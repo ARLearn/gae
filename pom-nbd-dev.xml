@@ -27,7 +27,7 @@
     </properties>
 
     <build>
-        <finalName>ARLearnWeb</finalName>
+        <finalName>BibendoDev</finalName>
         <plugins>
             <plugin>
                 <groupId>com.google.code.maven-replacer-plugin</groupId>
