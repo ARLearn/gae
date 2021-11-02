@@ -128,7 +128,7 @@ public class GameAccessManager {
 		try {
 			return new GameAccessEntity(datastore.get(key));
 		} catch (EntityNotFoundException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		return null;
 

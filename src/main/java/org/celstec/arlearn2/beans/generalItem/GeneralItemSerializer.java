@@ -48,6 +48,13 @@ public class GeneralItemSerializer extends GameBeanSerializer{
 			if (gi.getLat() != null) returnObject.put("lat", gi.getLat());
 			if (gi.getAuthoringX() != null) returnObject.put("authoringX", gi.getAuthoringX());
 			if (gi.getAuthoringY() != null) returnObject.put("authoringY", gi.getAuthoringY());
+
+			if (gi.getCustomMapX() != null) returnObject.put("customMapX", gi.getCustomMapX());
+			if (gi.getCustomMapY() != null) returnObject.put("customMapY", gi.getCustomMapY());
+
+			if (gi.getRelX() != null) returnObject.put("relX", gi.getRelX());
+			if (gi.getRelY() != null) returnObject.put("relY", gi.getRelY());
+
 			if (gi.getVisibleAt() != null) returnObject.put("visibleAt", gi.getVisibleAt());
 			if (gi.getDisappearAt() != null) returnObject.put("disappearAt", gi.getDisappearAt());
 			if (gi.getAutoLaunch() != null) returnObject.put("autoLaunch", gi.getAutoLaunch());

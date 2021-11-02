@@ -17,9 +17,9 @@
  * Contributors: Stefaan Ternier
  ******************************************************************************/
 package org.celstec.arlearn2.beans;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name = "AuthResponse")
+//import javax.xml.bind.annotation.XmlRootElement;
+//
+//@XmlRootElement(name = "AuthResponse")
 public class AuthResponse extends Bean{
 	
 	private String auth;

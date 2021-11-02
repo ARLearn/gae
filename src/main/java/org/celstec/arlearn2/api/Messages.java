@@ -18,11 +18,6 @@ import org.celstec.arlearn2.beans.run.Thread;
 import org.celstec.arlearn2.delegators.MessageDelegator;
 
 import org.celstec.arlearn2.delegators.ThreadDelegator;
-import org.celstec.arlearn2.mappers.lom.GamesMapper;
-import org.celstec.arlearn2.mappers.lom.LomOutput;
-import org.celstec.arlearn2.mappers.lom.LomReducer;
-import org.celstec.arlearn2.mappers.messages.MessagesMapper;
-import com.google.appengine.tools.mapreduce.outputs.DatastoreOutput;
 import com.google.appengine.api.datastore.Key;
 
 import java.io.Serializable;

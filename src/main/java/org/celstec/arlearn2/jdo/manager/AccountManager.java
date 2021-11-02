@@ -250,6 +250,7 @@ public class AccountManager {
             datastore.put(accountEntity.toEntity());
             return accountEntity.toAccount();
         } catch (Exception e) {
+
             e.printStackTrace();
         }
         return null;

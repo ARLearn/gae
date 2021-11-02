@@ -49,6 +49,7 @@ public class GameDeserializer extends GameBeanDeserializer {
 		if (object.has("description")) g.setDescription(object.getString("description"));
 		if (object.has("owner")) g.setOwner(object.getString("owner"));
 		if (object.has("feedUrl")) g.setFeedUrl(object.getString("feedUrl"));
+		if (object.has("messageListTypes")) g.setMessageListTypes(object.getString("messageListTypes"));
 		if (object.has("sharing")) g.setSharing(object.getInt("sharing"));
 		if (object.has("licenseCode")) g.setLicenseCode(object.getString("licenseCode"));
 		if (object.has("config")) g.setConfig((Config) JsonBeanDeserializer.deserialize(Config.class, object.getJSONObject("config")));
@@ -57,10 +58,16 @@ public class GameDeserializer extends GameBeanDeserializer {
         if (object.has("language")) g.setLanguage(object.getString("language"));
         if (object.has("rank")) g.setRank(object.getInt("rank"));
         if (object.has("theme")) g.setTheme(object.getLong("theme"));
-		if (object.has("googlePlayUrl")) g.setGooglePlayUrl(object.getString("googlePlayUrl"));
-		if (object.has("appStoreUrl")) g.setAppStoreUrl(object.getString("appStoreUrl"));
+//		if (object.has("googlePlayUrl")) g.setGooglePlayUrl(object.getString("googlePlayUrl"));
+//		if (object.has("appStoreUrl")) g.setAppStoreUrl(object.getString("appStoreUrl"));
+		if (object.has("messageListScreen")) g.setMessageListScreen(object.getString("messageListScreen"));
+		if (object.has("messageListTypes")) g.setMessageListTypes(object.getString("messageListTypes"));
 		if (object.has("privateMode")) g.setPrivateMode(object.getBoolean("privateMode"));
+		if (object.has("webEnabled")) g.setWebEnabled(object.getBoolean("webEnabled"));
+
 		if (object.has("iconAbbreviation")) g.setIconAbbreviation(object.getString("iconAbbreviation"));
 		if (object.has("endsOn")) g.setEndsOn((Dependency) JsonBeanDeserializer.deserialize(Dependency.class, object.getJSONObject("endsOn")));
+		if (object.has("boardHeight")) g.setBoardHeight(object.getInt("boardHeight"));
+		if (object.has("boardWidth")) g.setBoardWidth(object.getInt("boardWidth"));
     }
 }

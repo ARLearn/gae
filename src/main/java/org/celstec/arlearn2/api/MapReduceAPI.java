@@ -1,7 +1,5 @@
 package org.celstec.arlearn2.api;
 
-import org.celstec.arlearn2.mappers.UpdateUsersTable;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

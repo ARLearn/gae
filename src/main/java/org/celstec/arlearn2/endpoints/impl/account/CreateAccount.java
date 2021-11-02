@@ -54,6 +54,7 @@ public class CreateAccount {
 
 
     public Account updateAccount( Account account) throws FirebaseAuthException {
+        FirebaseAuthPersistence.getInstance();
         if (account.getFirebaseId() == null) {
             account.setFirebaseId(FirebaseAuthPersistence.getInstance().getUserViaEmail(account.getEmail()));
         }
@@ -96,6 +97,7 @@ public class CreateAccount {
     public Account setAdvanced(String accountId, Boolean value) {
         Account account = AccountManager.setAdvanced(accountId, value);
         if (account != null && account.getFirebaseId() != null) {
+            System.out.println("in set advanced");
             try {
                 FirebaseAuthPersistence.getInstance().setAdvanced(account.getFirebaseId(), value);
             } catch (FirebaseAuthException e) {

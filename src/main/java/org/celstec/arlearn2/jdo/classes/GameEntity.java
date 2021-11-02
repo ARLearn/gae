@@ -37,14 +37,18 @@ public class GameEntity {
     public static String COL_DELETED = "deleted";
     public static String COL_LASTMODIFICATIONDATE = "lastModificationDate";
 
-    public static String COL_APPSTOREURL = "appStoreUrl";
+//    public static String COL_APPSTOREURL = "appStoreUrl";
     public static String COL_CONFIG = "config";
     public static String COL_CREATOREMAIL = "creatorEmail";
     public static String COL_DESCRIPTION = "description";
     public static String COL_FEATURED = "featured";
     public static String COL_FEEDURL = "feedUrl";
 
-    public static String COL_GOOGLEPLAYURL = "googlePlayUrl";
+//    public static String COL_GOOGLEPLAYURL = "googlePlayUrl";
+    public static String COL_MESSAGELISTSCREEN = "messageListScreen";
+    public static String COL_MESSAGELISTTYPES = "messageListTypes";
+    public static String COL_BOARDWIDTH = "boardWidth";
+    public static String COL_BOARDHEIGHT = "boardHeight";
     public static String COL_LANGUAGE = "language";
 
     public static String COL_LAT = "lat";
@@ -56,6 +60,7 @@ public class GameEntity {
     public static String COL_TITLE = "title";
     public static String COL_SPLASHSCREEN = "splashScreen";
     public static String COL_PRIVATE_MODE = "privateMode";
+    public static String COL_WEB_ENABLED = "webEnabled";
     public static String COL_ICON_ABBREV = "iconAbbreviation";
     public static String COL_ENDS_ON = "endsOn";
 
@@ -96,10 +101,14 @@ public class GameEntity {
     private Boolean featured;
     private String language;
     private Long theme;
-    private String googlePlayUrl;
-    private String appStoreUrl;
-
+//    private String googlePlayUrl;
+//    private String appStoreUrl;
+    private String messageListScreen;
+    private String messageListTypes;
+    private Integer boardWidth;
+    private Integer boardHeight;
     private Boolean privateMode;
+    private Boolean webEnabled;
     private String iconAbbreviation;
 
     public Long getGameId() {
@@ -240,20 +249,52 @@ public class GameEntity {
         this.theme = theme;
     }
 
-    public String getGooglePlayUrl() {
-        return googlePlayUrl;
+//    public String getGooglePlayUrl() {
+//        return googlePlayUrl;
+//    }
+//
+//    public void setGooglePlayUrl(String googlePlayUrl) {
+//        this.googlePlayUrl = googlePlayUrl;
+//    }
+//
+//    public String getAppStoreUrl() {
+//        return appStoreUrl;
+//    }
+//
+//    public void setAppStoreUrl(String appStoreUrl) {
+//        this.appStoreUrl = appStoreUrl;
+//    }
+
+    public String getMessageListScreen() {
+        return messageListScreen;
     }
 
-    public void setGooglePlayUrl(String googlePlayUrl) {
-        this.googlePlayUrl = googlePlayUrl;
+    public void setMessageListScreen(String messageListScreen) {
+        this.messageListScreen = messageListScreen;
     }
 
-    public String getAppStoreUrl() {
-        return appStoreUrl;
+    public String getMessageListTypes() {
+        return messageListTypes;
     }
 
-    public void setAppStoreUrl(String appStoreUrl) {
-        this.appStoreUrl = appStoreUrl;
+    public void setMessageListTypes(String messageListTypes) {
+        this.messageListTypes = messageListTypes;
+    }
+
+    public Integer getBoardWidth() {
+        return boardWidth;
+    }
+
+    public void setBoardWidth(Integer boardWidth) {
+        this.boardWidth = boardWidth;
+    }
+
+    public Integer getBoardHeight() {
+        return boardHeight;
+    }
+
+    public void setBoardHeight(Integer boardHeight) {
+        this.boardHeight = boardHeight;
     }
 
     public Boolean getPrivateMode() {
@@ -262,6 +303,14 @@ public class GameEntity {
 
     public void setPrivateMode(Boolean privateMode) {
         this.privateMode = privateMode;
+    }
+
+    public Boolean getWebEnabled() {
+        return webEnabled;
+    }
+
+    public void setWebEnabled(Boolean webEnabled) {
+        this.webEnabled = webEnabled;
     }
 
     public String getIconAbbreviation() {
@@ -300,9 +349,18 @@ public class GameEntity {
         if (entity.getProperty(COL_THEME) != null) {
             this.theme = ((Long) entity.getProperty(COL_THEME));
         }
-        this.googlePlayUrl = (String) entity.getProperty(COL_GOOGLEPLAYURL);
-        this.appStoreUrl = (String) entity.getProperty(COL_APPSTOREURL);
+//        this.googlePlayUrl = (String) entity.getProperty(COL_GOOGLEPLAYURL);
+//        this.appStoreUrl = (String) entity.getProperty(COL_APPSTOREURL);
+        this.messageListScreen = (String) entity.getProperty(COL_MESSAGELISTSCREEN);
+        this.messageListTypes = (String) entity.getProperty(COL_MESSAGELISTTYPES);
+        if (entity.getProperty(COL_BOARDHEIGHT) != null) {
+            this.boardHeight = ((Long) entity.getProperty(COL_BOARDHEIGHT)).intValue();
+        }
+        if (entity.getProperty(COL_BOARDWIDTH) != null) {
+            this.boardWidth = ((Long) entity.getProperty(COL_BOARDWIDTH)).intValue();
+        }
         this.privateMode = (Boolean) entity.getProperty(COL_PRIVATE_MODE);
+        this.webEnabled = (Boolean) entity.getProperty(COL_WEB_ENABLED);
         this.iconAbbreviation = (String) entity.getProperty(COL_ICON_ABBREV);
     }
 
@@ -316,14 +374,20 @@ public class GameEntity {
 
         result.setProperty(COL_DELETED, this.deleted);
         result.setProperty(COL_LASTMODIFICATIONDATE, this.lastModificationDate);
-        result.setProperty(COL_APPSTOREURL, this.appStoreUrl);
+//        result.setProperty(COL_APPSTOREURL, this.appStoreUrl);
         result.setProperty(COL_CONFIG, this.config);
         result.setProperty(COL_ENDS_ON, this.endsOn);
         result.setProperty(COL_CREATOREMAIL, this.creatorEmail);
         result.setProperty(COL_DESCRIPTION, this.description);
         result.setProperty(COL_FEATURED, this.featured);
         result.setProperty(COL_FEEDURL, this.feedUrl);
-        result.setProperty(COL_GOOGLEPLAYURL, this.googlePlayUrl);
+//        result.setProperty(COL_GOOGLEPLAYURL, this.googlePlayUrl);
+
+        result.setProperty(COL_MESSAGELISTSCREEN, this.messageListScreen);
+        result.setProperty(COL_MESSAGELISTTYPES, this.messageListTypes);
+        result.setProperty(COL_BOARDWIDTH, this.boardWidth);
+        result.setProperty(COL_BOARDHEIGHT, this.boardHeight);
+
         result.setProperty(COL_LANGUAGE, this.language);
         result.setProperty(COL_LAT, this.lat);
         result.setProperty(COL_LNG, this.lng);
@@ -334,6 +398,7 @@ public class GameEntity {
         result.setProperty(COL_TITLE, this.title);
         result.setProperty(COL_SPLASHSCREEN, this.splashScreen);
         result.setProperty(COL_PRIVATE_MODE, this.privateMode);
+        result.setProperty(COL_WEB_ENABLED, this.webEnabled);
         result.setProperty(COL_ICON_ABBREV, this.iconAbbreviation);
         return result;
 
@@ -352,8 +417,12 @@ public class GameEntity {
         game.setLng(getLng());
         game.setLat(getLat());
         game.setLanguage(getLanguage());
-        game.setAppStoreUrl(getAppStoreUrl());
-        game.setGooglePlayUrl(getGooglePlayUrl());
+//        game.setAppStoreUrl(getAppStoreUrl());
+//        game.setGooglePlayUrl(getGooglePlayUrl());
+        game.setMessageListScreen(getMessageListScreen());
+        game.setMessageListTypes(getMessageListTypes());
+        game.setBoardWidth(getBoardWidth());
+        game.setBoardHeight(getBoardHeight());
         if (getTheme() != null) game.setTheme(getTheme());
         if (getLicenseCode() != null) game.setLicenseCode(getLicenseCode());
         if (getLastModificationDate() != null) {
@@ -389,6 +458,11 @@ public class GameEntity {
             game.setPrivateMode(false);
         } else {
             game.setPrivateMode(getPrivateMode());
+        }
+        if (getWebEnabled() == null) {
+            game.setWebEnabled(false);
+        } else {
+            game.setWebEnabled(getWebEnabled());
         }
         if (getIconAbbreviation() == null) {
             game.setIconAbbreviation("");

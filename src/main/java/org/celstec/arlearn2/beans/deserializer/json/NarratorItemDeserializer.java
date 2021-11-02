@@ -41,8 +41,6 @@ public class NarratorItemDeserializer extends GeneralItemDeserializer {
 	public void initBean(JSONObject object, Bean genericBean) throws JSONException {
 		super.initBean(object, genericBean);
 		NarratorItem nItem = (NarratorItem) genericBean;
-		System.out.println("in narrator deserializer");
-		System.out.println("in narrator deserializer "+object.toString(1));
 		if (object.has("videoUrl")) nItem.setVideoUrl(object.getString("videoUrl"));
 		if (object.has("audioUrl")) nItem.setAudioUrl(object.getString("audioUrl"));
 		if (object.has("imageUrl")) nItem.setImageUrl(object.getString("imageUrl"));

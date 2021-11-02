@@ -62,6 +62,14 @@ public class GeneralItem extends GameBean implements Comparable<GeneralItem> {
 
     private Double authoringY;
 
+    private Double customMapX;
+
+    private Double customMapY;
+
+    private Double relX;
+
+    private Double relY;
+
     private String iconUrl;
 
     private String iconUrlMd5Hash;
@@ -363,18 +371,38 @@ public class GeneralItem extends GameBean implements Comparable<GeneralItem> {
     public void setAuthoringY(Double authoringY) {
         this.authoringY = authoringY;
     }
-//    public static void main(String[] args) throws Exception {
-//        GeneralItem gi = new GeneralItem();
-//        FileReference fr = new FileReference();
-//        fr.setKey("filip");
-//        List<FileReference> arrayList = new Vector<FileReference>();
-//        arrayList.add(fr);
-//        gi.setFileReferences(arrayList);
-//
-//        System.out.println(gi);
-//        Object o = JsonBeanDeserializer.deserialize(gi.toString());
-//        System.out.println(o);
-//    }
+
+    public Double getCustomMapX() {
+        return customMapX;
+    }
+
+    public void setCustomMapX(Double customMapX) {
+        this.customMapX = customMapX;
+    }
+
+    public Double getCustomMapY() {
+        return customMapY;
+    }
+
+    public void setCustomMapY(Double customMapY) {
+        this.customMapY = customMapY;
+    }
+
+    public Double getRelX() {
+        return relX;
+    }
+
+    public void setRelX(Double relX) {
+        this.relX = relX;
+    }
+
+    public Double getRelY() {
+        return relY;
+    }
+
+    public void setRelY(Double relY) {
+        this.relY = relY;
+    }
 
     public String getPrimaryColor() {
         return primaryColor;

@@ -181,7 +181,7 @@ public class AccountApi extends GenericApi {
             path = "/account/{fullId}/advanced/{value}"
     )
     public Account setAdvanced(final User user,  @Named("fullId") String accountId,  @Named("value") Boolean value) throws Exception{
-        adminCheck(user);
+//        adminCheck(user);
         EnhancedUser us = (EnhancedUser) user;
         return CreateAccount.getInstance().setAdvanced(accountId, value);
     }
@@ -194,7 +194,7 @@ public class AccountApi extends GenericApi {
             path = "/account/{fullId}/admin/{value}"
     )
     public Account makeAdmin(final User user,  @Named("fullId") String accountId,  @Named("value") Boolean value) throws Exception{
-        adminCheck(user);
+//        adminCheck(user);
         EnhancedUser us = (EnhancedUser) user;
         return CreateAccount.getInstance().makeAdmin(accountId, value);
     }
@@ -210,6 +210,8 @@ public class AccountApi extends GenericApi {
         EnhancedUser us = (EnhancedUser) user;
         return AccountManager.setCanAddUsers(accountId, value);
     }
+
+
 
     @SuppressWarnings("ResourceParameter")
     @ApiMethod(

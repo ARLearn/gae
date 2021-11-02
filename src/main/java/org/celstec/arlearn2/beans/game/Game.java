@@ -32,11 +32,17 @@ public class Game extends GameBean implements Serializable, Comparable<Game>{
     public static final int PUBLIC = 3;
 
     private String title;
+    private String messageListScreen;
+    private String messageListTypes;
+    private Integer boardWidth;
+    private Integer boardHeight;
+
     private String splashScreen;
     private String creator;
     private String description;
     private String owner;
     private String feedUrl;
+
     private Config config;
     private Integer sharing;
     private String licenseCode;
@@ -46,9 +52,10 @@ public class Game extends GameBean implements Serializable, Comparable<Game>{
     private Integer rank;
     private Long theme;
 
-    private String googlePlayUrl;
-    private String appStoreUrl;
+
+
     private Boolean privateMode;
+    private Boolean webEnabled;
     private String iconAbbreviation;
 
     private Dependency endsOn;
@@ -149,20 +156,36 @@ public class Game extends GameBean implements Serializable, Comparable<Game>{
         this.lat = lat;
     }
 
-    public String getGooglePlayUrl() {
-        return googlePlayUrl;
+//    public String getGooglePlayUrl() {
+//        return googlePlayUrl;
+//    }
+//
+//    public void setGooglePlayUrl(String googlePlayUrl) {
+//        this.googlePlayUrl = googlePlayUrl;
+//    }
+//
+//    public String getAppStoreUrl() {
+//        return appStoreUrl;
+//    }
+//
+//    public void setAppStoreUrl(String appStoreUrl) {
+//        this.appStoreUrl = appStoreUrl;
+//    }
+
+    public String getMessageListScreen() {
+        return messageListScreen;
     }
 
-    public void setGooglePlayUrl(String googlePlayUrl) {
-        this.googlePlayUrl = googlePlayUrl;
+    public void setMessageListScreen(String messageListScreen) {
+        this.messageListScreen = messageListScreen;
     }
 
-    public String getAppStoreUrl() {
-        return appStoreUrl;
+    public String getMessageListTypes() {
+        return messageListTypes;
     }
 
-    public void setAppStoreUrl(String appStoreUrl) {
-        this.appStoreUrl = appStoreUrl;
+    public void setMessageListTypes(String messageListTypes) {
+        this.messageListTypes = messageListTypes;
     }
 
     public Boolean getPrivateMode() {
@@ -171,6 +194,14 @@ public class Game extends GameBean implements Serializable, Comparable<Game>{
 
     public void setPrivateMode(Boolean privateMode) {
         this.privateMode = privateMode;
+    }
+
+    public Boolean getWebEnabled() {
+        return webEnabled;
+    }
+
+    public void setWebEnabled(Boolean webEnabled) {
+        this.webEnabled = webEnabled;
     }
 
     public String getIconAbbreviation() {
@@ -234,6 +265,22 @@ public class Game extends GameBean implements Serializable, Comparable<Game>{
 
     public void setEndsOn(Dependency endsOn) {
         this.endsOn = endsOn;
+    }
+
+    public Integer getBoardWidth() {
+        return boardWidth;
+    }
+
+    public void setBoardWidth(Integer boardWidth) {
+        this.boardWidth = boardWidth;
+    }
+
+    public Integer getBoardHeight() {
+        return boardHeight;
+    }
+
+    public void setBoardHeight(Integer boardHeight) {
+        this.boardHeight = boardHeight;
     }
 }
 

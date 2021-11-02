@@ -59,6 +59,13 @@ public class GeneralItemDeserializer extends GameBeanDeserializer {
 		if (object.has("lat")) gi.setLat(object.getDouble("lat"));
 		if (object.has("authoringX")) gi.setAuthoringX(object.getDouble("authoringX"));
 		if (object.has("authoringY")) gi.setAuthoringY(object.getDouble("authoringY"));
+
+		if (object.has("customMapX")) gi.setCustomMapX(object.getDouble("customMapX"));
+		if (object.has("customMapY")) gi.setCustomMapY(object.getDouble("customMapY"));
+
+		if (object.has("relX")) gi.setRelX(object.getDouble("relX"));
+		if (object.has("relY")) gi.setRelY(object.getDouble("relY"));
+
 		if (object.has("visibleAt")) gi.setVisibleAt(object.getLong("visibleAt"));
 		if (object.has("disappearAt")) gi.setDisappearAt(object.getLong("disappearAt"));
 		if (object.has("autoLaunch")) gi.setAutoLaunch(object.getBoolean("autoLaunch"));

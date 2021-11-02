@@ -8,10 +8,7 @@ package org.celstec.arlearn2.api;
 //import com.google.appengine.tools.mapreduce.inputs.DatastoreInput;
 import org.celstec.arlearn2.beans.game.Rating;
 import org.celstec.arlearn2.jdo.manager.GameAverageRatingManager;
-import org.celstec.arlearn2.mappers.rating.RatingMapper;
-import org.celstec.arlearn2.mappers.rating.RatingMarshaller;
-import org.celstec.arlearn2.mappers.rating.RatingOutput;
-import org.celstec.arlearn2.mappers.rating.RatingReducer;
+
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

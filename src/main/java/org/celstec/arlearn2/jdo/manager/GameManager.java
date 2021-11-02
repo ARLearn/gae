@@ -88,8 +88,12 @@ public class GameManager {
         gameJdo.setLng(game.getLng());
         gameJdo.setLanguage(game.getLanguage());
         gameJdo.setTheme(game.getTheme());
-		gameJdo.setAppStoreUrl(game.getAppStoreUrl());
-		gameJdo.setGooglePlayUrl(game.getGooglePlayUrl());
+//		gameJdo.setAppStoreUrl(game.getAppStoreUrl());
+//		gameJdo.setGooglePlayUrl(game.getGooglePlayUrl());
+		gameJdo.setMessageListScreen(game.getMessageListScreen());
+		gameJdo.setMessageListTypes(game.getMessageListTypes());
+		gameJdo.setBoardHeight(game.getBoardHeight());
+		gameJdo.setBoardWidth(game.getBoardWidth());
 		gameJdo.setIconAbbreviation(game.getIconAbbreviation());
 		if (game.getDeleted() != null) gameJdo.setDeleted(game.getDeleted());
 		if (game.getLicenseCode() !=null) gameJdo.setLicenseCode(game.getLicenseCode());
@@ -104,6 +108,7 @@ public class GameManager {
 			gameJdo.setEndsOn(jbs.serialiseToJson().toString());
 		}
 		gameJdo.setPrivateMode(game.getPrivateMode());
+		gameJdo.setWebEnabled(game.getWebEnabled());
 		return datastore.put(gameJdo.toEntity()).getId();
 
 //		try {

@@ -20,7 +20,7 @@ package org.celstec.arlearn2.beans.run;
 
 import java.util.HashMap;
 
-import javax.xml.bind.annotation.XmlElement;
+//import javax.xml.bind.annotation.XmlElement;
 
 //TODO: revisit this class
 public class GameStateRecord extends RunBean {
@@ -77,7 +77,7 @@ public class GameStateRecord extends RunBean {
 		this.teamProgress = teamProgress;
 	}
 
-	@XmlElement(name="allProgress", nillable = true,required = true)
+//	@XmlElement(name="allProgress", nillable = true,required = true)
 
 	public HashMap<String, Long> getAllProgress() {
 		return allProgress;

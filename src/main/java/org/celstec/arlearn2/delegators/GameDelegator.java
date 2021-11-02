@@ -171,6 +171,7 @@ public class GameDelegator extends GoogleDelegator {
             if (game == null) {
                 System.out.println("game is null");
                 if (nullIfGameDoesNotExist) return null;
+                GameAccessManager.deleteGame(gameId);
                 System.out.println("return game does not exist");
                 game = new Game();
                 game.setGameId(gameId);
@@ -196,9 +197,14 @@ public class GameDelegator extends GoogleDelegator {
         oldGame.setLicenseCode(updateGame.getLicenseCode());
         oldGame.setSharing(updateGame.getSharing());
         oldGame.setLastModificationDate(System.currentTimeMillis());
+        oldGame.setMessageListScreen(updateGame.getMessageListScreen());
+        oldGame.setBoardHeight(updateGame.getBoardHeight());
+        oldGame.setBoardWidth(updateGame.getBoardWidth());
+        oldGame.setMessageListTypes(updateGame.getMessageListTypes());
         oldGame.setConfig(updateGame.getConfig());
         oldGame.setTheme(updateGame.getTheme());
         oldGame.setTitle(updateGame.getTitle());
+        oldGame.setWebEnabled(updateGame.getWebEnabled());
         GameManager.addGame(oldGame);
         resetCache(gameId);
         return oldGame;
@@ -245,8 +251,6 @@ public class GameDelegator extends GoogleDelegator {
         if (game.getGameId() != null) {
             oldGame = getGame(game.getGameId());
         }
-
-        System.out.println("before game mgr "+game.getEndsOn());
         game.setGameId(GameManager.addGame(game));
         MyGamesCache.getInstance().removeGame(game.getGameId());
         MyGamesCache.getInstance().removeGameList(game.getGameId(), null, null, null, null);
@@ -285,24 +289,13 @@ public class GameDelegator extends GoogleDelegator {
 //        g.setDeleted(true); //soft delete
 		GameManager.deleteGame(gameIdentifier); //is a hard delete
         GameAccessManager.deleteGame(gameIdentifier);
-//        GameManager.addGame(g); //was a soft delete
 
 
         GameAccessManager.resetGameAccessLastModificationDate(g.getGameId());
         MyGamesCache.getInstance().removeGameList(null, null, myAccount, null, null);
         MyGamesCache.getInstance().removeGameList(gameIdentifier, null, myAccount, null, null);
         (new DeleteRuns(authToken, this.account, gameIdentifier, myAccount)).scheduleTask();
-//		(new DeleteProgressDefinitions(authToken, gameIdentifier)).scheduleTask();
-//		(new DeleteScoreDefinitions(authToken, gameIdentifier)).scheduleTask();
         (new DeleteGeneralItems(authToken, this.account, gameIdentifier)).scheduleTask();
-
-//        GameModification gm = new GameModification();
-//        gm.setModificationType(GameModification.DELETED);
-//        gm.setGame(g);
-//        if (this.account != null) {
-//            new NotificationDelegator(this).broadcast(g, account.getFullId());
-//        }
-//        ChannelNotificator.getInstance().notify(myAccount, gm);
 
         return g;
     }

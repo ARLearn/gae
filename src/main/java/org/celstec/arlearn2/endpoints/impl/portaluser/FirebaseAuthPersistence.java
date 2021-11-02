@@ -91,6 +91,7 @@ public class FirebaseAuthPersistence {
         claims.putAll(claimsOld);
         claims.put("advanced", value);
         request.setCustomClaims(claims);
+        System.out.println("updating custom claims" +claims);
         return FirebaseAuth.getInstance().updateUser(request);
     }
 

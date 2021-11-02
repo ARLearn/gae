@@ -5,16 +5,7 @@ package org.celstec.arlearn2.api;
 //import com.google.appengine.tools.mapreduce.outputs.InMemoryOutput;
 import org.celstec.arlearn2.beans.store.Category;
 import org.celstec.arlearn2.delegators.*;
-import org.celstec.arlearn2.mappers.CountOutput;
-import org.celstec.arlearn2.mappers.CountReducer;
-import org.celstec.arlearn2.mappers.CountRunsMapper;
-import org.celstec.arlearn2.mappers.lom.GamesMapper;
-import org.celstec.arlearn2.mappers.lom.LomOutput;
-import org.celstec.arlearn2.mappers.lom.LomReducer;
-import org.celstec.arlearn2.mappers.rating.RatingMapper;
-import org.celstec.arlearn2.mappers.rating.RatingMarshaller;
-import org.celstec.arlearn2.mappers.rating.RatingOutput;
-import org.celstec.arlearn2.mappers.rating.RatingReducer;
+
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

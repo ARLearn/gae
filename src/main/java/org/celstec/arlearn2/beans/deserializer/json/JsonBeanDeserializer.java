@@ -279,6 +279,7 @@ public class JsonBeanDeserializer  extends BeanDeserializer{
 		customDeserializerMap.put(SingleChoiceImageTest.class, SingleChoiceImageTest.deserializer);
 		customDeserializerMap.put(MultipleChoiceImageTest.class, MultipleChoiceImageTest.deserializer);
 		customDeserializerMap.put(CombinationLock.class, CombinationLock.deserializer);
+		customDeserializerMap.put(CodeWord.class, CodeWord.deserializer);
 
 		customDeserializerMap.put(User.class, User.deserializer);
 
@@ -349,6 +350,7 @@ public class JsonBeanDeserializer  extends BeanDeserializer{
 		customDeserializerMapString.put("org.celstec.arlearn2.beans.generalItem.SingleChoiceImageTest", SingleChoiceImageTest.deserializer);
 		customDeserializerMapString.put("org.celstec.arlearn2.beans.generalItem.MultipleChoiceImageTest", MultipleChoiceImageTest.deserializer);
 		customDeserializerMapString.put("org.celstec.arlearn2.beans.generalItem.CombinationLock", CombinationLock.deserializer);
+		customDeserializerMapString.put("org.celstec.arlearn2.beans.generalItem.CodeWord", CodeWord.deserializer);
 
         customDeserializerMapString.put("org.celstec.arlearn2.beans.generalItem.SortQuestion", SortQuestion.deserializer);
         customDeserializerMapString.put("org.celstec.arlearn2.beans.generalItem.SortQuestionItem", SortQuestionItem.deserializer);

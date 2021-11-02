@@ -44,13 +44,25 @@ public class GameSerializer extends GameBeanSerializer{
             if (game.getRank() != null) returnObject.put("rank", game.getRank());
             if (game.getTheme() != null) returnObject.put("theme", game.getTheme());
 
-			if (game.getGooglePlayUrl() != null) returnObject.put("googlePlayUrl", game.getGooglePlayUrl());
-			if (game.getAppStoreUrl() != null) returnObject.put("appStoreUrl", game.getAppStoreUrl());
+//			if (game.getGooglePlayUrl() != null) returnObject.put("googlePlayUrl", game.getGooglePlayUrl());
+//			if (game.getAppStoreUrl() != null) returnObject.put("appStoreUrl", game.getAppStoreUrl());
+
+			if (game.getMessageListScreen() != null) returnObject.put("messageListScreen", game.getMessageListScreen());
+			if (game.getMessageListTypes() != null) returnObject.put("messageListTypes", game.getMessageListTypes());
+			if (game.getBoardHeight() != null) returnObject.put("boardHeight", game.getBoardHeight());
+			if (game.getBoardWidth() != null) returnObject.put("boardWidth", game.getBoardWidth());
+
 			if (game.getPrivateMode() != null) {
 				returnObject.put("privateMode", game.getPrivateMode());
 			} else {
 				returnObject.put("privateMode", false);
 			}
+			if (game.getWebEnabled() != null) {
+				returnObject.put("webEnabled", game.getWebEnabled());
+			} else {
+				returnObject.put("webEnabled", false);
+			}
+
 			if (game.getEndsOn() != null) returnObject.put("endsOn", JsonBeanSerialiser.serialiseToJson(game.getEndsOn()));
 
 			if (game.getIconAbbreviation() != null) returnObject.put("iconAbbreviation", game.getIconAbbreviation());

@@ -166,6 +166,7 @@ public class JsonBeanSerialiser extends BeanSerializer{
 		customSerializerMap.put(MultipleChoiceAnswerItem.class.getCanonicalName(), new MultipleChoiceAnswerItemSerializer());
 		customSerializerMap.put(MultipleChoiceImageAnswerItem.class.getCanonicalName(), MultipleChoiceImageAnswerItem.serializer);
 		customSerializerMap.put(CombinationLock.class.getCanonicalName(), CombinationLock.serializer);
+		customSerializerMap.put(CodeWord.class.getCanonicalName(), CodeWord.serializer);
 		customSerializerMap.put(OpenUrl.class.getCanonicalName(), OpenUrl.serializer);
 		customSerializerMap.put(ScanTag.class.getCanonicalName(), ScanTag.serializer);
         customSerializerMap.put(FileReference.class.getCanonicalName(), FileReference.serializer);

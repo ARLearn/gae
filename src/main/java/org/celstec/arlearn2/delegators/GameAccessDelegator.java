@@ -173,7 +173,11 @@ public class GameAccessDelegator extends GoogleDelegator {
     }
     public boolean canView( Long gameId, String myAccount) {
         try {
-            int accessRights = GameAccessManager.getAccessById(myAccount + ":" + gameId).getAccessRights();
+            GameAccessEntity gameAccessEntity = GameAccessManager.getAccessById(myAccount + ":" + gameId);
+            if (gameAccessEntity == null) {
+                return false;
+            }
+            int accessRights = gameAccessEntity.getAccessRights();
             return accessRights == GameAccessEntity.OWNER || accessRights == GameAccessEntity.CAN_EDIT || accessRights == GameAccessEntity.CAN_VIEW;
         } catch (Exception e) {
             return false;
