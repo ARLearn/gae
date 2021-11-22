@@ -107,6 +107,27 @@ public class AccountManager {
         return account;
     }
 
+    public static AccountEntity overwriteAccount(Account acc) {
+        AccountEntity account = getAccount(acc.getAccountType(), acc.getLocalId());
+        if (account == null) {
+            account = new AccountEntity();
+            account.setLocalId(acc.getLocalId());
+            account.setAccountType(acc.getAccountType());
+            account.setUniqueId();
+        }
+        account.setFirebaseId(acc.getFirebaseId());
+        account.setEmail(acc.getEmail());
+        account.setName(acc.getName());
+        account.setLabels(acc.getLabel());
+        account.setPicture(acc.getPicture());
+        account.setLastModificationDate(System.currentTimeMillis());
+        account.setAllowTrackLocation(false);
+        account.setExpirationDate(acc.getExpirationDate());
+        account.setSuspended(acc.getSuspended());
+        datastore.put(account.toEntity());
+        return account;
+    }
+
     public static Account getAccount(Account myAccount) {
         return (getAccount(myAccount.getAccountType() + ":" + myAccount.getLocalId()));
     }

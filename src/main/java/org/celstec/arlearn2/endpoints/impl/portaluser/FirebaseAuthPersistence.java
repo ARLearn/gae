@@ -122,4 +122,16 @@ public class FirebaseAuthPersistence {
     public String getUserViaEmail(String email)  throws FirebaseAuthException {
         return FirebaseAuth.getInstance().getUserByEmail(email).getUid();
     }
+
+    public UserRecord suspend(String uid) throws FirebaseAuthException {
+        UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(uid);
+        request.setDisabled(true);
+        return FirebaseAuth.getInstance().updateUser(request);
+    }
+
+    public UserRecord unSuspend(String uid) throws FirebaseAuthException {
+        UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(uid);
+        request.setDisabled(false);
+        return FirebaseAuth.getInstance().updateUser(request);
+    }
 }

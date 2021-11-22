@@ -18,10 +18,23 @@ public class AccountSearchIndex extends GenericBean {
     String labels;
     String email;
     Long expirationDate;
+    boolean suspended;
     boolean delete = false;
 
     public AccountSearchIndex() {
         super();
+    }
+
+    public AccountSearchIndex(String fullId, String displayName, String labels, String email, Long expirationDate, boolean suspended) {
+        super();
+        this.displayName = displayName;
+        this.fullId = fullId;
+        this.labels = labels;
+        this.email = email;
+        this.delete = false;
+        this.expirationDate = expirationDate;
+        this.suspended = suspended;
+        System.out.println("setting suspended to "+ this.suspended);
     }
 
     public AccountSearchIndex(String fullId, String displayName, String labels, String email, Long expirationDate) {
@@ -32,6 +45,7 @@ public class AccountSearchIndex extends GenericBean {
         this.email = email;
         this.delete = false;
         this.expirationDate = expirationDate;
+        this.suspended = false;
     }
 
     public AccountSearchIndex(String fullId, String displayName, String labels, boolean delete) {
@@ -40,6 +54,7 @@ public class AccountSearchIndex extends GenericBean {
         this.fullId = fullId;
         this.labels = labels;
         this.delete = delete;
+        this.suspended = false;
     }
 
     public String getFullId() {
@@ -92,6 +107,18 @@ public class AccountSearchIndex extends GenericBean {
 
     public void setExpirationDate(Long expirationDate) {
         this.expirationDate = expirationDate;
+    }
+
+    public boolean getSuspended() {
+        return suspended;
+    }
+
+    public boolean isSuspended() {
+        return suspended;
+    }
+
+    public void setSuspended(boolean suspended) {
+        this.suspended = suspended;
     }
 
     @Override
@@ -152,12 +179,13 @@ public class AccountSearchIndex extends GenericBean {
     }
 
     public void addToIndex() throws PutException {
-        System.out.println("adding to index");
+        System.out.println("adding to index: "+suspended);
         Document.Builder builder = Document.newBuilder()
                 .setId(fullId)
                 .addField(Field.newBuilder().setName("displayName").setText(""+getDisplayName()))
                 .addField(Field.newBuilder().setName("email").setText(""+getEmail()))
                 .addField(Field.newBuilder().setName("labels").setText(getLabels()))
+                .addField(Field.newBuilder().setName("suspended").setText(""+isSuspended()))
                 .addField(Field.newBuilder().setName("expirationDate").setText(""+getExpirationDate()));
 
         Document doc = builder.build();

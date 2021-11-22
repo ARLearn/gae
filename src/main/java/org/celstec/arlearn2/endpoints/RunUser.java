@@ -60,4 +60,14 @@ public class RunUser extends GenericApi{
                             @Named("fullId") String fullId) {
         new UsersDelegator(user).deleteUser(runId, fullId);
     }
+
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.DELETE,
+            name = "deleteMeFromRunRunId",
+            path = "/runs/player/me/{runId}"
+    )
+    public void deleteMe(EnhancedUser user,
+                           @Named("runId") Long runId) {
+        new UsersDelegator(user).deleteUser(runId, user.createFullId());
+    }
 }

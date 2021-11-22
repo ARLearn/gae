@@ -41,6 +41,7 @@ public class AccountEntity {
     public static String COL_ORGANISATIONID = "organisationId";
     public static String COL_ADMIN = "admin";
     public static String COL_ADVANCED = "advanced";
+    public static String COL_SUSPENDED = "suspended";
     public static String COL_CAN_PUBLISH = "canPublishGames";
     public static String COL_CAN_ADD_USERS_TO_ORG = "canAddUsersToOrganisation";
     public static String COL_LOCALID = "localId";
@@ -75,6 +76,7 @@ public class AccountEntity {
     private Boolean canAddUsersToOrganisation;
     private Boolean admin;
     private Boolean advanced;
+    private Boolean suspended;
 //    private Integer accountLevel;
     private Boolean allowTrackLocation;
 
@@ -216,6 +218,14 @@ public class AccountEntity {
         this.advanced = advanced;
     }
 
+    public Boolean getSuspended() {
+        return suspended;
+    }
+
+    public void setSuspended(Boolean suspended) {
+        this.suspended = suspended;
+    }
+
     public Boolean getCanPublishGames() {
         return canPublishGames;
     }
@@ -256,6 +266,7 @@ public class AccountEntity {
         this.organisationId = (Long) entity.getProperty(COL_ORGANISATIONID);
         this.advanced = (Boolean) entity.getProperty(COL_ADVANCED) == null ? false : (Boolean) entity.getProperty(COL_ADVANCED);
         this.admin = (Boolean) entity.getProperty(COL_ADMIN) == null ? false : (Boolean) entity.getProperty(COL_ADMIN);
+        this.suspended = (Boolean) entity.getProperty(COL_SUSPENDED) == null ? false : (Boolean) entity.getProperty(COL_SUSPENDED);
 
         this.canPublishGames = (Boolean) entity.getProperty(COL_CAN_PUBLISH) == null ? false : (Boolean) entity.getProperty(COL_CAN_PUBLISH);
         this.canAddUsersToOrganisation = (Boolean) entity.getProperty(COL_CAN_ADD_USERS_TO_ORG) == null ? false : (Boolean) entity.getProperty(COL_CAN_ADD_USERS_TO_ORG);
@@ -282,6 +293,7 @@ public class AccountEntity {
         result.setProperty(COL_ORGANISATIONID, this.organisationId);
         result.setProperty(COL_ADVANCED, this.advanced);
         result.setProperty(COL_ADMIN, this.admin);
+        result.setProperty(COL_SUSPENDED, this.suspended);
         result.setProperty(COL_CAN_PUBLISH, this.canPublishGames);
         result.setProperty(COL_CAN_ADD_USERS_TO_ORG, this.canAddUsersToOrganisation);
 
@@ -304,6 +316,7 @@ public class AccountEntity {
         account.setExpirationDate(this.expirationDate);
         account.setOrganisationId(this.organisationId);
         account.setAdvanced(this.advanced);
+        account.setSuspended(this.suspended);
         account.setAdmin(this.admin);
         return account;
     }

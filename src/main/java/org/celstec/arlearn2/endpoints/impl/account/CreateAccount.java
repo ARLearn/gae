@@ -1,5 +1,8 @@
 package org.celstec.arlearn2.endpoints.impl.account;
 
+import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.WriteResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
@@ -72,6 +75,11 @@ public class CreateAccount {
                 account.getName(), null, account.getExpirationDate(), account.getLabel());
     }
 
+    public Account updateDbAccount( Account account){
+        return AccountManager.overwriteAccount(account).toAccount();
+    }
+
+
     public void resetIndex() {
         new AccountSearchIndex().resetIndex();
 
@@ -119,5 +127,35 @@ public class CreateAccount {
         return account;
     }
 
+    public void suspend(Account account) {
+        try {
+            if (account != null && account.getFirebaseId() != null) {
+                account.setSuspended(true);
+                FirebaseAuthPersistence.getInstance().suspend(account.getFirebaseId());
+                new AccountSearchIndex(account.getFullId()
+                        , account.getName().toLowerCase(), account.getLabel(),
+                        account.getEmail().toLowerCase(), account.getExpirationDate(), true).scheduleTask();
+                updateDbAccount(account);
+            }
 
+        } catch (FirebaseAuthException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void unsuspend(Account account) {
+        try {
+            if (account != null && account.getFirebaseId() != null) {
+                account.setSuspended(false);
+                FirebaseAuthPersistence.getInstance().unSuspend(account.getFirebaseId());
+                new AccountSearchIndex(account.getFullId()
+                        , account.getName().toLowerCase(), account.getLabel(),
+                        account.getEmail().toLowerCase(), account.getExpirationDate(), false).scheduleTask();
+                updateDbAccount(account);
+            }
+
+        } catch (FirebaseAuthException e) {
+            e.printStackTrace();
+        }
+    }
 }

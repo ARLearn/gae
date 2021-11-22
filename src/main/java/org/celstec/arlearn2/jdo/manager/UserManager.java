@@ -165,10 +165,10 @@ public class UserManager {
 
     }
 
-    public static List<User> getUserList(Long runId, String email) {
+    public static List<User> getUserList(Long runId, String fullId) {
         Query.CompositeFilter filter = Query.CompositeFilterOperator.and(
                 new Query.FilterPredicate(UserEntity.COL_RUNID, Query.FilterOperator.EQUAL, runId),
-                new Query.FilterPredicate(UserEntity.COL_EMAIL, Query.FilterOperator.EQUAL, email)
+                new Query.FilterPredicate(UserEntity.COL_EMAIL, Query.FilterOperator.EQUAL, fullId)
         );
         ArrayList<User> userArrayList = new ArrayList<User>();
         Query q = new Query(UserEntity.KIND)

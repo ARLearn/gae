@@ -29,6 +29,9 @@ import com.google.api.server.spi.config.Named;
 
 import com.google.api.server.spi.response.ForbiddenException;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import org.celstec.arlearn2.beans.account.Account;
@@ -46,6 +49,8 @@ import org.celstec.arlearn2.delegators.GameDelegator;
 import org.celstec.arlearn2.endpoints.impl.account.AccountSearchIndex;
 import org.celstec.arlearn2.endpoints.impl.storage.DeleteStorage;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
+import org.celstec.arlearn2.jdo.classes.GameCategoryEntity;
+import org.celstec.arlearn2.jdo.manager.GameCategoryManager;
 import org.celstec.arlearn2.tasks.beans.GameSearchIndex;
 
 @Api(name = "store")
@@ -173,6 +178,48 @@ public class Store extends GenericApi {
     public GameCategoryList getGamesForCategory(
                                      @Named("categoryId") Long categoryId)  {//Game newGame
         return new CategoryDelegator().getGames(categoryId);
+    }
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(
+            name = "get_categories_for_game",
+            path = "/games/library/categories/game/{gameId}/{lang}"
+    )
+    public CategoryList getCategoriesForGame(
+            @Named("lang") String lang,
+            @Named("gameId") Long gameId)  {//Game newGame
+        return new CategoryDelegator().getCategories(lang, gameId);
+    }
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(
+            name = "get_category_mappings_for_game",
+            path = "/games/library/categoriesMappings/game/{gameId}"
+    )
+    public GameCategoryList getCategoriesMappingsForGame(
+            @Named("gameId") Long gameId)  {//Game newGame
+        GameCategoryList resultList = new GameCategoryList();
+
+        for (GameCategory result : GameCategoryManager.getCategories(gameId).getGameCategoryList()) {
+            resultList.addGameCategory(result);
+        }
+        return resultList;
+    }
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(
+            name = "delete_category_mappings_for_game",
+            path = "/games/library/categoriesMappings/game/{id}",
+            httpMethod = ApiMethod.HttpMethod.DELETE
+    )
+    public GameCategory deleteCategoriesMappingsForGame(
+            final User u,
+            @Named("id") String id) throws ForbiddenException {//Game
+        adminCheck(u);// newGame
+        GameCategoryManager.deleteGameCategory(id);
+        GameCategory gameCategory = new GameCategory();
+        gameCategory.setId(id);
+        return gameCategory;
     }
 
     @SuppressWarnings("ResourceParameter")

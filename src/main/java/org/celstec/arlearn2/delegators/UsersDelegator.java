@@ -223,25 +223,16 @@ public class UsersDelegator extends GoogleDelegator {
         return UserManager.userExists(gameId, email);
     }
 
-    public List<User> getUserList(Long runId, String email) {
-        List<User> users = UsersCache.getInstance().getUserList(runId, email);
+    public List<User> getUserList(Long runId, String fullId) {
+        List<User> users = UsersCache.getInstance().getUserList(runId, fullId);
         if (users == null) {
-            users = UserManager.getUserList(runId, email);
+            users = UserManager.getUserList(runId, fullId);
             enrichListWithAccountInfo(users);
-            UsersCache.getInstance().putUserList(users, runId, email);
+            UsersCache.getInstance().putUserList(users, runId, fullId);
         }
         return users;
     }
 
-    //    public List<User> getUserList(Long runId, String name, String email, String teamId) {
-//        List<User> users = UsersCache.getInstance().getUserList(runId, name, email, teamId);
-//        if (users == null) {
-//            users = UserManager.getUserList(name, email, teamId, runId);
-//            enrichListWithAccountInfo(users);
-//            UsersCache.getInstance().putUserList(users, runId, name, email, teamId);
-//        }
-//        return users;
-//    }
     public UserList getUsers(String myAccount) {
         UserList returnList = new UserList();
         returnList.setUsers(UserManager.getUserList(myAccount));
@@ -264,9 +255,9 @@ public class UsersDelegator extends GoogleDelegator {
         return returnList;
     }
 
-    public User getUserByEmail(Long runId, String account) {
+    public User getUserByEmail(Long runId, String fullId) {
 //        account = User.normalizeEmail(account); //TODO delete this line
-        List<User> users = getUserList(runId, account);
+        List<User> users = getUserList(runId, fullId);
         if (users.isEmpty())
             return null;
         return users.get(0);
@@ -280,17 +271,17 @@ public class UsersDelegator extends GoogleDelegator {
         return map;
     }
 
-    public User deleteUser(Long runId, String email) {
+    public User deleteUser(Long runId, String fullId) {
 //        email = User.normalizeEmail(email);
-        User user = getUserByEmail(runId, email);
+        User user = getUserByEmail(runId, fullId);
         // UserManager.deleteUser(runId, email);
-        UserManager.setStatusDeleted(runId, email);
+        UserManager.setStatusDeleted(runId, fullId);
         UsersCache.getInstance().removeUser(runId); // removing because user
         // might be cached in a team
-        (new DeleteActions(authToken, this.account, runId, email)).scheduleTask();
-        (new DeleteBlobs(authToken, this.account, runId, email)).scheduleTask();
-        (new DeleteResponses(authToken, this.account, runId, email)).scheduleTask();
-        (new UpdateGeneralItemsVisibility(authToken, this.account, runId, email, 2)).scheduleTask();
+        (new DeleteActions(authToken, this.account, runId, fullId)).scheduleTask();
+        (new DeleteBlobs(authToken, this.account, runId, fullId)).scheduleTask();
+        (new DeleteResponses(authToken, this.account, runId, fullId)).scheduleTask();
+        (new UpdateGeneralItemsVisibility(authToken, this.account, runId, fullId, 2)).scheduleTask();
 
         //update if used again
 //        (new UpdateVariableInstancesForUser(authToken, this.account, email, runId, null, 2)).scheduleTask();

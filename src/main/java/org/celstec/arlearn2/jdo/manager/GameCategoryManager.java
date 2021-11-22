@@ -6,6 +6,7 @@ import org.celstec.arlearn2.beans.store.GameCategoryList;
 
 import org.celstec.arlearn2.jdo.classes.CategoryEntity;
 import org.celstec.arlearn2.jdo.classes.GameCategoryEntity;
+import org.celstec.arlearn2.jdo.classes.GameEntity;
 
 import javax.jdo.PersistenceManager;
 import java.util.ArrayList;
@@ -70,6 +71,11 @@ public class GameCategoryManager {
             resultList.addGameCategory(new GameCategoryEntity(result).toGameCategory());
         }
         return resultList;
+    }
+
+    public static void deleteGameCategory(String  id) {
+        Key key = KeyFactory.createKey(GameCategoryEntity.KIND, id);
+        datastore.delete(key);
     }
 
 }

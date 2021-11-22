@@ -14,6 +14,7 @@ import org.celstec.arlearn2.beans.game.GamesList;
 import org.celstec.arlearn2.beans.medialibrary.MediaLibraryFile;
 import org.celstec.arlearn2.endpoints.impl.account.CreateAccount;
 import org.celstec.arlearn2.endpoints.impl.portaluser.FirebaseAuthPersistence;
+import org.celstec.arlearn2.endpoints.impl.storage.DeleteStorage;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.manager.MediaLibraryManager;
 import org.celstec.arlearn2.tasks.beans.GameSearchIndex;
@@ -23,6 +24,35 @@ import java.util.List;
 
 @Api(name = "games")
 public class MediaLibraryAPI extends GenericApi {
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.DELETE,
+            name = "delete_featuredgame_library_file",
+            path = "/deleteImage/featuredGames/backgrounds/{gameId}"
+    )
+    public void deleteFeaturedGameFile(final User user, @Named("gameId") String gameId) throws Exception{
+        adminCheck(user);
+        DeleteStorage.getInstance().deleteFilePath("featuredGames/backgrounds/"+gameId);
+    }
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.DELETE,
+            name = "delete_featuredgame_screenshot",
+            path = "/deleteImage/featuredGames/screenshots/{gameId}/{shot}"
+    )
+    public void deleteFeaturedGameScreenshot(final User user,
+                                             @Named("gameId") String gameId,
+                                             @Named("shot") String shot) throws Exception{
+        adminCheck(user);
+        DeleteStorage.getInstance().deleteFilePath("featuredGames/screenshots/"+gameId+"/"+shot);
+    }
+
+
+
+
+    //todo check if media library is still used
 
     @SuppressWarnings("ResourceParameter")
     @ApiMethod(

@@ -6,6 +6,7 @@ import com.google.api.server.spi.config.Api;
 
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.response.ForbiddenException;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
@@ -62,7 +63,7 @@ import java.util.Map;
  */
 @Api(name = "account")
 public class AccountApi extends GenericApi {
-    static{
+    static {
         FirebaseAuthPersistence.getInstance();
     }
 
@@ -82,7 +83,7 @@ public class AccountApi extends GenericApi {
             path = "/account/organisation/{organisationId}/list"
     )
     public AccountList listOrganisation(EnhancedUser user,
-                                          @Named("organisationId") Long organisationId) {
+                                        @Named("organisationId") Long organisationId) {
         return new AccountDelegator().listOrganisation(organisationId);
     }
 
@@ -106,13 +107,13 @@ public class AccountApi extends GenericApi {
             name = "create_account",
             path = "/account/create"
     )
-    public Account createAccount(final User user, Account account) throws Exception{
+    public Account createAccount(final User user, Account account) throws Exception {
         adminCheck(user);
         EnhancedUser us = (EnhancedUser) user;
-        if (AccountManager.queryViaEmail(account.getEmail())!= null){
+        if (AccountManager.queryViaEmail(account.getEmail()) != null) {
             throw new Exception("EXCEPTION.USER_EXISTS");
         }
-        return CreateAccount.getInstance().createUser(account.getEmail(),account.getPassword(), account.getName(), account.getLabel());
+        return CreateAccount.getInstance().createUser(account.getEmail(), account.getPassword(), account.getName(), account.getLabel());
     }
 
     @SuppressWarnings("ResourceParameter")
@@ -121,7 +122,7 @@ public class AccountApi extends GenericApi {
             name = "update_display_name",
             path = "/account/update/displayName/asUser"
     )
-    public Account updateDisplayName(final User user, Account account) throws Exception{
+    public Account updateDisplayName(final User user, Account account) throws Exception {
         FirebaseAuthPersistence.getInstance().updateDisplayName(user.getId(), account.getName());
         return CreateAccount.getInstance().updateUserWithoutAdmin(user.getId(), account.getEmail(), account.getName());
     }
@@ -132,10 +133,10 @@ public class AccountApi extends GenericApi {
             name = "empty_account_index",
             path = "/account/resetIndex"
     )
-    public void resetAccountIndex(final User user) throws Exception{
+    public void resetAccountIndex(final User user) throws Exception {
         adminCheck(user);
         EnhancedUser us = (EnhancedUser) user;
-         CreateAccount.getInstance().resetIndex();
+        CreateAccount.getInstance().resetIndex();
     }
 
 
@@ -144,7 +145,7 @@ public class AccountApi extends GenericApi {
             name = "updateAccounts",
             path = "/account/updateOnce"
     )
-    public void updateOnce(final User user) throws Exception{
+    public void updateOnce(final User user) throws Exception {
         adminCheck(user);
         new AccountIterator().scheduleTask();
     }
@@ -155,7 +156,7 @@ public class AccountApi extends GenericApi {
             name = "set_expiration_date",
             path = "/account/{fullId}/expiration/{dateAsEpoch}"
     )
-    public void setExpirationDate(final User user,  @Named("fullId") String accountId,  @Named("dateAsEpoch") Long date) throws Exception{
+    public void setExpirationDate(final User user, @Named("fullId") String accountId, @Named("dateAsEpoch") Long date) throws Exception {
         adminCheck(user);
         EnhancedUser us = (EnhancedUser) user;
         CreateAccount.getInstance().setExpirationDate(accountId, date);
@@ -168,8 +169,8 @@ public class AccountApi extends GenericApi {
             path = "/account/{fullId}/organisation/{organisationId}"
     )
     public Account setOrganisationId(final User user,
-                                  @Named("fullId") String accountId,
-                                  @Named("organisationId") Long organisationId) throws Exception{
+                                     @Named("fullId") String accountId,
+                                     @Named("organisationId") Long organisationId) throws Exception {
         adminCheck(user);
         return CreateAccount.getInstance().setOrganisationId(accountId, organisationId);
     }
@@ -180,7 +181,7 @@ public class AccountApi extends GenericApi {
             name = "make_advanced",
             path = "/account/{fullId}/advanced/{value}"
     )
-    public Account setAdvanced(final User user,  @Named("fullId") String accountId,  @Named("value") Boolean value) throws Exception{
+    public Account setAdvanced(final User user, @Named("fullId") String accountId, @Named("value") Boolean value) throws Exception {
 //        adminCheck(user);
         EnhancedUser us = (EnhancedUser) user;
         return CreateAccount.getInstance().setAdvanced(accountId, value);
@@ -193,7 +194,7 @@ public class AccountApi extends GenericApi {
             name = "make_admin",
             path = "/account/{fullId}/admin/{value}"
     )
-    public Account makeAdmin(final User user,  @Named("fullId") String accountId,  @Named("value") Boolean value) throws Exception{
+    public Account makeAdmin(final User user, @Named("fullId") String accountId, @Named("value") Boolean value) throws Exception {
 //        adminCheck(user);
         EnhancedUser us = (EnhancedUser) user;
         return CreateAccount.getInstance().makeAdmin(accountId, value);
@@ -205,12 +206,11 @@ public class AccountApi extends GenericApi {
             name = "set_can_AddUsers",
             path = "/account/{fullId}/canAddUsers/{value}"
     )
-    public Account canAddUsers(final User user,  @Named("fullId") String accountId,  @Named("value") Boolean value) throws Exception{
+    public Account canAddUsers(final User user, @Named("fullId") String accountId, @Named("value") Boolean value) throws Exception {
         adminCheck(user);
         EnhancedUser us = (EnhancedUser) user;
         return AccountManager.setCanAddUsers(accountId, value);
     }
-
 
 
     @SuppressWarnings("ResourceParameter")
@@ -219,7 +219,7 @@ public class AccountApi extends GenericApi {
             name = "set_can_publish_games",
             path = "/account/{fullId}/canPublishGames/{value}"
     )
-    public Account canPublishGames(final User user,  @Named("fullId") String accountId,  @Named("value") Boolean value) throws Exception{
+    public Account canPublishGames(final User user, @Named("fullId") String accountId, @Named("value") Boolean value) throws Exception {
         adminCheck(user);
         EnhancedUser us = (EnhancedUser) user;
         return AccountManager.setCanPublishGames(accountId, value);
@@ -231,7 +231,7 @@ public class AccountApi extends GenericApi {
             name = "update_account",
             path = "/account/update"
     )
-    public Account updateAccount(final User user, Account account) throws Exception{
+    public Account updateAccount(final User user, Account account) throws Exception {
         adminCheck(user);
         return CreateAccount.getInstance().updateAccount(account);
     }
@@ -241,7 +241,7 @@ public class AccountApi extends GenericApi {
             name = "deleteAccount",
             path = "/account/{fullId}"
     )
-    public Account deleteAccount(final User user, @Named("fullId") String accountId) throws  Exception{
+    public Account deleteAccount(final User user, @Named("fullId") String accountId) throws Exception {
         adminCheck(user);
         if (accountId.startsWith("7:")) {
             FirebaseAuth.getInstance().deleteUser(accountId.substring(2));
@@ -250,16 +250,40 @@ public class AccountApi extends GenericApi {
         } else {
             Account acc = new AccountDelegator().getContactDetails(accountId);
             String firebaseId = acc.getFirebaseId();
-            if (firebaseId!= null) {
+            if (firebaseId != null) {
                 try {
                     FirebaseAuth.getInstance().deleteUser(firebaseId);
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
             new AccountSearchIndex(acc.getFullId(), "", "", true).scheduleTask();
             return AccountManager.deleteAccount(accountId);
         }
+    }
+
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.POST,
+            name = "suspendAccount",
+            path = "/account/suspend/{fullId}"
+    )
+    public Account suspendAccount(EnhancedUser user, @Named("fullId") String accountId) throws ForbiddenException {
+        adminCheck(user);
+        Account account = new AccountDelegator().getContactDetails(accountId);
+        CreateAccount.getInstance().suspend(account);
+        return account;
+    }
+
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.POST,
+            name = "unSuspendAccount",
+            path = "/account/unsuspend/{fullId}"
+    )
+    public Account unSuspendAccount(EnhancedUser user, @Named("fullId") String accountId) throws ForbiddenException {
+        adminCheck(user);
+        Account account = new AccountDelegator().getContactDetails(accountId);
+        CreateAccount.getInstance().unsuspend(account);
+        return account;
     }
 
 
@@ -285,7 +309,6 @@ public class AccountApi extends GenericApi {
         }
         return returnList;
     }
-
 
 
     //todo set account name
@@ -317,10 +340,18 @@ public class AccountApi extends GenericApi {
                 account.setName(document.getFields("displayName").iterator().next().getText());
                 account.setLabel(document.getFields("labels").iterator().next().getText());
                 account.setEmail(document.getFields("email").iterator().next().getText());
+                if (document.getFields("suspended") != null){
+                    String suspendText = document.getFields("suspended").iterator().next().getText();
+                    if (suspendText != null) {
+                        account.setSuspended(Boolean.parseBoolean(suspendText));
+                    }
+                }
+
+
                 try {
                     String exp = document.getFields("expirationDate").iterator().next().getText();
                     if (exp != null) {
-                        account.    setExpirationDate(Long.parseLong(exp));
+                        account.setExpirationDate(Long.parseLong(exp));
                     }
                 } catch (NullPointerException e) {
 
