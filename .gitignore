@@ -1,4 +1,6 @@
 deploy-nbd-dev.sh
+src/main/webapp
+target
 
 /.idea
 .project

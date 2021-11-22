@@ -27,7 +27,7 @@
     </properties>
 
     <build>
-        <finalName>ARLearnWeb</finalName>
+        <finalName>YouplayProd</finalName>
         <plugins>
             <plugin>
                 <groupId>com.google.code.maven-replacer-plugin</groupId>
@@ -129,11 +129,6 @@
                 <artifactId>endpoints-framework-maven-plugin</artifactId>
                 <version>1.0.2</version>
                 <configuration>
-                    <!-- plugin configuration -->
-                    <!--
-                         You must replace YOUR_PROJECT_ID with your
-                         Google Cloud Project Id
-                    -->
                     <hostname>arlearn-eu.appspot.com</hostname>
                     <basePath>/api</basePath>
                 </configuration>
@@ -207,13 +202,6 @@
             <version>2.25.1</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>nl.ou.arlearn</groupId>-->
-<!--            <artifactId>java-beans</artifactId>-->
-<!--            <version>1.0.3</version>-->
-<!--        </dependency>-->
-
-
 
         <dependency>
             <groupId>com.google.appengine.tools</groupId>
@@ -246,11 +234,6 @@
             <artifactId>appengine-mapreduce</artifactId>
             <version>RELEASE</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.zsoltsafrany</groupId>-->
-<!--            <artifactId>java-apns-gae</artifactId>-->
-<!--            <version>1.2.0</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>

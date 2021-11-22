@@ -42,7 +42,7 @@
                         </goals>
                         <inherited>false</inherited>
                         <configuration>
-                            <file>src/main/java/templates/arlearn_nbd/Constants.java.template</file>
+                            <file>src/main/java/templates/arlearn_nbd_dev/Constants.java.template</file>
                             <outputFile>src/main/java/org/celstec/arlearn2/endpoints/util/Constants.java</outputFile>
                             <replacements>
                                 <replacement>
@@ -61,7 +61,7 @@
                         </goals>
                         <inherited>false</inherited>
                         <configuration>
-                            <file>src/main/java/templates/arlearn_nbd/GenericApi.java.template</file>
+                            <file>src/main/java/templates/arlearn_nbd_dev/GenericApi.java.template</file>
                             <outputFile>src/main/java/org/celstec/arlearn2/endpoints/GenericApi.java</outputFile>
                             <replacements>
                                 <replacement>
@@ -219,16 +219,16 @@
             <artifactId>twitter4j-core</artifactId>
             <version>3.0.3</version>
         </dependency>
-        <dependency>
-            <groupId>com.google.appengine.tools</groupId>
-            <artifactId>appengine-mapreduce</artifactId>
-            <version>RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>com.zsoltsafrany</groupId>
-            <artifactId>java-apns-gae</artifactId>
-            <version>1.2.0</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.google.appengine.tools</groupId>-->
+<!--            <artifactId>appengine-mapreduce</artifactId>-->
+<!--            <version>RELEASE</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.zsoltsafrany</groupId>-->
+<!--            <artifactId>java-apns-gae</artifactId>-->
+<!--            <version>1.2.0</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>

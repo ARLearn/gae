@@ -26,7 +26,7 @@
     </properties>
 
     <build>
-        <finalName>ARLearnWeb</finalName>
+        <finalName>BibendoProd</finalName>
         <plugins>
             <plugin>
                 <groupId>com.google.code.maven-replacer-plugin</groupId>
@@ -229,16 +229,16 @@
             <artifactId>twitter4j-core</artifactId>
             <version>3.0.3</version>
         </dependency>
-        <dependency>
-            <groupId>com.google.appengine.tools</groupId>
-            <artifactId>appengine-mapreduce</artifactId>
-            <version>RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>com.zsoltsafrany</groupId>
-            <artifactId>java-apns-gae</artifactId>
-            <version>1.2.0</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.google.appengine.tools</groupId>-->
+<!--            <artifactId>appengine-mapreduce</artifactId>-->
+<!--            <version>RELEASE</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.zsoltsafrany</groupId>-->
+<!--            <artifactId>java-apns-gae</artifactId>-->
+<!--            <version>1.2.0</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>
