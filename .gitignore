@@ -2,6 +2,8 @@ deploy-nbd-dev.sh
 src/main/webapp
 target
 
+deploy-*
+
 /.idea
 .project
 .classpath
