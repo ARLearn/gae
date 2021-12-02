@@ -1,14 +1,16 @@
 package org.celstec.arlearn2.oai;
 
-import java.io.IOException;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.jdom.Document;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import java.io.IOException;
 
 /**
  * ****************************************************************************
@@ -30,42 +32,33 @@ import org.jdom.output.XMLOutputter;
  * Contributors: Stefaan Ternier
  * ****************************************************************************
  */
-@Deprecated
+
+
 public class OaiServlet extends HttpServlet {
 
-    public static XMLOutputter out;
-    static {
-        out = new XMLOutputter();
-        out.setFormat(Format.getPrettyFormat());
-    }
-
-    public void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException {
-        resp.setContentType("text/xml;  charset=UTF-8");
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        System.out.println("in oai servlet");
         OaiParameters op = new OaiParameters(req);
         String verb = req.getParameter("verb");
-        Document feed = null;
+        Document doc = new Document();
         if (verb != null) {
-//            if (op.isIdentify()) {
-//                resp.getWriter().write(Identify.getXmlAsString(op));
-//            } else if (op.isListRecords()) {
-//                resp.getWriter().write(ListRecords.getXmlAsString(op));
-//            } else if (op.isListMetadataFormats()) {
-//                resp.getWriter().write(ListMetadataFormats.getXmlAsString(op));
-//            } else if (op.isListIdentifiers()) {
-//                resp.getWriter().write(ListIdentifiers.getXmlAsString(op));
-//            } else if (op.isGetRecord()) {
-////                resp.getWriter().write(GetRecord.getXmlAsString(op));
-//
+            if (op.isIdentify()) {
+                doc.setContent(new Identify(op).getXml());
+            } else if (op.isListRecords()) {
+                doc.setContent(new ListRecords(op).getXml());
+            }
+//            else if (op.isListMetadataFormats()) {
+//                doc.setContent(new ListMetdataFormats(op).getXml());
 //            }
-
-            if (feed != null) {
-                resp.getWriter().write(out.outputString(feed));
-            }
-        } else {
-            if (req.getPathInfo().contains("resolve/")) {
-                resp.sendRedirect("https://play.google.com/store/apps/details?id=org.celstec.arlearn2.android");
-            }
+//            System.out.println("verb is not null");
         }
+
+        XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+        String xmlString = outputter.outputString(doc);
+        outputter.output(doc, resp.getWriter());
+
+//        resp.getWriter().write("todo hang on");
+
     }
 }

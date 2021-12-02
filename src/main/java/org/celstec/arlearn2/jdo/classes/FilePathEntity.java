@@ -5,7 +5,7 @@ import com.google.appengine.api.blobstore.BlobInfoFactory;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.tools.cloudstorage.*;
+//import com.google.appengine.tools.cloudstorage.*;
 import org.celstec.arlearn2.beans.game.GameFile;
 
 import java.io.IOException;
@@ -73,13 +73,13 @@ public class FilePathEntity {
     }
     private final String bucketName = "arlearn-eu-rundata";
     private BlobInfoFactory infoFactory = new BlobInfoFactory();
-    private final GcsService gcsService =
-            GcsServiceFactory.createGcsService(
-                    new RetryParams.Builder()
-                            .initialRetryDelayMillis(10)
-                            .retryMaxAttempts(10)
-                            .totalRetryPeriodMillis(15000)
-                            .build());
+//    private final GcsService gcsService =
+//            GcsServiceFactory.createGcsService(
+//                    new RetryParams.Builder()
+//                            .initialRetryDelayMillis(10)
+//                            .retryMaxAttempts(10)
+//                            .totalRetryPeriodMillis(15000)
+//                            .build());
     private static final int BUFFER_SIZE = 2 * 1024 * 1024;
 
     public  GameFile toBean() {
@@ -87,19 +87,19 @@ public class FilePathEntity {
         gf.setId(getId());
         gf.setPath(getFileName());
 
-        GcsFilename fn = new GcsFilename(bucketName, "game/"+gameId+getFileName());
-        try {
-            GcsFileMetadata fileMetadata = gcsService.getMetadata(fn);
-            if (fileMetadata!=null) gf.setSize(fileMetadata.getLength());
-            BlobInfo info =blobInfoFactory.loadBlobInfo(getBlobKey());
-            if (info != null) {
-                gf.setMd5Hash(info.getMd5Hash());
-                gf.setSize(info.getSize());
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        GcsFilename fn = new GcsFilename(bucketName, "game/"+gameId+getFileName());
+//        try {
+//            GcsFileMetadata fileMetadata = gcsService.getMetadata(fn);
+//            if (fileMetadata!=null) gf.setSize(fileMetadata.getLength());
+//            BlobInfo info =blobInfoFactory.loadBlobInfo(getBlobKey());
+//            if (info != null) {
+//                gf.setMd5Hash(info.getMd5Hash());
+//                gf.setSize(info.getSize());
+//            }
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
 
         return gf;

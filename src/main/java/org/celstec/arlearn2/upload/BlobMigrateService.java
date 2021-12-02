@@ -2,7 +2,7 @@ package org.celstec.arlearn2.upload;
 
 import com.google.appengine.api.blobstore.BlobInfoFactory;
 import com.google.appengine.api.blobstore.BlobKey;
-import com.google.appengine.tools.cloudstorage.*;
+//import com.google.appengine.tools.cloudstorage.*;
 import org.celstec.arlearn2.jdo.manager.FilePathManager;
 
 import javax.servlet.ServletException;
@@ -42,13 +42,13 @@ import java.util.Set;
 public class BlobMigrateService extends HttpServlet {
     private final String bucketName = "arlearn-eu-rundata";
     private BlobInfoFactory infoFactory = new BlobInfoFactory();
-    private final GcsService gcsService =
-            GcsServiceFactory.createGcsService(
-                    new RetryParams.Builder()
-                            .initialRetryDelayMillis(10)
-                            .retryMaxAttempts(10)
-                            .totalRetryPeriodMillis(15000)
-                            .build());
+//    private final GcsService gcsService =
+//            GcsServiceFactory.createGcsService(
+//                    new RetryParams.Builder()
+//                            .initialRetryDelayMillis(10)
+//                            .retryMaxAttempts(10)
+//                            .totalRetryPeriodMillis(15000)
+//                            .build());
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -79,22 +79,22 @@ public class BlobMigrateService extends HttpServlet {
         BufferedInputStream bis = (new BufferedInputStream(inputStream));
 
 
-        GcsFileOptions options = new GcsFileOptions.Builder()
-                .mimeType(contentType)
-                .acl("public-read")
-                .build();
-
-        GcsOutputChannel writeChannel = gcsService.createOrReplace(new GcsFilename(bucketName, path), options);
-        try {
-            byte[] contents = new byte[1024];
-            int length;
-            while ( (length = bis.read(contents)) != -1) {
-                writeChannel.write(ByteBuffer.wrap(contents, 0, length));
-            }
-        } finally {
-            writeChannel.close();
-            bis.close();
-        }
+//        GcsFileOptions options = new GcsFileOptions.Builder()
+//                .mimeType(contentType)
+//                .acl("public-read")
+//                .build();
+//
+//        GcsOutputChannel writeChannel = gcsService.createOrReplace(new GcsFilename(bucketName, path), options);
+//        try {
+//            byte[] contents = new byte[1024];
+//            int length;
+//            while ( (length = bis.read(contents)) != -1) {
+//                writeChannel.write(ByteBuffer.wrap(contents, 0, length));
+//            }
+//        } finally {
+//            writeChannel.close();
+//            bis.close();
+//        }
     }
 
     private String getFirstPath(String path) {

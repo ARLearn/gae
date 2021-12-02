@@ -3,7 +3,7 @@ package org.celstec.arlearn2.upload;
 
 import com.google.appengine.api.blobstore.*;
 import com.google.appengine.api.blobstore.BlobInfo;
-import com.google.appengine.tools.cloudstorage.*;
+//import com.google.appengine.tools.cloudstorage.*;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.*;
 
@@ -41,35 +41,19 @@ import org.celstec.arlearn2.jdo.manager.FilePathManager;
  * Contributors: Stefaan Ternier
  * ****************************************************************************
  */
+@Deprecated
 public class GoogleCloudStorageServlet  extends HttpServlet {
 //    private static final int BUFFER_SIZE = 2 * 1024 * 1024;
     private final String bucketName = "arlearn-eu-rundata";
     private BlobInfoFactory infoFactory = new BlobInfoFactory();
-    private final GcsService gcsService =
-            GcsServiceFactory.createGcsService(
-                    new RetryParams.Builder()
-                            .initialRetryDelayMillis(10)
-                            .retryMaxAttempts(10)
-                            .totalRetryPeriodMillis(15000)
-                            .build());
-//
-//
-//
-//    @Override
-//    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        Storage storage = StorageOptions.getDefaultInstance().getService();
-//        BlobId blobId = BlobId.of(bucketName, "blob_name");
-//        BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build();
-//
-//        storage.create(blobInfo, "Hello, Cloud Storage!".getBytes(UTF_8));
-//
-//        final byte[] bytes = "FooBar".getBytes();
-//
-////        InputStream content = new ByteArrayInputStream("Hello, World!".getBytes("UTF_8"));
-////        Blob blob = bucket.create(blobName, content, "text/plain");
-//        resp.setStatus(404);
-//        resp.getWriter().write("hallo");
-//    }
+//    private final GcsService gcsService =
+//            GcsServiceFactory.createGcsService(
+//                    new RetryParams.Builder()
+//                            .initialRetryDelayMillis(10)
+//                            .retryMaxAttempts(10)
+//                            .totalRetryPeriodMillis(15000)
+//                            .build());
+
 private static final Logger log = Logger.getLogger(BlobStoreServletWithExternalUrl.class.getName());
 
     private BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
@@ -111,8 +95,8 @@ private static final Logger log = Logger.getLogger(BlobStoreServletWithExternalU
             String buck = gsc.substring(1,gsc.indexOf('/', 1));
             gsc = gsc.substring(buck.length()+2);
             System.out.println(buck+ "    "+gsc);
-            GcsFilename filename = new GcsFilename(buck, gsc);
-            gcsService.copy(filename, new GcsFilename(bucketName, "game/"+gameId+req.getPathInfo()));
+//            GcsFilename filename = new GcsFilename(buck, gsc);
+//            gcsService.copy(filename, new GcsFilename(bucketName, "game/"+gameId+req.getPathInfo()));
 
 
             FilePathManager.addFile(null, gameId, null, req.getPathInfo(), blobs.get(key).get(0));

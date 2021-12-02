@@ -8,7 +8,7 @@ import com.google.appengine.api.images.ImagesServiceFactory;
 import com.google.appengine.api.images.ServingUrlOptions;
 import com.google.appengine.api.blobstore.BlobInfoFactory;
 
-import com.google.appengine.tools.cloudstorage.*;
+//import com.google.appengine.tools.cloudstorage.*;
 import org.celstec.arlearn2.jdo.classes.FilePathEntity;
 import org.celstec.arlearn2.jdo.manager.FilePathManager;
 import org.celstec.arlearn2.upload.BlobStoreServlet;
@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 /**
  * Created by str on 27/05/14.
  */
+@Deprecated
 public class GameContentServlet extends HttpServlet {
     private static final Logger log = Logger.getLogger(BlobStoreServlet.class.getName());
 
@@ -35,13 +36,13 @@ public class GameContentServlet extends HttpServlet {
 
     private final String bucketName = "arlearn-eu-rundata";
     private BlobInfoFactory infoFactory = new BlobInfoFactory();
-    private final GcsService gcsService =
-            GcsServiceFactory.createGcsService(
-                    new RetryParams.Builder()
-                            .initialRetryDelayMillis(10)
-                            .retryMaxAttempts(10)
-                            .totalRetryPeriodMillis(15000)
-                            .build());
+//    private final GcsService gcsService =
+//            GcsServiceFactory.createGcsService(
+//                    new RetryParams.Builder()
+//                            .initialRetryDelayMillis(10)
+//                            .retryMaxAttempts(10)
+//                            .totalRetryPeriodMillis(15000)
+//                            .build());
     private static final int BUFFER_SIZE = 2 * 1024 * 1024;
 
     @Override
@@ -54,12 +55,12 @@ public class GameContentServlet extends HttpServlet {
 
 
 
-        GcsFilename fn = new GcsFilename(bucketName, "game/"+gameId+path);
-        GcsFileMetadata fileMetadata = gcsService.getMetadata(fn);
-
-        GcsInputChannel readChannel = gcsService.openPrefetchingReadChannel(new GcsFilename(bucketName, "game/"+gameId+path), 0, BUFFER_SIZE);
-        resp.setContentType(fileMetadata.getOptions().getMimeType());
-        copy(Channels.newInputStream(readChannel), resp.getOutputStream());
+//        GcsFilename fn = new GcsFilename(bucketName, "game/"+gameId+path);
+//        GcsFileMetadata fileMetadata = gcsService.getMetadata(fn);
+//
+//        GcsInputChannel readChannel = gcsService.openPrefetchingReadChannel(new GcsFilename(bucketName, "game/"+gameId+path), 0, BUFFER_SIZE);
+//        resp.setContentType(fileMetadata.getOptions().getMimeType());
+//        copy(Channels.newInputStream(readChannel), resp.getOutputStream());
 //        List<FilePathEntity> filePathEntities = FilePathManager.getFilePathEntityByGameId(gameId, path);
 //        BlobKey bk = null;
 //        if (!filePathEntities.isEmpty()) {

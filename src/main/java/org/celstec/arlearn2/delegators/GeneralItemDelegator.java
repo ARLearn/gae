@@ -43,7 +43,7 @@ import org.celstec.arlearn2.jdo.manager.*;
 import org.celstec.arlearn2.tasks.beans.GeneralItemSearchIndex;
 import org.celstec.arlearn2.tasks.beans.GenericBean;
 import org.celstec.arlearn2.tasks.beans.NotifyRunsFromGame;
-import org.htmlparser.util.Translate;
+//import org.htmlparser.util.Translate;
 
 import java.util.*;
 
@@ -70,8 +70,8 @@ public class GeneralItemDelegator extends DependencyDelegator {
     }
 
     public GeneralItem createGeneralItem(GeneralItem gi) {
-        if (gi.getDescription() != null)
-            gi.setDescription(Translate.decode(gi.getDescription()).replaceAll("\\<.*?>", ""));
+//        if (gi.getDescription() != null)
+//            gi.setDescription(Translate.decode(gi.getDescription()).replaceAll("\\<.*?>", ""));
         GeneralitemsCache.getInstance().removeGeneralItemList(gi.getGameId());
         gi.setDeleted(false);
 //        updateContentUrls(gi);

@@ -26,8 +26,7 @@ import org.celstec.arlearn2.jdo.classes.AccountEntity;
 import org.celstec.arlearn2.jdo.classes.OauthConfigurationEntity;
 import org.celstec.arlearn2.jdo.manager.AccountManager;
 import org.celstec.arlearn2.jdo.manager.OauthKeyManager;
-import org.celstec.arlearn2.tasks.beans.migrate.MigrateGamesTask;
-import org.celstec.arlearn2.tasks.beans.migrate.MigrateRunsTask;
+
 
 import org.codehaus.jettison.json.JSONObject;
 

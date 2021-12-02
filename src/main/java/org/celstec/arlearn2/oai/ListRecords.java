@@ -1,151 +1,93 @@
 package org.celstec.arlearn2.oai;
 
-import java.util.HashMap;
+
+import org.celstec.arlearn2.beans.game.GameTheme;
+import org.celstec.arlearn2.jdo.classes.GameEntity;
+import org.celstec.arlearn2.jdo.manager.GameManager;
+import org.celstec.arlearn2.jdo.manager.GameThemeManager;
+import org.jdom2.Element;
+
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
-//import javax.jdo.PersistenceManager;
-//import javax.jdo.Query;
-//
-//import org.celstec.arlearn2.jdo.PMF;
-//import org.celstec.arlearn2.jdo.classes.LomJDO;
-//import com.google.appengine.datanucleus.query.JDOCursorHelper;
-//import org.jdom.Element;
-
-import com.google.appengine.api.datastore.Cursor;
-
 
 public class ListRecords extends OaiVerb {
-	
-////	private static final int amountOfRecords = 10;
-////
-////	private static Namespace oaiNS = Namespace.getNamespace("oai","http://www.openarchives.org/OAI/2.0/");
-////	private static Namespace xsiNS = Namespace.getNamespace("xsi","http://www.w3.org/2001/XMLSchema-instance");
-//
-//
-////	public static Document getXML(String mdPrefix) {
-////		Document doc = new Document();
-////		Element oaiPmhElement = new Element("OAI-PMH", Configuration.oaiNS);
-////		oaiPmhElement.setAttribute("schemaLocation", "http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", Configuration.xsiNS);
-////		doc.setRootElement(oaiPmhElement);
-////		setRequest(oaiPmhElement, mdPrefix);
-////		Element listRecords = new Element("ListRecords", Configuration.oaiNS);
-////		oaiPmhElement.addContent(listRecords);
-////		for (Element el: LomManager.getLoms(new Date(0), new Date(System.currentTimeMillis()))) {
-////			listRecords.addContent(el);
-////		}
-////		return doc;
-////	}
-//
-//
-//
-////	private static String getOaiFirstPart() {
-////		String returnString = "";
-////		returnString += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-////		returnString += "<OAI-PMH xmlns=\"http://www.openarchives.org/OAI/2.0/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"";
-////		returnString += "	xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd\">";
-////		returnString += "	<responseDate>2010-05-11T15:56:54Z</responseDate>";
-////		returnString += "	<request metadataPrefix=\"oai_lom\" verb=\"ListRecords\">http://sharetec.celstec.org/leraar24-oaipmh/OAIHandler</request>";
-////		returnString += "	<ListRecords>";
-////		return returnString;
-////	}
-//
-////	private static String getOaiLastPart() {
-////		String returnString = "	</ListRecords>";
-////		returnString += "</OAI-PMH>";
-////		return returnString;
-////	}
-//
-//	public static String getXmlAsString(OaiParameters op) {
-//		String returnString = getOaiFirstPart(op);
-//		returnString += "	<ListRecords>";
-//
-//		PersistenceManager pm = PMF.get().getPersistenceManager();
-//		try {
-//			Query query = pm.newQuery(LomJDO.class);
-//			query.setRange(0, Configuration.amountOfRecords);
-//			List<LomJDO> results = null;
-//			if (op.getResumptionToken() != null && !op.getResumptionToken().equals("")){
-//				Cursor cursor = Cursor.fromWebSafeString(op.getResumptionToken());
-//				Map<String, Object> extensionMap = new HashMap<String, Object>();
-//				extensionMap.put(JDOCursorHelper.CURSOR_EXTENSION, cursor);
-//				query.setExtensions(extensionMap);
-//				Map exParams = setFilters(query, op);
-//				results = (List<LomJDO>) query.executeWithMap(exParams);
-//			} else {
-//				Map exParams = setFilters(query, op);
-//				results = (List<LomJDO>) query.executeWithMap(exParams);
-//			}
-//
-////			List<Lom> results = (List<Lom>) query.execute();
-//			for (LomJDO l : results) {
-//
-//				returnString += "<record>";
-//				returnString += getHeader(l);
-//				if (!l.isDeleted()) {
-//					returnString += "<metadata>";
-//					returnString += l.getLom();
-//					returnString += "</metadata>\n";
-//				}
-//				returnString += "</record>\n";
-//			}
-//			if (results.size() >= Configuration.amountOfRecords) {
-//				Cursor cursor = JDOCursorHelper.getCursor(results);
-//				String cursorString = cursor.toWebSafeString();
-//				returnString += "<resumptionToken expirationDate=\"2010-05-11T16:56:55Z\" "+
-//				"completeListSize=\""+results.size()+"\">"+op.getCursorPrefix()+cursorString+"</resumptionToken>";
-//			}
-//		} finally {
-//			pm.close();
-//
-//		}
-//		returnString += "	</ListRecords>";
-//		return returnString+ getOaiLastPart();
-//	}
-//
-////	public static String getXmlAsString(String resumptionToken) {
-////		String returnString = getOaiFirstPart();
-////		PersistenceManager pm = PMF.get().getPersistenceManager();
-////		try {
-////			Query query = pm.newQuery(Lom.class);
-////
-////			query.setRange(0, Configuration.amountOfRecords);
-////
-////			List<Lom> results = (List<Lom>) query.execute();
-////			System.out.println(results.size());
-//////			int lastIndex = 0;
-////			for (Lom l : results) {
-////				returnString += "<record><header><identifier>oai:ipo.ounl:"+l.getId().getName()+"</identifier>"+
-////				"<datestamp>2010-03-25T13:56:59Z"+l.getLastModificationDate()+"</datestamp></header><metadata>";
-////				returnString += l.getXmlrep();
-////				returnString += "</metadata></record>\n";
-//////				lastIndex = results.indexOf(l);
-////
-////			}
-//////			cursor = JDOCursorHelper.getCursor(results);
-//////			String cursorString = cursor.toWebSafeString();
-//////			returnString += "<resumptionToken expirationDate=\"2010-05-11T16:56:55Z\" "+
-//////			"completeListSize=\""+results.size()+"\">"+cursorString+"</resumptionToken>";
-////			if (results.size() <= Configuration.amountOfRecords) {
-////				cursor = JDOCursorHelper.getCursor(results);
-////				String cursorString = cursor.toWebSafeString();
-////				returnString += "<resumptionToken expirationDate=\"2010-05-11T16:56:55Z\" "+
-////				"completeListSize=\""+results.size()+"\">"+cursorString+"</resumptionToken>";
-////			}
-////		} finally {
-////			pm.close();
-////
-////		}
-////		return returnString+ getOaiLastPart();
-////	}
-//
-//
-//
-//	public static void setRequest(Element doc, String mdPrefix) {
-//		Element request = new Element("request", Configuration.oaiNS);
-//		request.setAttribute("verb", "ListRecords");
-//		request.setAttribute("metadataPrefix", mdPrefix);
-//		request.setText("http://localhost:8888/OAI?verb=Identify");
-//		doc.addContent(request);
-//	}
+
+    public ListRecords(OaiParameters oaiParameters) {
+        super(oaiParameters);
+    }
+
+    public Element getXml() {
+
+        Element root = getParent();
+        Element pl = new Element("ListRecords", oai);
+        root.addContent(pl);
+
+            GameEntity mission = null;
+            System.out.println("date is"+ oaiParameters.getFrom());
+            List<GameEntity> gameEntities = null;
+            if (oaiParameters.getFrom() != null) {
+                try {
+                    Date fromDate = OaiDateFormatter.getSingleTonInstance().parse(oaiParameters.getFrom());
+                    gameEntities = GameManager.queryAll(); //oaiParameters.getResumptionToken(), fromDate
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (gameEntities == null) {
+                gameEntities = GameManager.queryAll(); //GetMission.getInstance().queryAll(oaiParameters.getResumptionToken(), null);
+            }
+
+//            List<Mission> missions = GetMission.getInstance().queryAll(oaiParameters.getResumptionToken(), null);
+            for (int i = 0; i < gameEntities.size(); i++) {
+                mission = gameEntities.get(i);
+                Element record = new Element("record", oai);
+                Element header = new Element("header", oai);
+                header.addContent(new Element("identifier", oai).setText(""+mission.getGameId()));
+                if (mission.getLastModificationDate() != null) {
+                    header.addContent(new Element("datestamp", oai)
+                            .setText(
+                                    OaiDateFormatter.getSingleTonInstance().format(new Date(mission.getLastModificationDate()))
+                            ));
+                }
+
+                Element metadata = new Element("metadata", oai);
+                metadata.addContent(getOaiDC(mission));
+
+                record.addContent(header);
+                record.addContent(metadata);
+                pl.addContent(record);
+            }
+            if (mission != null) {
+//                Element resumptionToken = new Element("resumptionToken", oai).setText(mission.objectID);
+//                pl.addContent(resumptionToken);
+            }
+
+        return root;
+    }
+
+    private Element getOaiDC(GameEntity m) {
+        Element record = new Element("dc", oai_dc);
+        record.addContent(new Element("identifier", oai_dc).setText(m.getGameId()+""));
+        record.addContent(new Element("title", oai_dc).setText(m.getTitle()));
+
+        record.addContent(new Element("url").setText(System.getenv("URL")+"#/portal/root/library/game/"+m.getGameId()));
+        GameTheme theme = GameThemeManager.getGameTheme(m.getTheme());
+
+
+
+        record.addContent(new Element("primaryColor").setText(theme.getPrimaryColor()));
+        record.addContent(new Element("backgroundImage")
+                .setText("https://storage.cloud.google.com/"+System.getenv("ENDPOINTS_SERVICE_NAME")+theme.getBackgroundPath()));
+        return record;
+    }
+
+    private Element getRfc1807(GameEntity m) {
+        Element record = new Element("rfc1807", rfc1807);
+        record.addContent(new Element("bib-version", rfc1807).setText("v2"));
+        record.addContent(new Element("id", rfc1807).setText(m.getGameId()+""));
+        record.addContent(new Element("title", rfc1807).setText(m.getTitle()));
+        return record;
+    }
+
 }

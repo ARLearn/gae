@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
+@Deprecated
 public class OauthServlet  extends HttpServlet {
 
 	private static final String FACEBOOK = "facebook";
@@ -40,50 +40,50 @@ public class OauthServlet  extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-        if (req.getParameter("twitter") != null && req.getParameter("twitter").equals("init")) {
-            new OauthTwitterWorker().redirectToTwitterForAuthentication(req, resp);
-        } else {
-            this.doPost(req, resp);
-        }
+//        if (req.getParameter("twitter") != null && req.getParameter("twitter").equals("init")) {
+//            new OauthTwitterWorker().redirectToTwitterForAuthentication(req, resp);
+//        } else {
+//            this.doPost(req, resp);
+//        }
 
 	}
 
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		String baseUrl =  "https://" +req.getServerName();
-		if (req.getServerPort() != 80) baseUrl+=":"+req.getServerPort();
-		if (req.getParameter("error") != null || req.getParameter("denied") != null ) {
-			resp.sendRedirect(baseUrl+"/oauth.html");
-			return;
-
-		}
-		OauthWorker worker = null;
-		if (req.getPathInfo().contains(FACEBOOK)) {
-			worker = new OauthFbWorker();
-		} else if (req.getPathInfo().contains(GOOGLE)) {
-			worker = new OauthGoogleWorker();
-		} else if (req.getPathInfo().contains(LINKEDIN)) {
-			worker = new OauthLinkedInWorker();
-		}  else if (req.getPathInfo().contains(TWITTER)) {
-            OauthTwitterWorker twitterWorker = new OauthTwitterWorker();
-            String accessToken = twitterWorker.afterSuccesfullAuthentication(req);
-            if (accessToken != null) {
-                long expiresLong = 3600*24*7l;
-                resp.sendRedirect(baseUrl+"/oauth.html?accessToken=" + accessToken + "&type=" + AccountEntity.LINKEDINCLIENT + "&exp=" + expiresLong);
-            }
-        } else if (req.getPathInfo().contains(WESPOT)) {
-            worker = new OauthWespotWorker();
-        } else if (req.getPathInfo().contains(ECO)) {
-            worker = new OauthEcoWorker();
-        }
-		if (worker != null) {
-			worker.setBaseUrl(baseUrl);
-			worker.setCode(req.getParameter("code"));
-			worker.setResponse(resp);
-			worker.exchangeCodeForAccessToken();
-		}
-	}
+//	@Override
+//	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+//			throws ServletException, IOException {
+//		String baseUrl =  "https://" +req.getServerName();
+//		if (req.getServerPort() != 80) baseUrl+=":"+req.getServerPort();
+//		if (req.getParameter("error") != null || req.getParameter("denied") != null ) {
+//			resp.sendRedirect(baseUrl+"/oauth.html");
+//			return;
+//
+//		}
+//		OauthWorker worker = null;
+//		if (req.getPathInfo().contains(FACEBOOK)) {
+//			worker = new OauthFbWorker();
+//		} else if (req.getPathInfo().contains(GOOGLE)) {
+//			worker = new OauthGoogleWorker();
+//		} else if (req.getPathInfo().contains(LINKEDIN)) {
+//			worker = new OauthLinkedInWorker();
+//		}  else if (req.getPathInfo().contains(TWITTER)) {
+//            OauthTwitterWorker twitterWorker = new OauthTwitterWorker();
+//            String accessToken = twitterWorker.afterSuccesfullAuthentication(req);
+//            if (accessToken != null) {
+//                long expiresLong = 3600*24*7l;
+//                resp.sendRedirect(baseUrl+"/oauth.html?accessToken=" + accessToken + "&type=" + AccountEntity.LINKEDINCLIENT + "&exp=" + expiresLong);
+//            }
+//        } else if (req.getPathInfo().contains(WESPOT)) {
+//            worker = new OauthWespotWorker();
+//        } else if (req.getPathInfo().contains(ECO)) {
+//            worker = new OauthEcoWorker();
+//        }
+//		if (worker != null) {
+//			worker.setBaseUrl(baseUrl);
+//			worker.setCode(req.getParameter("code"));
+//			worker.setResponse(resp);
+//			worker.exchangeCodeForAccessToken();
+//		}
+//	}
 	
 
 }

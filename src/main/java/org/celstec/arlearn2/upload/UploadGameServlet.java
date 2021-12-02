@@ -31,7 +31,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.HeaderParam;
+//import javax.ws.rs.HeaderParam;
 
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileItemIterator;
@@ -58,7 +58,7 @@ import org.celstec.arlearn2.delegators.UsersDelegator;
 
 import org.codehaus.jettison.json.JSONObject;
 
-
+@Deprecated
 public class UploadGameServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest req, HttpServletResponse res)

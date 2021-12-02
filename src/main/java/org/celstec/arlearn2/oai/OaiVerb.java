@@ -1,102 +1,71 @@
 package org.celstec.arlearn2.oai;
 
+
 //import org.celstec.arlearn2.jdo.classes.LomJDO;
 
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
+
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 //import javax.jdo.Query;
 
 //import nl.ounl.itunesu.server.db.Lom;
 
 public abstract class OaiVerb {
+	OaiParameters oaiParameters;
 
-//	protected static String getOaiFirstPart(OaiParameters op) {
-//		String returnString = "";
-//		returnString += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-//		returnString += "<OAI-PMH xmlns=\"http://www.openarchives.org/OAI/2.0/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"";
-//		returnString += "	xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd\">\n";
-//		returnString += "	<responseDate>"+OaiDateFormatter.getSingleTonInstance().format(new Date(System.currentTimeMillis()))+"</responseDate>\n";
-//		returnString += "	<request ";
-//		if (op.getMetadataPrefix() != null) {
-//			returnString += "metadataPrefix=\""+op.getMetadataPrefix()+"\" ";
-//		}
-//		if (op.getIdentifier() != null) {
-//			returnString += "identifier=\""+op.getIdentifier()+"\" ";
-//		}
-//		if (op.getUntil() != null) {
-//			returnString += "until=\""+op.getUntil()+"\" ";
-//		}
-//		if (op.getFrom() != null) {
-//			returnString += "from=\""+op.getFrom()+"\" ";
-//		}
-//		if (op.getResumptionToken() != null) {
-//			returnString += "resumptionToken=\""+op.getResumptionToken()+"\" ";
-//		}
-//		if (op.getSet() != null) {
-//			returnString += "set=\""+op.getSet()+"\" ";
-//		}
-//		returnString += "verb=\""+op.getVerb()+"\">"
-//				+ Configuration.getBaseUrl() + "</request>\n";
-//		return returnString;
-//	}
+	public static Namespace oai = Namespace.getNamespace("oai", "http://www.openarchives.org/OAI/2.0/");
+	public static Namespace  rfc1807 = Namespace.getNamespace("rfc1807", "http://info.internet.isi.edu:80/in-notes/rfc/files/rfc1807.txt");
+	public static Namespace  oai_dc = Namespace.getNamespace("oai_dc", "http://www.openarchives.org/OAI/2.0/oai_dc/");
+
+	public OaiVerb(OaiParameters oaiParameters) {
+		this.oaiParameters = oaiParameters;
+	}
+
+	public abstract Element getXml();
+
+	public  Element getParent() {
+		Element root = new Element("OAI-PMH", oai);
+		Date d = new Date(System.currentTimeMillis());
+//		System.out.println("date is "+d + " - "+d.toGMTString());
+//		SimpleDateFormat test = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+//		test.setTimeZone(TimeZone.getTimeZone("UTC"));
 //
-//	protected static String getOaiLastPart() {
-//		String returnString = "</OAI-PMH>";
-//		return returnString;
-//	}
-//
-//	protected static String getHeader(LomJDO l) {
-//		String returnString = "";
-//		if (l.isDeleted()) {
-//			returnString += "<header status =\"deleted\">";
-//		} else {
-//			returnString += "<header>";
-//		}
-//		returnString += "<identifier>oai:org.celstec.arlearn2:"
-//			+ l.getGameId()
-//			+ "</identifier>"
-//			+ "<datestamp>"
-//			+ OaiDateFormatter.getSingleTonInstance().format(
-//					l.getLastModificationDate())
-//			+ "</datestamp></header>\n";
-//		return returnString;
-//	}
-//
-//	private static String addParam(String p, String toAdd) {
-//		if (!p.equals("")) p += ", ";p+= toAdd;return p;
-//	}
-//
-//	private static String addFilter(String p, String toAdd) {
-//		if (!p.equals("")) p += " && ";p+= toAdd;return p;
-//	}
-//
-//	protected static Map setFilters(Query query, OaiParameters op) {
-//		HashMap<String, Object> params = new HashMap<String, Object>();
-//		String declareParam = "";
-//		String filter = "";
-//		if (op.getSet() != null) {
-//			declareParam = addParam(declareParam, "java.lang.String code");
-//			filter = addFilter(filter, "iTunesCode == code");
-//			params.put("code", op.getSet());
-//		}
-//		if (op.getFromAsDate() != null) {
-//			declareParam = addParam(declareParam, "java.util.Date fromDate");
-//			filter = addFilter(filter, "lastModificationDate >= fromDate");
-//			params.put("fromDate", op.getFromAsDate());
-//		}
-//		if (op.getUntilAsDate() != null) {
-//			declareParam = addParam(declareParam, "java.util.Date untilDate");
-//			filter = addFilter(filter, "lastModificationDate <= untilDate");
-//			params.put("untilDate", op.getUntilAsDate());
-//		}
-//		if (!filter.equals("")) {
-//			query.declareParameters(declareParam);
-//			query.setFilter(filter);
-//		}
-//
-//		return params;
-//	}
-		
+//		System.out.println("test is "+d + " - "+test.format(d));
+		Element responseDate = new Element("responseDate", oai)
+				.setText(OaiDateFormatter.getSingleTonInstance().format(d));
+		Element request = new Element("request", oai);
+
+		if (oaiParameters.getMetadataPrefix() != null) {
+			request.setAttribute("metadataPrefix", oaiParameters.getMetadataPrefix());
+		}
+		if (oaiParameters.getIdentifier() != null) {
+			request.setAttribute("identifier", oaiParameters.getIdentifier());
+		}
+		if (oaiParameters.getUntil() != null) {
+			request.setAttribute("until", oaiParameters.getUntil());
+		}
+		if (oaiParameters.getFrom() != null) {
+			request.setAttribute("from", oaiParameters.getFrom());
+		}
+		if (oaiParameters.getResumptionToken() != null) {
+			request.setAttribute("resumptionToken", oaiParameters.getResumptionToken());
+		}
+		if (oaiParameters.getSet() != null) {
+			request.setAttribute("set", oaiParameters.getSet());
+		}
+		request.setAttribute("verb", oaiParameters.getVerb());
+		root.addContent(responseDate);
+		root.addContent(request);
+		return root;
+	};
+
+
+
 }

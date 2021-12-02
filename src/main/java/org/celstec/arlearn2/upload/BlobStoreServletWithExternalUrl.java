@@ -46,13 +46,13 @@ import com.google.appengine.api.files.FileWriteChannel;
 import com.google.appengine.api.files.GSFileOptions.GSFileOptionsBuilder;
 
 
-import com.google.appengine.tools.cloudstorage.GcsFileOptions;
-import com.google.appengine.tools.cloudstorage.GcsFilename;
-import com.google.appengine.tools.cloudstorage.GcsInputChannel;
-import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
-import com.google.appengine.tools.cloudstorage.GcsService;
-import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
-import com.google.appengine.tools.cloudstorage.RetryParams;
+//import com.google.appengine.tools.cloudstorage.GcsFileOptions;
+//import com.google.appengine.tools.cloudstorage.GcsFilename;
+//import com.google.appengine.tools.cloudstorage.GcsInputChannel;
+//import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
+//import com.google.appengine.tools.cloudstorage.GcsService;
+//import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
+//import com.google.appengine.tools.cloudstorage.RetryParams;
 
 
 public class BlobStoreServletWithExternalUrl extends HttpServlet {

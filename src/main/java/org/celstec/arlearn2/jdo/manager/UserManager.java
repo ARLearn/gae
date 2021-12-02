@@ -156,9 +156,17 @@ public class UserManager {
         ArrayList<Long> userArrayList = new ArrayList<Long>();
         Query q = new Query(UserEntity.KIND)
                 .addSort(UserEntity.COL_LASTMODIFICATIONDATEGAME, Query.SortDirection.DESCENDING)
-                .setFilter(new Query.FilterPredicate(UserEntity.COL_EMAIL, Query.FilterOperator.EQUAL, fullId));
+                .setFilter(
+                        Query.CompositeFilterOperator.and(
+                                new Query.FilterPredicate(UserEntity.COL_DELETED, Query.FilterOperator.EQUAL, false),
+                                new Query.FilterPredicate(UserEntity.COL_EMAIL, Query.FilterOperator.EQUAL, fullId)
+                        )
+                );
+//                .setFilter(new Query.FilterPredicate(UserEntity.COL_EMAIL, Query.FilterOperator.EQUAL, fullId));
+        System.out.println("query is : "+q);
         PreparedQuery pq = datastore.prepare(q);
         for (Entity result : pq.asIterable()) {
+
             userArrayList.add((Long) result.getProperty(UserEntity.COL_GAMEID));
         }
         return userArrayList;
