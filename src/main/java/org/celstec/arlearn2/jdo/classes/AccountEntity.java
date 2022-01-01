@@ -318,6 +318,8 @@ public class AccountEntity {
         account.setAdvanced(this.advanced);
         account.setSuspended(this.suspended);
         account.setAdmin(this.admin);
+        account.setLastModificationDate(this.lastModificationDate);
+
         return account;
     }
 }

@@ -159,7 +159,6 @@ public class AccountManager {
 
 
     public static AccountList queryAll(String cursorString) {
-        System.out.println("queryAll cursor was null");
         FetchOptions fetchOptions = FetchOptions.Builder.withLimit(5);
         if (cursorString != null) {
             fetchOptions.startCursor(Cursor.fromWebSafeString(cursorString));

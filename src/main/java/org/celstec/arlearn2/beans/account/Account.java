@@ -59,6 +59,7 @@ public class Account extends Bean {
     private Boolean suspended = false;
 
     private Boolean allowTrackLocation;
+    private Long lastModificationDate;
 
     public String getFirebaseId() {
         return firebaseId;
@@ -229,6 +230,14 @@ public class Account extends Bean {
 
     public void setSuspended(Boolean suspended) {
         this.suspended = suspended;
+    }
+
+    public Long getLastModificationDate() {
+        return lastModificationDate;
+    }
+
+    public void setLastModificationDate(Long lastModificationDate) {
+        this.lastModificationDate = lastModificationDate;
     }
 
     @Override

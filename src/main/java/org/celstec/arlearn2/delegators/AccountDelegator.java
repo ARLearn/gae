@@ -1,11 +1,13 @@
 package org.celstec.arlearn2.delegators;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import org.celstec.arlearn2.api.Service;
 import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.account.AccountList;
 import org.celstec.arlearn2.cache.AccountCache;
 import org.celstec.arlearn2.endpoints.impl.account.GetOrganization;
+import org.celstec.arlearn2.endpoints.impl.portaluser.FirebaseAuthPersistence;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.manager.AccountManager;
 
@@ -77,10 +79,25 @@ public class AccountDelegator extends GoogleDelegator {
 //        AccountManager.makeSuper(accountId);
 //    }
 
-    public void deleteAccount(String fullIdentifier){
+    public void deleteAccount(EnhancedUser user){
 
         try {
-            AccountManager.deleteAccount(fullIdentifier);
+            AccountManager.deleteAccount(user.createFullId());
+            FirebaseAuthPersistence.getInstance().deleteUser(user.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public void deleteAccount(Account account){
+
+        try {
+            AccountManager.deleteAccount(account.getFullId());
+            if (account.getFirebaseId() != null) {
+                FirebaseAuthPersistence.getInstance().deleteUser(account.getFirebaseId());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

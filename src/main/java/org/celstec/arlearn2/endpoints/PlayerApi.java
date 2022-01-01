@@ -8,6 +8,7 @@ import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.account.AccountList;
 
 import org.celstec.arlearn2.beans.api.ConnectionInvitation;
+import org.celstec.arlearn2.delegators.AccountDelegator;
 import org.celstec.arlearn2.delegators.CollaborationDelegator;
 import org.celstec.arlearn2.delegators.GameDelegator;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
@@ -44,6 +45,17 @@ public class PlayerApi extends GenericApi {
     public AccountList getContacts(EnhancedUser user, @Named("tillTime") long time) {
         CollaborationDelegator cd = new CollaborationDelegator();
         return cd.getContacts(user.getProvider(), user.getLocalId(),0l, time, null);
+    }
+
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
+            name = "one_contact",
+            path = "/player/contact/{userFullId}"
+    )
+    public Account getOneContact(EnhancedUser user, @Named("userFullId") String fullId) {
+        CollaborationDelegator cd = new CollaborationDelegator();
+        AccountDelegator ad = new AccountDelegator();
+        return ad.getContactDetails(fullId);
     }
 
     @ApiMethod(

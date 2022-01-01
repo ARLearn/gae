@@ -95,6 +95,24 @@ public class FirebaseAuthPersistence {
         return FirebaseAuth.getInstance().updateUser(request);
     }
 
+    public UserRecord setClaims(String uid, String claimsString) throws FirebaseAuthException {
+        String[] claimsArray = claimsString.split(",");
+        UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(uid);
+        Map<String, Object> claimsOld = FirebaseAuth.getInstance().getUser(uid).getCustomClaims();
+        if (claimsOld.containsKey("admin") && claimsOld.get("admin") == Boolean.TRUE) {
+            return FirebaseAuth.getInstance().getUser(uid);
+        }
+        Map<String, Object> claims = new HashMap<>();
+        for (int i = 0; i < claimsArray.length; i++) {
+            claims.put(claimsArray[i], true);
+        }
+        if (claimsOld.containsKey("advanced") && claimsOld.get("advanced") == Boolean.TRUE) {
+            claims.put("advanced", true);
+        }
+        request.setCustomClaims(claims);
+        return FirebaseAuth.getInstance().updateUser(request);
+    }
+
     public UserRecord makeAdmin(String uid, boolean value) throws FirebaseAuthException {
         UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(uid);
         Map<String, Object> claimsOld = FirebaseAuth.getInstance().getUser(uid).getCustomClaims();

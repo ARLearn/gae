@@ -117,8 +117,10 @@ public class CreateAccount {
 
     public Account makeAdmin(String accountId, Boolean value) {
         Account account = AccountManager.setAdmin(accountId, value);
+        System.out.println("making admin 1 "+account);
         if (account != null && account.getFirebaseId() != null) {
             try {
+                System.out.println("making admin 2 "+account.getFirebaseId());
                 FirebaseAuthPersistence.getInstance().makeAdmin(account.getFirebaseId(), value);
             } catch (FirebaseAuthException e) {
                 e.printStackTrace();

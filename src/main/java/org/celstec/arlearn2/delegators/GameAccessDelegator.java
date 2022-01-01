@@ -1,5 +1,6 @@
 package org.celstec.arlearn2.delegators;
 
+import com.google.api.server.spi.response.ForbiddenException;
 import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.game.Game;
 import org.celstec.arlearn2.beans.game.GameAccess;
@@ -54,8 +55,20 @@ public class GameAccessDelegator extends GoogleDelegator {
 
     }
 
-    public GameAccess provideAccessWithCheck(Long gameIdentifier, String account, Integer accessRight) {
-        return provideAccess(gameIdentifier, account, accessRight);
+    public GameAccess provideAccessWithCheck(Long gameIdentifier, String accountFullId, Integer accessRight, String requestingUserFullId) throws ForbiddenException {
+        GameAccessList list = getAccessList(gameIdentifier);
+        boolean iAmOwner = false;
+        for (int i = 0; i < list.getGameAccess().size(); i++) {
+            GameAccess gameAccess = list.getGameAccess().get(i);
+            iAmOwner = iAmOwner || (requestingUserFullId.equals(gameAccess.getAccount()) && gameAccess.owner());
+        }
+        if (!iAmOwner) {
+            throw new ForbiddenException("you don't have the rights to do this");
+        }
+        if (accountFullId.equals(requestingUserFullId)) {
+            throw new ForbiddenException("you cannot change your own rights");
+        }
+        return provideAccess(gameIdentifier, accountFullId, accessRight);
 
 
     }

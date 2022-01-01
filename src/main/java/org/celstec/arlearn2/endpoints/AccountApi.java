@@ -320,7 +320,7 @@ public class AccountApi extends GenericApi {
     )
     public void deleteMe(final User user) {
         EnhancedUser us = (EnhancedUser) user;
-        new AccountDelegator().deleteAccount(us.createFullId());
+        new AccountDelegator().deleteAccount(us);
     }
 
 

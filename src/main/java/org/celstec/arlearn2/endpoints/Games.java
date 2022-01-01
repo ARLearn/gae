@@ -189,9 +189,9 @@ public class Games extends GenericApi {
                                      @Named("gameId") Long gameId,
                                      @Named("fullId") String fullId,
                                      @Named("rights") int rights
-    ) {
+    ) throws ForbiddenException {
         GameAccessDelegator gad = new GameAccessDelegator(user);
-        return gad.provideAccessWithCheck(gameId, fullId, rights);
+        return gad.provideAccessWithCheck(gameId, fullId, rights, user.createFullId()); //
     }
 
 

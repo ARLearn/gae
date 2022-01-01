@@ -36,6 +36,14 @@ public class GameAccess extends Bean{
 		this.gameId = gameId;
 	}
 
+	public boolean owner(){
+		return accessRights == 1;
+	}
+
+	public boolean editor(){
+		return accessRights == 2;
+	}
+
 	public static BeanDeserializer deserializer = new BeanDeserializer(){
 
 		@Override

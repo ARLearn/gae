@@ -69,7 +69,7 @@ public class GameThemeManager {
 
         Query q = new Query(KIND).setFilter(featuredFilter);
         PreparedQuery pq = datastore.prepare(q);
-        List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(25));
+        List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(150));
         Iterator<Entity> it = results.iterator();
         while (it.hasNext()) {
             globalThemeList.add(GameTheme.from(it.next()));
