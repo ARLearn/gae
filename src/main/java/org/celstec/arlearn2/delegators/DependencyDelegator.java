@@ -18,7 +18,6 @@
  ******************************************************************************/
 package org.celstec.arlearn2.delegators;
 
-import org.celstec.arlearn2.api.Service;
 import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.dependencies.*;
 import org.celstec.arlearn2.beans.run.Action;
@@ -38,31 +37,29 @@ import java.util.Iterator;
  * Time: 20:10
  * To change this template use File | Settings | File Templates.
  */
-public class DependencyDelegator extends GoogleDelegator {
+public class DependencyDelegator {
 
     public DependencyDelegator() {
         super();
     }
 
-    public DependencyDelegator(String authToken) {
-        super(authToken);
-    }
+//    public DependencyDelegator(String authToken) {
+//        super(authToken);
+//    }
+//
+//    public DependencyDelegator(GoogleDelegator gd) {
+//        super(gd);
+//    }
+//
+//    public DependencyDelegator(Account account, String token) {
+//        super(account, token);
+//    }
 
-    public DependencyDelegator(GoogleDelegator gd) {
-        super(gd);
-    }
 
-    public DependencyDelegator(Account account, String token) {
-        super(account, token);
-    }
 
-    public DependencyDelegator(Service service) {
-        super(service);
-    }
-
-    public DependencyDelegator(GenericBean bean) {
-        super(bean);
-    }
+//    public DependencyDelegator(GenericBean bean) {
+//        super(bean);
+//    }
 
     protected boolean influencedBy(Dependency dependsOn, Action action) {
         if (dependsOn == null)

@@ -33,13 +33,12 @@ public class DeleteResponses extends GenericBean {
 		super();
 	}
 
-	public DeleteResponses(String token, Account account, Long runId) {
-		super(token, account);
+	public DeleteResponses( Long runId) {
+		super( );
 		this.runId = runId;
 	}
 
-	public DeleteResponses(String token, Account account, Long runId, String fullAccount) {
-		super(token, account);
+	public DeleteResponses(Long runId, String fullAccount) {
 		this.runId = runId;
         this.fullAccount = fullAccount;
 	}
@@ -62,7 +61,7 @@ public class DeleteResponses extends GenericBean {
 	
 	@Override
 	public void run() {
-			ResponseDelegator rd = new ResponseDelegator(getToken());
+			ResponseDelegator rd = new ResponseDelegator();
 			if (getFullAccount() == null) {
 				rd.deleteResponses(runId);
 			} else{

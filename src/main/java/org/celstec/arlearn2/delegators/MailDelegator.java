@@ -31,16 +31,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class MailDelegator extends GoogleDelegator {
+public class MailDelegator  {
 
     private static final Logger logger = Logger.getLogger(ActionDelegator.class.getName());
 
-    public MailDelegator(String authtoken) {
-        super(authtoken);
-    }
+    public MailDelegator() {
 
-    public MailDelegator(GoogleDelegator gd) {
-        super(gd);
     }
 
     public void sendMail(String from, String fromName, String toMail, String subject, String msgBody) {

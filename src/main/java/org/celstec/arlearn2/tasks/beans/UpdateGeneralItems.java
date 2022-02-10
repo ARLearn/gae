@@ -44,8 +44,8 @@ public class UpdateGeneralItems extends GenericBean{
 		
 	}
 	
-	public UpdateGeneralItems(String token, Long runId, String action, String userEmail, Long generalItemId, String generalItemType) {
-		super(token);
+	public UpdateGeneralItems(Long runId, String action, String userEmail, Long generalItemId, String generalItemType) {
+		super();
 		this.runId = runId;
 		this.action = action;
 		this.userEmail = userEmail;
@@ -98,22 +98,19 @@ public class UpdateGeneralItems extends GenericBean{
 	@Override
 	public void run() {
 
-		UsersDelegator qu = null;
-		User u = null;
-
-			qu = new UsersDelegator("auth=" + getToken());
-			u = qu.getUserByEmail(runId, getUserEmail());
+		UsersDelegator qu = new UsersDelegator();
+		User u = qu.getUserByEmail(runId, getUserEmail());
 
 		Action a = new Action();
 		a.setRunId(runId);
 		a.setAction(getAction());
 		a.setGeneralItemId(getGeneralItemId());
 		a.setGeneralItemType(getGeneralItemType());
-		RunDelegator qr = new RunDelegator(qu);
+		RunDelegator qr = new RunDelegator();
 		Run run = qr.getRun(a.getRunId());
 		
-		GeneralItemDelegator gid = new GeneralItemDelegator(qu);
-		ActionRelevancyPredictor arp = ActionRelevancyPredictor.getActionRelevancyPredicator(run.getGameId(), qu);
+		GeneralItemDelegator gid = new GeneralItemDelegator();
+		ActionRelevancyPredictor arp = ActionRelevancyPredictor.getActionRelevancyPredicator(run.getGameId());
 
 		boolean userRelevant = arp.isRelevantForUser(a);
 		boolean teamRelevant = arp.isRelevantForTeam(a); 
@@ -124,7 +121,7 @@ public class UpdateGeneralItems extends GenericBean{
 		} 
 			
 
-			if ((teamRelevant ||allRelevant)&&  qu != null) {
+			if ((teamRelevant ||allRelevant)) {
                 UserList ul = qu.getUsers(runId);
                 if (ul != null)
 				for (User otherUser :ul.getUsers()) {
@@ -137,11 +134,7 @@ public class UpdateGeneralItems extends GenericBean{
 					}
 				}
 			}
-		
-		
-		
-		
-		
+
 	}
 
 }

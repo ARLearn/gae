@@ -3,6 +3,7 @@ package org.celstec.arlearn2.endpoints.impl.account;
 import com.google.appengine.api.datastore.*;
 import endpoints.repackaged.org.jose4j.http.Get;
 import org.celstec.arlearn2.beans.account.Organization;
+import org.celstec.arlearn2.tasks.account.UpdateAccountExpirationForOrganisation;
 
 public class CreateOrganization {
 
@@ -37,6 +38,7 @@ public class CreateOrganization {
     public Organization updateOrganizationExpiration(Long organisationId, Long expirationDate) throws EntityNotFoundException {
         Organization org = GetOrganization.getInstance().getOrganisation(organisationId);
         org.setExpirationDate(expirationDate);
+        UpdateAccountExpirationForOrganisation.setup(organisationId, expirationDate);
         return createOrganization(org);
     }
 }

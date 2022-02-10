@@ -18,11 +18,6 @@
  ******************************************************************************/
 package org.celstec.arlearn2.util;
 
-import org.celstec.arlearn2.beans.game.Game;
-import org.celstec.arlearn2.beans.game.GamesList;
-import org.celstec.arlearn2.beans.run.User;
-import org.celstec.arlearn2.jdo.UserLoggedInManager;
-
 import javax.cache.Cache;
 
 

@@ -18,39 +18,26 @@
  ******************************************************************************/
 package org.celstec.arlearn2.delegators;
 
-import org.celstec.arlearn2.api.Service;
-import org.celstec.arlearn2.beans.notification.TeamModification;
 import org.celstec.arlearn2.beans.run.Team;
 import org.celstec.arlearn2.beans.run.TeamList;
 import org.celstec.arlearn2.cache.TeamsCache;
 import org.celstec.arlearn2.cache.UsersCache;
-
 import org.celstec.arlearn2.jdo.manager.TeamManager;
 import org.celstec.arlearn2.tasks.beans.DeleteUsers;
-import org.celstec.arlearn2.tasks.beans.NotifyUsersFromGame;
-
 
 import java.util.UUID;
-import java.util.logging.Logger;
 
-public class TeamsDelegator extends GoogleDelegator {
+public class TeamsDelegator  {
 
-    private static final Logger logger = Logger.getLogger(TeamsDelegator.class.getName());
+//    private static final Logger logger = Logger.getLogger(TeamsDelegator.class.getName());
 
-    public TeamsDelegator(String authToken) {
-        super(authToken);
+    public TeamsDelegator(){
     }
 
-    public TeamsDelegator(GoogleDelegator gd) {
-        super(gd);
-    }
 
-    public TeamsDelegator(Service service) {
-        super(service);
-    }
 
     public Team createTeam(Team team) {
-        RunDelegator rd = new RunDelegator(this);
+        RunDelegator rd = new RunDelegator();
         if (team.getRunId() == null) {
             team.setError("No run identifier specified");
             return team;
@@ -65,19 +52,6 @@ public class TeamsDelegator extends GoogleDelegator {
     public Team createTeam(long runId, String teamId, String name) {
         if (teamId == null) teamId = UUID.randomUUID().toString();
         TeamsCache.getInstance().removeTeams(runId);
-        new NotifyUsersFromGame(getAuthToken(), runId, null, TeamModification.ALTERED).scheduleTask();
-
-        TeamModification tm = new TeamModification();
-        tm.setModificationType(TeamModification.ALTERED);
-        tm.setRunId(runId);
-        UsersDelegator ud = new UsersDelegator(this);
-
-//        ChannelNotificator.getInstance().notify(ud.getCurrentUserAccount(), tm);
-
-//        (new UpdateVariableInstancesForTeam(authToken, this.account, teamId, runId, null, 1)).scheduleTask();
-//        (new UpdateVariableEffectInstancesForTeam(authToken, this.account, teamId, runId, null, 1)).scheduleTask();
-
-
         return TeamManager.addTeam(runId, teamId, name);
     }
 
@@ -91,18 +65,6 @@ public class TeamsDelegator extends GoogleDelegator {
         return tl;
     }
 
-    public Team getTeam(String teamId) {
-        Team returnTeam = TeamsCache.getInstance().getTeam(teamId);
-        if (returnTeam == null) {
-            returnTeam = TeamManager.getTeam(teamId);
-            if (returnTeam == null) {
-                returnTeam = new Team();
-                returnTeam.setError("no team exists with id " + teamId);
-            }
-            TeamsCache.getInstance().putTeam(teamId, returnTeam);
-        }
-        return returnTeam;
-    }
 
     public void deleteTeam(Long runId) {
         TeamList tl = getTeams(runId);
@@ -117,19 +79,8 @@ public class TeamsDelegator extends GoogleDelegator {
         TeamManager.deleteTeam(teamId);
         TeamsCache.getInstance().removeTeams(t.getRunId());
         UsersCache.getInstance().removeUser(t.getRunId());
-        (new DeleteUsers(getAuthToken(), t.getRunId(), null, teamId)).scheduleTask();
-        new NotifyUsersFromGame(getAuthToken(), t.getRunId(), null, TeamModification.ALTERED).scheduleTask();
+        (new DeleteUsers(t.getRunId(), null, teamId)).scheduleTask();
 
-        TeamModification tm = new TeamModification();
-        tm.setModificationType(TeamModification.ALTERED);
-        tm.setRunId(t.getRunId());
-        UsersDelegator ud = new UsersDelegator(this);
-
-//        ChannelNotificator.getInstance().notify(ud.getCurrentUserAccount(), tm);
-
-//        (new UpdateVariableInstancesForTeam(authToken, this.account, teamId, t.getRunId(), null, 2)).scheduleTask();
-//        (new UpdateVariableEffectInstancesForTeam(authToken, this.account, teamId, t.getRunId(), null, 2)).scheduleTask();
-        //TODO test if deleting users works...
         return t;
     }
 }

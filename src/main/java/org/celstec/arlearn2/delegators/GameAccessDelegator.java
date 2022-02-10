@@ -2,11 +2,8 @@ package org.celstec.arlearn2.delegators;
 
 import com.google.api.server.spi.response.ForbiddenException;
 import org.celstec.arlearn2.beans.account.Account;
-import org.celstec.arlearn2.beans.game.Game;
 import org.celstec.arlearn2.beans.game.GameAccess;
 import org.celstec.arlearn2.beans.game.GameAccessList;
-import org.celstec.arlearn2.endpoints.util.EnhancedUser;
-import org.celstec.arlearn2.jdo.UserLoggedInManager;
 import org.celstec.arlearn2.jdo.classes.GameAccessEntity;
 import org.celstec.arlearn2.jdo.manager.GameAccessManager;
 
@@ -14,24 +11,19 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 
-public class GameAccessDelegator extends GoogleDelegator {
+public class GameAccessDelegator  {
     public GameAccessDelegator() {
-        super();
+
     }
 
-    public GameAccessDelegator(EnhancedUser user) {
-        super(user);
-    }
-
-    public GameAccessDelegator(String authtoken) {
-        super(authtoken);
-    }
-    public GameAccessDelegator(com.google.appengine.api.users.User user) {
-        super(user);
-    }
-    public GameAccessDelegator(GoogleDelegator gd) {
-        super(gd);
-    }
+//    public GameAccessDelegator(EnhancedUser user) {
+//        super(user);
+//    }
+//
+//
+//    public GameAccessDelegator(GoogleDelegator gd) {
+//        super(gd);
+//    }
 
     public void provideAccess(Long gameId, Account account, int accessRights) {
         GameAccessManager.addGameAccess(account.getLocalId(), account.getAccountType(), gameId, accessRights);
@@ -56,7 +48,7 @@ public class GameAccessDelegator extends GoogleDelegator {
     }
 
     public GameAccess provideAccessWithCheck(Long gameIdentifier, String accountFullId, Integer accessRight, String requestingUserFullId) throws ForbiddenException {
-        GameAccessList list = getAccessList(gameIdentifier);
+        GameAccessList list = getAccessList(gameIdentifier,requestingUserFullId);
         boolean iAmOwner = false;
         for (int i = 0; i < list.getGameAccess().size(); i++) {
             GameAccess gameAccess = list.getGameAccess().get(i);
@@ -123,28 +115,28 @@ public class GameAccessDelegator extends GoogleDelegator {
         return GameAccessManager.getGameList(accountType, localID, resumptionToken,from);
     }
 
-    public GameAccessList getGamesAccess(Long from, Long until) {
-        GameAccessList gl = new GameAccessList();
-        String myAccount = null;
-        if (account != null) {
-            myAccount = account.getFullId();
-        } else
-            myAccount = UserLoggedInManager.getUser(authToken);
-        if (myAccount == null) {
-            gl.setError("login to retrieve your list of games");
-            return gl;
-        }
-        return getGamesAccess(myAccount, from, until);
-    }
+//    public GameAccessList getGamesAccess(Long from, Long until) {
+//        GameAccessList gl = new GameAccessList();
+//        String myAccount = null;
+//        if (account != null) {
+//            myAccount = account.getFullId();
+//        } else
+//            myAccount = UserLoggedInManager.getUser();
+//        if (myAccount == null) {
+//            gl.setError("login to retrieve your list of games");
+//            return gl;
+//        }
+//        return getGamesAccess(myAccount, from, until);
+//    }
 
     public GameAccessList getGamesAccess(String resumptionToken, long from, int provider, String localId) {
         return GameAccessManager.getGameList(provider, localId, resumptionToken,from);
     }
 
-    public GameAccessList getAccessList(Long gameIdentifier) {
+    public GameAccessList getAccessList(Long gameIdentifier, String fullId) {
         GameAccessList returnList = new GameAccessList();
         returnList.setGameAccess(GameAccessManager.getGameList(gameIdentifier));
-        returnList.myFullId = this.account.getFullId();
+        returnList.myFullId = fullId;
         return returnList;
 
     }
@@ -173,17 +165,17 @@ public class GameAccessDelegator extends GoogleDelegator {
     }
 
 
-    public boolean canView( Long gameId) {
-        if (this.account == null) return false;
-        String myAccount = this.account.getFullId();
-        try {
-            int accessRights = GameAccessManager.getAccessById(myAccount + ":" + gameId).getAccessRights();
-            return accessRights == GameAccessEntity.OWNER || accessRights == GameAccessEntity.CAN_EDIT || accessRights == GameAccessEntity.CAN_VIEW;
-        } catch (Exception e) {
-            return false;
-        }
-//return true;
-    }
+//    public boolean canView( Long gameId) {
+//        if (this.account == null) return false;
+//        String myAccount = this.account.getFullId();
+//        try {
+//            int accessRights = GameAccessManager.getAccessById(myAccount + ":" + gameId).getAccessRights();
+//            return accessRights == GameAccessEntity.OWNER || accessRights == GameAccessEntity.CAN_EDIT || accessRights == GameAccessEntity.CAN_VIEW;
+//        } catch (Exception e) {
+//            return false;
+//        }
+////return true;
+//    }
     public boolean canView( Long gameId, String myAccount) {
         try {
             GameAccessEntity gameAccessEntity = GameAccessManager.getAccessById(myAccount + ":" + gameId);
@@ -198,10 +190,5 @@ public class GameAccessDelegator extends GoogleDelegator {
 
     }
 
-    public void broadcastGameUpdate(Game game) { //todo optimize via cache
-        for (GameAccess ga : GameAccessManager.getGameList(game.getGameId())) {
-            new NotificationDelegator(this).broadcast(game, ga.getAccount());
-        }
-    }
 
 }

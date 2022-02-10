@@ -18,21 +18,19 @@
  ******************************************************************************/
 package org.celstec.arlearn2.jdo.manager;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import org.celstec.arlearn2.beans.run.GeneralItemVisibility;
+import org.celstec.arlearn2.cache.VisibleGeneralItemsCache;
+import org.celstec.arlearn2.jdo.classes.GeneralItemVisibilityEntity;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
-
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-
-import com.google.appengine.api.datastore.*;
-import org.celstec.arlearn2.beans.run.GeneralItemVisibility;
-import org.celstec.arlearn2.cache.VisibleGeneralItemsCache;
-import org.celstec.arlearn2.jdo.PMF;
-import org.celstec.arlearn2.jdo.classes.GeneralItemVisibilityEntity;
 //import com.google.appengine.datanucleus.query.JDOCursorHelper;
 
 

@@ -1,7 +1,5 @@
 package org.celstec.arlearn2.delegators;
 
-import org.celstec.arlearn2.api.Service;
-import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.store.Category;
 import org.celstec.arlearn2.beans.store.CategoryList;
 import org.celstec.arlearn2.beans.store.GameCategory;
@@ -9,7 +7,6 @@ import org.celstec.arlearn2.beans.store.GameCategoryList;
 import org.celstec.arlearn2.cache.CategoryCache;
 import org.celstec.arlearn2.jdo.manager.CategoryManager;
 import org.celstec.arlearn2.jdo.manager.GameCategoryManager;
-import org.celstec.arlearn2.tasks.beans.GenericBean;
 
 /**
  * ****************************************************************************
@@ -31,28 +28,9 @@ import org.celstec.arlearn2.tasks.beans.GenericBean;
  * Contributors: Stefaan Ternier
  * ****************************************************************************
  */
-public class CategoryDelegator extends GoogleDelegator {
-    public CategoryDelegator(String authToken) {
-        super(authToken);
-    }
+public class CategoryDelegator  {
 
     public CategoryDelegator() {
-    }
-
-    public CategoryDelegator(GoogleDelegator gd) {
-        super(gd);
-    }
-
-    public CategoryDelegator(Account account, String token) {
-        super(account, token);
-    }
-
-    public CategoryDelegator(Service service) {
-        super(service);
-    }
-
-    public CategoryDelegator(GenericBean bean) {
-        super(bean);
     }
 
     public Category getCategory(long id) {

@@ -19,8 +19,6 @@
 package org.celstec.arlearn2.delegators;
 
 import com.google.api.server.spi.response.ForbiddenException;
-import org.celstec.arlearn2.api.Service;
-import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.game.Config;
 import org.celstec.arlearn2.beans.game.Game;
 import org.celstec.arlearn2.beans.run.*;
@@ -34,41 +32,31 @@ import org.celstec.arlearn2.util.RunsCache;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-//import org.celstec.arlearn2.tasks.beans.DeleteInventoryRecords;
-//import org.celstec.arlearn2.tasks.beans.DeleteProgressRecord;
 
-//TODO migrate and adapt cache
-public class RunDelegator extends GoogleDelegator {
+public class RunDelegator {
     private static final Logger logger = Logger.getLogger(RunDelegator.class.getName());
 
-    public RunDelegator(String authtoken) {
-        super(authtoken);
-    }
-
     public RunDelegator() {
-        super();
-    }
-    public RunDelegator(EnhancedUser user) {
-        super(user);
+
     }
 
-    public RunDelegator(GenericBean bean) {
-        super(bean);
-    }
+//    public RunDelegator(EnhancedUser user) {
+//        super(user);
+//    }
+//
+//    public RunDelegator(GenericBean bean) {
+//        super(bean);
+//    }
 
-    public RunDelegator(Service service) {
-        super(service);
-    }
 
-    public RunDelegator(GoogleDelegator gd) {
-        super(gd);
-    }
+//    public RunDelegator(GoogleDelegator gd) {
+//        super(gd);
+//    }
 
-    public RunDelegator(Account account, String authToken) {
-        super(account, authToken);
-    }
+//    public RunDelegator(Account account, String authToken) {
+//        super(account, authToken);
+//    }
 
     public Run getRun(Long runId) {
         return getRun(runId, true);
@@ -83,24 +71,24 @@ public class RunDelegator extends GoogleDelegator {
             RunsCache.getInstance().putRun(runId, r);
         }
         if (withGame) {
-            GameDelegator gd = new GameDelegator(this);
+            GameDelegator gd = new GameDelegator();
             r.setGame(gd.getGame(r.getGameId(), false));
         }
         return r;
     }
 
-    public RunList getRuns() {
-        RunList rl = new RunList();
-        UsersDelegator qu = new UsersDelegator(this);
-        String myAccount = qu.getCurrentUserAccount();
-
-        if (myAccount == null) {
-            rl.setError("login to retrieve your list of games");
-        } else {
-            rl.setRuns(RunManager.getRunsWithAccount(myAccount));
-        }
-        return rl;
-    }
+//    public RunList getRuns() {
+//        RunList rl = new RunList();
+//        UsersDelegator qu = new UsersDelegator();
+//        String myAccount = qu.getCurrentUserAccount();
+//
+//        if (myAccount == null) {
+//            rl.setError("login to retrieve your list of games");
+//        } else {
+//            rl.setRuns(RunManager.getRunsWithAccount(myAccount));
+//        }
+//        return rl;
+//    }
 
     public long getRunDuration(Long runId) {
         Run r = getRun(runId);
@@ -114,50 +102,7 @@ public class RunDelegator extends GoogleDelegator {
         return System.currentTimeMillis() - r.getStartTime();
     }
 
-    public RunList getParticipateRuns() {
-        UsersDelegator qu = new UsersDelegator(this);
-        String myAccount = qu.getCurrentUserAccount();
-        // TODO migrate this method to UserQuery
-        // TODO add this to cache
-        // TODO migrate RunsCache
-        Iterator<User> it = UserManager.getUserList( myAccount).iterator();
-        RunList rl = new RunList();
-        while (it.hasNext()) {
-            User user = (User) it.next();
-            Run r = getRun(user.getRunId());
-            if (r != null) {
-                if (r.getDeleted() == null || r.getDeleted() == false) r.setDeleted(user.getDeleted());
-                rl.addRun(r);
-            } else {
-                logger.severe("following run does not exist" + user.getRunId());
 
-            }
-        }
-        rl.setServerTime(System.currentTimeMillis());
-
-        return rl;
-    }
-
-    public RunList getParticipateRuns(Long gameId) {
-        UsersDelegator qu = new UsersDelegator(this);
-        String myAccount = qu.getCurrentUserAccount();
-        Iterator<User> it = UserManager.getUserListByGameId(gameId, myAccount).iterator();
-        RunList rl = new RunList();
-        while (it.hasNext()) {
-            User user = (User) it.next();
-            Run r = getRun(user.getRunId());
-            if (r != null) {
-                if (r.getDeleted() == null || r.getDeleted() == false) r.setDeleted(user.getDeleted());
-                rl.addRun(r);
-            } else {
-                logger.severe("following run does not exist" + user.getRunId());
-
-            }
-        }
-        rl.setServerTime(System.currentTimeMillis());
-
-        return rl;
-    }
 
     public boolean hasParticipateRuns(Long gameId, String fullId) {
         return UserManager.hasUserListByGameId(gameId, fullId);
@@ -184,7 +129,7 @@ public class RunDelegator extends GoogleDelegator {
     }
 
     public RunList getRuns(String accountId) {
-        UsersDelegator qu = new UsersDelegator(this);
+        UsersDelegator qu = new UsersDelegator();
 
         // TODO migrate this method to UserQuery
         // TODO add this to cache
@@ -207,111 +152,80 @@ public class RunDelegator extends GoogleDelegator {
         return rl;
     }
 
-    public RunList getParticipateRuns(Long from, Long until) {
-        UsersDelegator qu = new UsersDelegator(this);
-        String myAccount = qu.getCurrentUserAccount();
-        // TODO migrate this method to UserQuery
-        // TODO add this to cache
-        // TODO migrate RunsCache
-        Iterator<User> it = UserManager.getUserList(myAccount, from, until).iterator();
-        RunList rl = new RunList();
-        while (it.hasNext()) {
-            User user = (User) it.next();
-            Run r = getRun(user.getRunId());
-            if (r != null) {
-                if (user.getDeleted() != null && user.getDeleted()) r.setDeleted(user.getDeleted());
-                rl.addRun(r);
-            } else {
-                logger.severe("following run does not exist" + user.getRunId());
+//    public RunList getParticipateRuns(Long from, Long until) {
+//        UsersDelegator qu = new UsersDelegator();
+//        String myAccount = qu.getCurrentUserAccount();
+//        // TODO migrate this method to UserQuery
+//        // TODO add this to cache
+//        // TODO migrate RunsCache
+//        Iterator<User> it = UserManager.getUserList(myAccount, from, until).iterator();
+//        RunList rl = new RunList();
+//        while (it.hasNext()) {
+//            User user = (User) it.next();
+//            Run r = getRun(user.getRunId());
+//            if (r != null) {
+//                if (user.getDeleted() != null && user.getDeleted()) r.setDeleted(user.getDeleted());
+//                rl.addRun(r);
+//            } else {
+//                logger.severe("following run does not exist" + user.getRunId());
+//
+//            }
+//        }
+//        rl.setServerTime(System.currentTimeMillis());
+//        return rl;
+//    }
 
-            }
-        }
-        rl.setServerTime(System.currentTimeMillis());
-        return rl;
-    }
-
-    public Run createRun(Run run) {
+    public Run createRun(EnhancedUser us, Run run) {
         if (run.getRunId() != null) RunsCache.getInstance().removeRun(run.getRunId());
         if (run.getStartTime() == null) {
             run.setStartTime(System.currentTimeMillis());
             run.setServerCreationTime(run.getStartTime());
         }
         String myAccount = "";
-        if (account != null) {
-            UsersDelegator qu = new UsersDelegator(this);
-            myAccount = qu.getCurrentUserAccount();
+        if (us != null) {
+            UsersDelegator qu = new UsersDelegator();
+            myAccount = us.createFullId();
 
             if (myAccount == null) {
                 run.setError("login to create a game");
                 return run;
             }
         }
-        GameDelegator cg = new GameDelegator(this);
+        GameDelegator cg = new GameDelegator();
         Game game = cg.getGame(run.getGameId());
         if (game == null) {
             run.setError("Game with id '" + run.getGameId() + "' does not exist");
             return run;
         }
 
-//		if (account != null) {
-        return createRunWithAccount(run);
+        return createRunWithAccount(us, run);
 //		} else {
 //			run.setRunId(RunManager.addRun(run.getTitle(), myAccount, game.getGameId(), run.getRunId(), run.getStartTime(), run.getServerCreationTime(), run));
 //			return run;
 //		}
     }
 
-    private Run createRunWithAccount(Run run) {
+    private Run createRunWithAccount(EnhancedUser us, Run run) {
         run.setRunId(RunManager.addRun(run));
 
-        RunAccessDelegator rd = new RunAccessDelegator(this);
-        rd.provideAccess(run.getRunId(), run.getGameId(), account, RunAccessEntity.OWNER);
-        if (this.account != null) {
-            new NotificationDelegator(this).broadcast(run, account.getFullId());
-        }
-
-        //todo uncomment when variables are used again
-//        (new UpdateVariableInstancesForAll(authToken, this.account, run.getRunId(), run.getGameId(), 1)).scheduleTask();
-//        (new UpdateVariableEffectInstancesForAll(authToken, this.account, run.getRunId(), run.getGameId(), 1)).scheduleTask();
+        RunAccessDelegator rd = new RunAccessDelegator();
+        rd.provideAccess(run.getRunId(), run.getGameId(), us, RunAccessEntity.OWNER);
 
         return run;
     }
 
-    public Run updateRun(Run run, long runId) {
-        UsersDelegator qu = new UsersDelegator(this);
-        String myAccount = qu.getCurrentUserAccount();
 
-        if (myAccount == null) {
-            run.setError("login to update a run");
-            return run;
-        }
-        Run oldRun = getRun(runId);
-        if (oldRun == null) {
-            run.setError("run with id '" + runId + "' does not exist");
-            return run;
-        }
-        GameDelegator cg = new GameDelegator(this);
-        Game game = cg.getGame(run.getGameId());
-        if (game == null) {
-            run.setError("Game with id '" + run.getGameId() + "' does not exist");
-            return run;
-        }
-        RunsCache.getInstance().removeRun(runId);
-        RunManager.updateRun(runId, run);
-        return run;
-    }
-
-    public Run deleteRun(Long runId) {
-        UsersDelegator qu = new UsersDelegator(this);
-        String myAccount = qu.getCurrentUserAccount();
-        return deleteRun(getRun(runId), myAccount);
+    public Run deleteRun(Long runId, EnhancedUser us) {
+        UsersDelegator qu = new UsersDelegator();
+//        String myAccount = qu.getCurrentUserAccount();
+        return deleteRun(getRun(runId), us.createFullId());
     }
 
     private Run deleteRun(Run r, String myAccount) {
         RunAccessDelegator gad = null;
-        if (account != null) {
-            gad = new RunAccessDelegator(this);
-            if (!gad.isOwner(r.getRunId())) {
+        if (myAccount != null) {
+            gad = new RunAccessDelegator();
+            if (!gad.isOwner(r.getRunId(), myAccount)) {
                 Run run = new Run();
                 run.setError("You are not the owner of this run");
                 return run;
@@ -325,26 +239,16 @@ public class RunDelegator extends GoogleDelegator {
         RunManager.setStatusDeleted(r.getRunId());
         RunAccessManager.resetGameAccessLastModificationDate(r.getRunId());
         RunsCache.getInstance().removeRun(r.getRunId());
-        (new UpdateGeneralItemsVisibility(authToken, this.account, r.getRunId(), null, 2)).scheduleTask();
-
-        //todo update when variables are used again
-//        (new UpdateVariableInstancesForAll(authToken, this.account, r.getRunId(), r.getGameId(), 2)).scheduleTask();
-//        (new UpdateVariableEffectInstancesForAll(authToken, this.account, r.getRunId(), r.getGameId(), 2)).scheduleTask();
+        (new UpdateGeneralItemsVisibility( r.getRunId(), null, 2)).scheduleTask();
 
 
-//		(new DeleteVisibleItems(authToken, r.getRunId())).scheduleTask();
-        (new DeleteActions(authToken, this.account, r.getRunId())).scheduleTask();
-        (new DeleteTeams(authToken, this.account, r.getRunId(), null)).scheduleTask();
 
-        (new DeleteUserAfterDeleteRun(getAuthToken(), r.getRunId())).scheduleTask();
+        (new DeleteActions(r.getRunId())).scheduleTask();
+        (new DeleteTeams( r.getRunId(), null)).scheduleTask();
 
-        (new DeleteBlobs(authToken, this.account, r.getRunId())).scheduleTask();
-        (new DeleteResponses(authToken, this.account, r.getRunId())).scheduleTask();
+        (new DeleteUserAfterDeleteRun(r.getRunId())).scheduleTask();
 
-//        if (this.account != null) {
-//            gad.broadcastRunUpdate(r);
-//
-//        }
+        (new DeleteResponses( r.getRunId())).scheduleTask();
         return r;
     }
 
@@ -357,7 +261,7 @@ public class RunDelegator extends GoogleDelegator {
 
     public Config getConfig(Long runId) {
         Run r = getRun(runId);
-        GameDelegator gd = new GameDelegator(this);
+        GameDelegator gd = new GameDelegator();
         return gd.getGame(r.getGameId(), false).getConfig();
     }
 
@@ -366,24 +270,6 @@ public class RunDelegator extends GoogleDelegator {
 
     }
 
-//    public List<Run> getRunsForGame(long gameId, Account account) {
-//
-//
-//    }
-
-//    public Run selfRegister(String tagId) {
-//        UsersDelegator qu = new UsersDelegator(this);
-//        String myAccount = qu.getCurrentUserAccount();
-//
-//        List<Run> runList = RunManager.getRuns(null, null, null, null, tagId);
-//        if (!runList.isEmpty()) {
-//            return selfRegister(runList.get(0), myAccount);
-//        } else {
-//            Run run = new Run();
-//            run.setError("No run with tagid " + tagId + " exists");
-//            return run;
-//        }
-//    }
 
     public RunList getTaggedRuns(String tagId) {
         RunList rl = new RunList();
@@ -392,84 +278,23 @@ public class RunDelegator extends GoogleDelegator {
     }
 
 
-    private Run selfRegister(Run run) { //, String myAccount
-        TeamsDelegator td = new TeamsDelegator(this);
-        TeamList tl = td.getTeams(run.getRunId());
-        for (Team team : tl.getTeams()) {
-            if ("default".equals(team.getName())) {
-                return selfRegister(run, team); //, myAccount
-            }
-        }
-        if (!tl.getTeams().isEmpty()) {
-            return selfRegister(run, tl.getTeams().get(0)); //, myAccount
-        }
-        Team team = td.createTeam(run.getRunId(), null, "default");
-        return selfRegister(run,  team); //myAccount,
-    }
+//    private Run selfRegister(Run run) { //, String myAccount
+//        TeamsDelegator td = new TeamsDelegator();
+//        TeamList tl = td.getTeams(run.getRunId());
+//        for (Team team : tl.getTeams()) {
+//            if ("default".equals(team.getName())) {
+//                return selfRegister(run, team); //, myAccount
+//            }
+//        }
+//        if (!tl.getTeams().isEmpty()) {
+//            return selfRegister(run, tl.getTeams().get(0)); //, myAccount
+//        }
+//        Team team = td.createTeam(run.getRunId(), null, "default");
+//        return selfRegister(run,  team); //myAccount,
+//    }
 
-    private Run selfRegister(Run run, Team team) { //, String myAccount
-        UsersDelegator ud = new UsersDelegator(this);
-        User u = new User();
-        u.setRunId(run.getRunId());
-        u.setEmail(account.getEmail());
-        u.setName(account.getName());
-        u.setTeamId(team.getTeamId());
-        u.setFullIdentifier(account.getFullId());
-        u.setGameId(run.getGameId());
-        ud.selfRegister(u, run);
-
-        return run;
-    }
-
-    public Run selfRegister(Long runId) {
-        UsersDelegator qu = new UsersDelegator(this);
-        String myAccount = qu.getCurrentUserAccount();
-
-
-        Run r = RunManager.getRun(runId);
-        if (r != null) { //&& runList.get(0).getTagId() != null
-            return selfRegister(r);
-        } else {
-            Run run = new Run();
-            run.setError("No run with runId " + runId + " exists");
-            return run;
-        }
-    }
-
-    public Run selfRegister(Long runId, EnhancedUser myAccount) throws ForbiddenException {
-        UsersDelegator qu = new UsersDelegator(this);
-
-        Run r = RunManager.getRun(runId);
-        if (r != null) { //&& runList.get(0).getTagId() != null
-            if (r.getRunConfig()== null || !r.getRunConfig().getSelfRegistration()) {
-                throw new ForbiddenException("self registration is not possible");
-            }
-            return selfRegister(r, myAccount);
-        } else {
-            System.out.println("No run with runId " + runId + " exists");
-            Run run = new Run();
-            run.setError("No run with runId " + runId + " exists");
-            return run;
-        }
-    }
-
-
-    private Run selfRegister(Run run, EnhancedUser myAccount) { //, String myAccount
-        TeamsDelegator td = new TeamsDelegator(this);
-        TeamList tl = td.getTeams(run.getRunId());
-        for (Team team : tl.getTeams()) {
-            if ("default".equals(team.getName())) {
-                return selfRegister(run, team,myAccount); //, myAccount
-            }
-        }
-        if (!tl.getTeams().isEmpty()) {
-            return selfRegister(run, tl.getTeams().get(0)); //, myAccount
-        }
-        Team team = td.createTeam(run.getRunId(), null, "default");
-        return selfRegister(run,  team,myAccount); //myAccount,
-    }
     private Run selfRegister(Run run, Team team, EnhancedUser myAccount) { //, String myAccount
-        UsersDelegator ud = new UsersDelegator(this);
+        UsersDelegator ud = new UsersDelegator();
 
         User u = new User();
         u.setRunId(run.getRunId());
@@ -481,6 +306,55 @@ public class RunDelegator extends GoogleDelegator {
 
         return run;
     }
+
+
+
+//    public Run selfRegister(Long runId) {
+//        UsersDelegator qu = new UsersDelegator();
+//        String myAccount = qu.getCurrentUserAccount();
+//
+//
+//        Run r = RunManager.getRun(runId);
+//        if (r != null) { //&& runList.get(0).getTagId() != null
+//            return selfRegister(r);
+//        } else {
+//            Run run = new Run();
+//            run.setError("No run with runId " + runId + " exists");
+//            return run;
+//        }
+//    }
+
+    public Run selfRegister(Long runId, EnhancedUser enhancedUser) throws ForbiddenException {
+        Run r = RunManager.getRun(runId);
+        if (r != null) {
+            if (r.getRunConfig()== null || !r.getRunConfig().getSelfRegistration()) {
+                throw new ForbiddenException("self registration is not possible");
+            }
+            return selfRegister(r, enhancedUser);
+        } else {
+            System.out.println("No run with runId " + runId + " exists");
+            Run run = new Run();
+            run.setError("No run with runId " + runId + " exists");
+            return run;
+        }
+    }
+
+
+    private Run selfRegister(Run run, EnhancedUser myAccount) { //, String myAccount
+        TeamsDelegator td = new TeamsDelegator();
+        TeamList tl = td.getTeams(run.getRunId());
+        for (Team team : tl.getTeams()) {
+            if ("default".equals(team.getName())) {
+                return selfRegister(run, team, myAccount); //, myAccount
+            }
+        }
+        if (!tl.getTeams().isEmpty()) {
+            return selfRegister(run, tl.getTeams().get(0), myAccount); //, myAccount
+        }
+        Team team = td.createTeam(run.getRunId(), null, "default");
+        return selfRegister(run,  team,myAccount); //myAccount,
+    }
+
 
     public RunList getRuns(String resumptionToken, long gameId, int provider, String localId) {
         RunList runList = new RunList();

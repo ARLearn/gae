@@ -195,13 +195,13 @@ public class ContactManager {
 		return returnList;
 	}
 
-	public static AccountList pendingInvitations(Account myAccount) {
+	public static AccountList pendingInvitations(int accountType, String localId) {
 		AccountList returnList = new AccountList();
 
 		Query q = new Query(ContactEntity.KIND);//.setKeysOnly();
 		Query.CompositeFilter accountFilter = Query.CompositeFilterOperator.and(
-				new Query.FilterPredicate(ContactEntity.COL_FROMACCOUNTTYPE, Query.FilterOperator.EQUAL, myAccount.getAccountType()),
-				new Query.FilterPredicate(ContactEntity.COL_FROMLOCALID, Query.FilterOperator.EQUAL, myAccount.getLocalId()),
+				new Query.FilterPredicate(ContactEntity.COL_FROMACCOUNTTYPE, Query.FilterOperator.EQUAL, accountType),
+				new Query.FilterPredicate(ContactEntity.COL_FROMLOCALID, Query.FilterOperator.EQUAL, localId),
 				new Query.FilterPredicate(ContactEntity.COL_STATUS, Query.FilterOperator.EQUAL, ContactEntity.PENDING)
 		);
 

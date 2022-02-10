@@ -1,24 +1,25 @@
-/*******************************************************************************
- * Copyright (C) 2013 Open Universiteit Nederland
- *
- * This library is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Contributors: Stefaan Ternier
- ******************************************************************************/
+/******************************************************************************
+ Copyright (C) 2013 Open Universiteit Nederland
+
+ This library is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library.  If not, see <http://www.gnu.org/licenses/>.
+
+ Contributors: Stefaan Ternier
+ */
 package org.celstec.arlearn2.beans.account;
 
 
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.celstec.arlearn2.beans.Bean;
@@ -48,6 +49,7 @@ public class Account extends Bean {
     private String givenName;
     private String familyName;
     private String label;
+    private String claims;
     private String picture;
     private Integer accountLevel;
     private Long expirationDate;
@@ -60,6 +62,7 @@ public class Account extends Bean {
 
     private Boolean allowTrackLocation;
     private Long lastModificationDate;
+    private Long lastLoginDate;
 
     public String getFirebaseId() {
         return firebaseId;
@@ -159,6 +162,22 @@ public class Account extends Bean {
         this.label = label;
     }
 
+    public String getClaims() {
+        return claims;
+    }
+
+    public void setClaims(String claims) {
+        this.claims = claims;
+    }
+
+    public void setClaimsFromMap(Map<String, Object> claimsMap) {
+        this.claims = "";
+        if (claimsMap == null) {
+            return;
+        }
+        claimsMap.forEach((key, value) -> this.claims += key + ",");
+    }
+
     public Long getExpirationDate() {
         return expirationDate;
     }
@@ -240,6 +259,14 @@ public class Account extends Bean {
         this.lastModificationDate = lastModificationDate;
     }
 
+    public Long getLastLoginDate() {
+        return lastLoginDate;
+    }
+
+    public void setLastLoginDate(Long lastLoginDate) {
+        this.lastLoginDate = lastLoginDate;
+    }
+
     @Override
     public boolean equals(Object obj) {
         Account other = (Account) obj;
@@ -281,11 +308,14 @@ public class Account extends Bean {
             if (object.has("name")) bean.setName(object.getString("name"));
             if (object.has("givenName")) bean.setGivenName(object.getString("givenName"));
             if (object.has("familyName")) bean.setFamilyName(object.getString("familyName"));
-            if (object.has("label")) bean.setFamilyName(object.getString("label"));
+            if (object.has("label")) bean.setLabel(object.getString("label"));
+            if (object.has("claims")) bean.setClaims(object.getString("claims"));
             if (object.has("picture")) bean.setPicture(object.getString("picture"));
             if (object.has("accountLevel")) bean.setAccountLevel(object.getInt("accountLevel"));
             if (object.has("allowTrackLocation")) bean.setAllowTrackLocation(object.getBoolean("allowTrackLocation"));
             if (object.has("expirationDate")) bean.setExpirationDate(object.getLong("expirationDate"));
+            if (object.has("lastModificationDate")) bean.setLastModificationDate(object.getLong("lastModificationDate"));
+            if (object.has("lastLoginDate")) bean.setLastLoginDate(object.getLong("lastLoginDate"));
             if (object.has("organisationId")) bean.setOrganisationId(object.getLong("organisationId"));
             if (object.has("advanced")) bean.setAdvanced(object.getBoolean("advanced"));
             if (object.has("admin")) bean.setAdmin(object.getBoolean("admin"));
@@ -315,6 +345,7 @@ public class Account extends Bean {
                 if (accountBean.getGivenName() != null) returnObject.put("givenName", accountBean.getGivenName());
                 if (accountBean.getFamilyName() != null) returnObject.put("familyName", accountBean.getFamilyName());
                 if (accountBean.getLabel() != null) returnObject.put("label", accountBean.getLabel());
+                if (accountBean.getClaims() != null) returnObject.put("claims", accountBean.getClaims());
                 if (accountBean.getPicture() != null) returnObject.put("picture", accountBean.getPicture());
                 if (accountBean.getAccountLevel() != null)
                     returnObject.put("accountLevel", accountBean.getAccountLevel());
@@ -322,6 +353,10 @@ public class Account extends Bean {
                     returnObject.put("allowTrackLocation", accountBean.getAllowTrackLocation());
                 if (accountBean.getExpirationDate() != null)
                     returnObject.put("expirationDate", accountBean.getExpirationDate());
+                if (accountBean.getLastModificationDate() != null)
+                    returnObject.put("lastModificationDate", accountBean.getLastModificationDate());
+                if (accountBean.getLastLoginDate() != null)
+                    returnObject.put("lastLoginDate", accountBean.getLastLoginDate());
                 if (accountBean.getOrganisationId() != null)
                     returnObject.put("organisationId", accountBean.getOrganisationId());
                 if (accountBean.getAdvanced() != null)

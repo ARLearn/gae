@@ -19,31 +19,19 @@
 package org.celstec.arlearn2.delegators;
 
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.search.*;
 import org.celstec.arlearn2.beans.Bean;
-import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.dependencies.Dependency;
-import org.celstec.arlearn2.beans.game.Game;
-import org.celstec.arlearn2.beans.game.GameAccess;
-import org.celstec.arlearn2.beans.game.GameFile;
-import org.celstec.arlearn2.beans.generalItem.*;
-import org.celstec.arlearn2.beans.generalItem.AudioObject;
-import org.celstec.arlearn2.beans.generalItem.FileReference;
 import org.celstec.arlearn2.beans.generalItem.GeneralItem;
-import org.celstec.arlearn2.beans.generalItem.NarratorItem;
-import org.celstec.arlearn2.beans.generalItem.VideoObject;
-import org.celstec.arlearn2.beans.notification.GeneralItemModification;
+import org.celstec.arlearn2.beans.generalItem.GeneralItemList;
 import org.celstec.arlearn2.beans.run.Action;
 import org.celstec.arlearn2.beans.run.ActionList;
 import org.celstec.arlearn2.beans.run.Run;
 import org.celstec.arlearn2.beans.run.User;
 import org.celstec.arlearn2.cache.GeneralitemsCache;
 import org.celstec.arlearn2.cache.VisibleGeneralItemsCache;
-import org.celstec.arlearn2.jdo.manager.*;
+import org.celstec.arlearn2.jdo.manager.GeneralItemManager;
+import org.celstec.arlearn2.jdo.manager.GeneralItemVisibilityManager;
 import org.celstec.arlearn2.tasks.beans.GeneralItemSearchIndex;
-import org.celstec.arlearn2.tasks.beans.GenericBean;
-import org.celstec.arlearn2.tasks.beans.NotifyRunsFromGame;
-//import org.htmlparser.util.Translate;
 
 import java.util.*;
 
@@ -53,34 +41,11 @@ public class GeneralItemDelegator extends DependencyDelegator {
         super();
     }
 
-    public GeneralItemDelegator(GenericBean bean) {
-        super(bean);
-    }
-
-    public GeneralItemDelegator(String authToken) {
-        super(authToken);
-    }
-
-    public GeneralItemDelegator(GoogleDelegator gd) {
-        super(gd);
-    }
-
-    public GeneralItemDelegator(Account account, String token) {
-        super(account, token);
-    }
-
     public GeneralItem createGeneralItem(GeneralItem gi) {
-//        if (gi.getDescription() != null)
-//            gi.setDescription(Translate.decode(gi.getDescription()).replaceAll("\\<.*?>", ""));
         GeneralitemsCache.getInstance().removeGeneralItemList(gi.getGameId());
         gi.setDeleted(false);
-//        updateContentUrls(gi);
         Key key = GeneralItemManager.addGeneralItem(gi); //sets bean itemId as a side effect
-        UsersDelegator qu = new UsersDelegator(this);
 
-//        XapiManager.addNewGeneralItemStatement(qu.getCurrentUserAccount(), gi);
-//        (new NotifyRunsFromGame(authToken, gi.getGameId(), gi, GeneralItemModification.CREATED)).scheduleTask();
-//        broadcastGameUpdate(gi.getGameId(), gi.getId());
         GeneralItemSearchIndex.scheduleGiTask(gi);
         if (gi.getDependsOn() != null) {
             GeneralItemVisibilityManager.delete(null, gi.getId(), null, null);
@@ -88,104 +53,10 @@ public class GeneralItemDelegator extends DependencyDelegator {
         return GeneralItemManager.getGeneralItem(key);
     }
 
-    public void broadcastGameUpdate(long gameId, long itemId) { //todo optimize through cache
-//        GeneralItemModification gim = new GeneralItemModification();
-//        gim.setGameId(gameId);
-//        gim.setItemId(itemId);
-//        gim.setModificationType(GeneralItemModification.ALTERED);
-//        for (GameAccess ga : GameAccessManager.getGameList(gameId)) {
-//            new NotificationDelegator(this).broadcast(gim, ga.getAccount());
-//        }
-    }
-
-    private void updateContentUrls(GeneralItem gi) {
-        if (gi.getType().equals(VideoObject.class.getName())) {
-            VideoObject videoObject = (VideoObject) gi;
-            String feedUrl = videoObject.getVideoFeed();
-            videoObject.setVideoFeed(updateContentUrl(feedUrl, gi.getGameId(), gi.getId()));
-        } else if (gi.getType().equals(AudioObject.class.getName())) {
-            AudioObject audioObject = (AudioObject) gi;
-            audioObject.setAudioFeed(updateContentUrl(audioObject.getAudioFeed(), gi.getGameId(), gi.getId()));
-        } else if (gi.getType().equals(PureAudio.class.getName())) {
-            PureAudio pureAudio = (PureAudio) gi;
-            pureAudio.setAudioFeed(updateContentUrl(pureAudio.getAudioFeed(), gi.getGameId(), gi.getId()));
-            pureAudio.setImageUrl(updateContentUrl(pureAudio.getImageUrl(), gi.getGameId(), gi.getId()));
-
-        }
-
-    }
-
-    public String updateContentUrl(String feedUrl, Long newGameId, Long newItemId) {
-        if (feedUrl.startsWith("http://streetlearn.appspot.com/game/")) {
-            String prefix = feedUrl.substring(0, feedUrl.indexOf("game/") + 5);
-            String gameIdString = feedUrl.substring(feedUrl.indexOf("game/") + 5);
-            String oldFilePath = gameIdString.substring(gameIdString.indexOf("/"));
-            gameIdString = gameIdString.substring(0, gameIdString.indexOf("/"));
-
-            String giIdString = feedUrl.substring(feedUrl.indexOf("generalItems/") + 13);
-            giIdString = giIdString.substring(0, giIdString.indexOf("/"));
-
-            if (!giIdString.equals(newItemId + "") || !gameIdString.equals(newGameId + "")) {
-
-                String newFilePath = oldFilePath.replace(giIdString, newItemId + "");
-                newFilePath = newFilePath.replace(gameIdString, newGameId + "");
-                if (FilePathManager.clone(Long.parseLong(gameIdString), newGameId, oldFilePath, newFilePath)) {
-                    return prefix + newGameId + newFilePath;
-
-                }
-
-            }
-        }
-        return feedUrl;
-    }
-
-
-    public GeneralItem createDummyItem(Long gameId) {
-        NarratorItem item = new NarratorItem();
-        item.setName("dummy");
-        item.setDeleted(true);
-        item.setGameId(gameId);
-        GeneralItemManager.addGeneralItem(item);
-        return item;
-    }
-
     public void deleteGeneralItems(long gameId) {
         GeneralItemManager.deleteGeneralItem(gameId);
         GeneralitemsCache.getInstance().removeGeneralItemList(gameId);
     }
-
-//    public GeneralItem deleteGeneralItem(long gameId, String itemId) {
-//        UsersDelegator qu = new UsersDelegator(this);
-//        String myAccount = qu.getCurrentUserAccount();
-//        GeneralItem gi = getGeneralItemForGame(gameId, Long.parseLong(itemId));
-//
-//        if (myAccount.contains(":")) {
-//            GameAccessDelegator gad = new GameAccessDelegator(this);
-//            if (!gad.canEdit(myAccount, gi.getGameId())) {
-//                gi = new GeneralItem();
-//                gi.setError("You are not the owner of this game");
-//                return gi;
-//            }
-//        } else {
-//            //TODO this part is deprecated
-//            GameDelegator gd = new GameDelegator(this);
-//            Game g = gd.getGame(gi.getGameId());
-//            if (!g.getOwner().equals(myAccount)) {
-//                gi = new GeneralItem();
-//                gi.setError("You are not the owner of this game");
-//                return gi;
-//            }
-//        }
-//        deleteFilePath(gameId, gi);
-//        gi = GeneralItemManager.setStatusDeleted(gameId, itemId);
-//        GeneralitemsCache.getInstance().removeGeneralItemList(gameId);
-//
-//        (new NotifyRunsFromGame(authToken, gi.getGameId(), gi, GeneralItemModification.DELETED)).scheduleTask();
-////        (new RemoveDeleteGiFromDependencies(authToken, gi.getGameId(), gi.getId())).scheduleTask();
-//        broadcastGameUpdate(gi.getGameId(), gi.getId());
-//
-//        return gi;
-//    }
 
 
     public GeneralItem deleteGeneralItemNew(long gameId, Long itemId, String myAccount) {
@@ -193,7 +64,7 @@ public class GeneralItemDelegator extends DependencyDelegator {
         GeneralItem gi = getGeneralItemForGame(gameId, itemId);
 
         if (myAccount.contains(":")) {
-            GameAccessDelegator gad = new GameAccessDelegator(this);
+            GameAccessDelegator gad = new GameAccessDelegator();
 
             if (gi == null) {
                 GeneralitemsCache.getInstance().removeGeneralItemList(gameId);
@@ -211,30 +82,6 @@ public class GeneralItemDelegator extends DependencyDelegator {
         return gi;
     }
 
-
-    private void deleteFilePath(long gameId, GeneralItem gi) {
-
-
-        if (gi.getType().equals(VideoObject.class.getName())) {
-            FilePathManager.deleteFilePath(gameId, "/generalItems/" + gi.getId() + "/video");
-        } else if (gi.getType().equals(AudioObject.class.getName())) {
-            FilePathManager.deleteFilePath(gameId, "/generalItems/" + gi.getId() + "/audio");
-        }
-    }
-
-    public GameFile deleteFilePath(long gameId, String path) {
-        UsersDelegator qu = new UsersDelegator(this);
-        String myAccount = qu.getCurrentUserAccount();
-        if (myAccount.contains(":")) {
-            GameAccessDelegator gad = new GameAccessDelegator(this);
-            if (!gad.canEdit(myAccount, gameId)) {
-                GameFile gameFile = new GameFile();
-                gameFile.setError("You are not the owner of this game");
-                return gameFile;
-            }
-        }
-        return FilePathManager.deleteFilePath(gameId, path);
-    }
 
     public GeneralItemList getGeneralItems(Long gameId) {
         GeneralItemList gil = GeneralitemsCache.getInstance().getGeneralitems(gameId, null, null);
@@ -260,13 +107,13 @@ public class GeneralItemDelegator extends DependencyDelegator {
     }
 
     public GeneralItemList getAllGeneralItems(Long runIdentifier) {
-        RunDelegator qr = new RunDelegator(this);
+        RunDelegator qr = new RunDelegator();
         Run run = qr.getRun(runIdentifier);
         return getGeneralItems(run.getGameId());
     }
 
     public GeneralItemList getGeneralItemsRun(Long runIdentifier) {
-        RunDelegator qr = new RunDelegator(this);
+        RunDelegator qr = new RunDelegator();
         Run run = qr.getRun(runIdentifier);
         if (run == null) {
             GeneralItemList il = new GeneralItemList();
@@ -278,21 +125,7 @@ public class GeneralItemDelegator extends DependencyDelegator {
 
         List<GeneralItem> gl = returnItemList.getGeneralItems();
         long runDuration = (qr).getRunDuration(runIdentifier);
-        // for (int i = gl.size() - 1; i >= 0; i--) {
-        // if (gl.get(i).getShowAtTimeStamp() != null &&
-        // gl.get(i).getShowAtTimeStamp() > runDuration) {
-        // gl.remove(i);
-        // continue;
-        // }
-        // }
         return returnItemList;
-    }
-
-    public GeneralItem getGeneralItem(Long runIdentifier, Long generalItemId) {
-        // TODO:better do a DB query by id
-        RunDelegator rd = new RunDelegator(this);
-        Run run = rd.getRun(runIdentifier);
-        return getGeneralItemForGame(run.getGameId(), generalItemId);
     }
 
     public GeneralItem getGeneralItem(Long generalItemId) {
@@ -301,7 +134,6 @@ public class GeneralItemDelegator extends DependencyDelegator {
     }
 
     public GeneralItem getGeneralItemForGame(Long gameId, Long generalItemId) {
-        // TODO:better do a DB query by id
 
         GeneralItem returnItem = GeneralItemManager.getGeneralItem(generalItemId);
         if (returnItem == null) {
@@ -312,42 +144,14 @@ public class GeneralItemDelegator extends DependencyDelegator {
         }
 
         return null;
-//        GeneralItemList returnItemList = getGeneralItems(gameId);
-//        List<GeneralItem> gl = returnItemList.getGeneralItems();
-//        for (int i = gl.size() - 1; i >= 0; i--) {
-//            if (gl.get(i).getId().equals(generalItemId)) {
-//                return gl.get(i);
-//            }
-//        }
-//        return null;
     }
 
-    @Deprecated
-    public GeneralItemList getNonPickableItemsAll(Long runIdentifier) {
-        RunDelegator qr = new RunDelegator(this);
-        Run run = qr.getRun(runIdentifier);
-        // TODO run does not exist: return a proper exception
-        return getGeneralItems(run.getGameId());
-    }
-
-    @Deprecated
-    public GeneralItemList getNonPickableItems(Long runIdentifier, String userIdentifier) {
-        GeneralItemList returnItemList = getGeneralItemsRun(runIdentifier);
-        List<GeneralItem> gl = returnItemList.getGeneralItems();
-        for (int i = gl.size() - 1; i >= 0; i--) {
-            if (gl.get(i) instanceof PickupItem) {
-                gl.remove(i);
-                continue;
-            }
-        }
-        return returnItemList;
-    }
 
     public GeneralItemList getItems(Long runIdentifier, String userIdentifier, Integer status) {
         GeneralItemList gil = VisibleGeneralItemsCache.getInstance().getVisibleGeneralitems(runIdentifier, userIdentifier, status);
         if (gil == null) {
             gil = new GeneralItemList();
-            RunDelegator qr = new RunDelegator(this);
+            RunDelegator qr = new RunDelegator();
             Run run = qr.getRun(runIdentifier);
             if (run == null) {
                 GeneralItemList il = new GeneralItemList();
@@ -382,9 +186,9 @@ public class GeneralItemDelegator extends DependencyDelegator {
         if (u == null) {
             return;
         }
-        ActionDelegator qa = new ActionDelegator(this);
+        ActionDelegator qa = new ActionDelegator();
         ActionList al = qa.getActionList(runId);
-        GeneralItemDelegator gid = new GeneralItemDelegator(this);
+        GeneralItemDelegator gid = new GeneralItemDelegator();
         GeneralItemList visableGIs = gid.getItems(runId, u.getFullId(), GeneralItemVisibilityManager.VISIBLE_STATUS);
         GeneralItemList disappearedGIs = gid.getItems(runId, u.getFullId(), GeneralItemVisibilityManager.DISAPPEARED_STATUS);
 
@@ -401,20 +205,14 @@ public class GeneralItemDelegator extends DependencyDelegator {
             GeneralItem generalItem = (GeneralItem) it.next();
             long visAt;
             if (influencedByAppear(generalItem, action) && (visAt = isVisible(generalItem, al, u)) != -1 && itemMatchesUserRoles(generalItem, u.getRoles()) && (generalItem.getDeleted() == null || !generalItem.getDeleted())) {
-                GeneralItemModification gim = new GeneralItemModification();
-                gim.setModificationType(GeneralItemModification.VISIBLE);
-                gim.setRunId(runId);
-                gim.setGameId(generalItem.getGameId());
-//				gim.setGeneralItem(generalItem);
-                gim.setItemId(generalItem.getId());
+//                GeneralItemModification gim = new GeneralItemModification();
+//                gim.setModificationType(GeneralItemModification.VISIBLE);
+//                gim.setRunId(runId);
+//                gim.setGameId(generalItem.getGameId());
+////				gim.setGeneralItem(generalItem);
+//                gim.setItemId(generalItem.getId());
                 generalItem.setVisibleAt(visAt);
                 GeneralItemVisibilityManager.setItemVisible(generalItem.getId(), runId, u.getFullId(), GeneralItemVisibilityManager.VISIBLE_STATUS, visAt);
-
-//                GeneralItem giBroadcast = new GeneralItem();
-//                giBroadcast.setId(generalItem.getId());
-//                giBroadcast.setGameId(generalItem.getGameId());
-//                giBroadcast.se
-                new NotificationDelegator(this).broadcast(gim, u.getFullId());
 
             }
 
@@ -422,23 +220,19 @@ public class GeneralItemDelegator extends DependencyDelegator {
         List<GeneralItem> notDisappearedItems = getNotDisappearedItems(getAllGeneralItems(runId), disappearedGIs);
         it = notDisappearedItems.iterator();
         while (it.hasNext()) {
-            GeneralItem generalItem = (GeneralItem) it.next();
+            GeneralItem generalItem = it.next();
             long disAt;
             if (influencedByDisappear(generalItem, action) && (disAt = hasDisappeared(generalItem, al, u)) != -1) {
-                GeneralItemModification gim = new GeneralItemModification();
-                gim.setModificationType(GeneralItemModification.DISAPPEARED);
-                gim.setRunId(runId);
-                gim.setGameId(generalItem.getGameId());
-                gim.setItemId(generalItem.getId());
-//				gim.setGeneralItem(generalItem);
+//                GeneralItemModification gim = new GeneralItemModification();
+//                gim.setModificationType(GeneralItemModification.DISAPPEARED);
+//                gim.setRunId(runId);
+//                gim.setGameId(generalItem.getGameId());
+//                gim.setItemId(generalItem.getId());
+////				gim.setGeneralItem(generalItem);
                 generalItem.setDisappearAt(disAt);
-
                 GeneralItemVisibilityManager.setItemVisible(generalItem.getId(), runId, u.getFullId(), GeneralItemVisibilityManager.DISAPPEARED_STATUS, disAt);
 
-//                GeneralItem giBroadcast = new GeneralItem();
-//                giBroadcast.setId(generalItem.getId());
-//                giBroadcast.setGameId(generalItem.getGameId());
-                new NotificationDelegator(this).broadcast(gim, u.getFullId());
+
             }
         }
     }
@@ -468,21 +262,21 @@ public class GeneralItemDelegator extends DependencyDelegator {
     private boolean influencedByAppear(GeneralItem gi, Action action) {
         boolean result = false;
         if (gi.getDependsOn() != null)
-            result = result || influencedBy(gi.getDependsOn(), action);
+            result = influencedBy(gi.getDependsOn(), action);
         return result;
     }
 
     private boolean influencedByDisappear(GeneralItem gi, Action action) {
         boolean result = false;
         if (gi.getDisappearOn() != null)
-            result = result || influencedBy(gi.getDisappearOn(), action);
+            result = influencedBy(gi.getDisappearOn(), action);
         return result;
     }
 
     public long isVisible(GeneralItem gi, ActionList al, User u) {
         if (gi.getDependsOn() == null)
-            return 0l;
-        UsersDelegator ud = new UsersDelegator(this);
+            return 0L;
+        UsersDelegator ud = new UsersDelegator();
         HashMap<String, User> uMap = ud.getUserMap(u.getRunId());
         Dependency dep = gi.getDependsOn();
         return checkActions(dep, al, u, uMap);
@@ -492,19 +286,18 @@ public class GeneralItemDelegator extends DependencyDelegator {
     public long hasDisappeared(GeneralItem gi, ActionList al, User u) {
         Dependency dep = gi.getDisappearOn();
         if (dep == null)
-            return 0l;
-        UsersDelegator ud = new UsersDelegator(this);
+            return 0L;
+        UsersDelegator ud = new UsersDelegator();
         HashMap<String, User> uMap = ud.getUserMap(u.getRunId());
         return checkActions(dep, al, u, uMap);
 
     }
 
     public List<GeneralItem> getNonVisibleItems(GeneralItemList allItems, GeneralItemList filterAway) {
-        List<GeneralItem> returnItems = new ArrayList();
+        ArrayList returnItems = new ArrayList();
         long currentTime = System.currentTimeMillis();
         HashSet<Long> idsToRemove = new HashSet<Long>();
-        for (Iterator iterator = filterAway.getGeneralItems().iterator(); iterator.hasNext(); ) {
-            GeneralItem generalItem = (GeneralItem) iterator.next();
+        for (GeneralItem generalItem : filterAway.getGeneralItems()) {
             if (generalItem.getVisibleAt() == null) {
                 idsToRemove.add(generalItem.getId());
             } else if (generalItem.getVisibleAt() < currentTime) {
@@ -522,11 +315,10 @@ public class GeneralItemDelegator extends DependencyDelegator {
     }
 
     public List<GeneralItem> getNotDisappearedItems(GeneralItemList allItems, GeneralItemList filterAway) {
-        List<GeneralItem> returnItems = new ArrayList();
+        ArrayList returnItems = new ArrayList();
         long currentTime = System.currentTimeMillis();
         HashSet<Long> idsToRemove = new HashSet<Long>();
-        for (Iterator iterator = filterAway.getGeneralItems().iterator(); iterator.hasNext(); ) {
-            GeneralItem generalItem = (GeneralItem) iterator.next();
+        for (GeneralItem generalItem : filterAway.getGeneralItems()) {
             if (generalItem.getDisappearAt() == null) {
                 idsToRemove.add(generalItem.getId());
             } else if (generalItem.getDisappearAt() < currentTime) {
@@ -543,25 +335,4 @@ public class GeneralItemDelegator extends DependencyDelegator {
 
     }
 
-    public GeneralItemList search(String searchQuery) {
-        return null;
-    }
-
-    public Index getIndex() {
-        IndexSpec indexSpec = IndexSpec.newBuilder().setName("generalItem_index").build();
-        return SearchServiceFactory.getSearchService().getIndex(indexSpec);
-    }
-
-
-    public GeneralItemList cleanUpFilePaths(Long gameIdentifier) {
-        GeneralItemList list = new GeneralItemList();
-        for (GeneralItem gi : GeneralItemManager.getGeneralitemsFromUntil(gameIdentifier, 0l, System.currentTimeMillis())) {
-            if (gi.isDeleted()) {
-                FilePathManager.deleteFilePath(gameIdentifier, "/generalItems/" + gi.getId() + "/video");
-                FilePathManager.deleteFilePath(gameIdentifier, "/generalItems/" + gi.getId() + "/audio");
-                list.addGeneralItem(gi);
-            }
-        }
-        return list;
-    }
 }

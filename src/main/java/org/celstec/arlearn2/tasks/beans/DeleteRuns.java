@@ -18,7 +18,6 @@
  ******************************************************************************/
 package org.celstec.arlearn2.tasks.beans;
 
-import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.delegators.RunDelegator;
 
 
@@ -31,8 +30,8 @@ public class DeleteRuns extends GenericBean {
 		super();
 	}
 	
-	public DeleteRuns(String token, Account account, Long gameId, String userEmail) {
-		super(token, account);
+	public DeleteRuns(Long gameId, String userEmail) {
+		super();
 		this.gameId = gameId;
 		this.userEmail = userEmail;
 	}
@@ -56,11 +55,8 @@ public class DeleteRuns extends GenericBean {
 	@Override
 	public void run() {
 		RunDelegator rd;
-            rd =new RunDelegator(getAccountBean(), getToken());
-//			rd = new RunDelegator("auth=" + getToken());
+            rd =new RunDelegator();
 			rd.deleteRuns(getGameId(),getUserEmail());
-
-		
 	}
 
 }

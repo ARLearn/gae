@@ -31,8 +31,8 @@ public class DeleteTeams extends GenericBean {
 		super();
 	}
 
-	public DeleteTeams(String token, Account account,Long runId, String teamId) {
-		super(token, account);
+	public DeleteTeams( Long runId, String teamId) {
+		super();
 		this.runId = runId;
 		this.teamId = teamId;
 	}
@@ -55,7 +55,7 @@ public class DeleteTeams extends GenericBean {
 
 	@Override
 	public void run() {
-			TeamsDelegator td = new TeamsDelegator(getToken());
+			TeamsDelegator td = new TeamsDelegator();
 			if (getRunId() != null) {
 				td.deleteTeam(getRunId());
 			}

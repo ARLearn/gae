@@ -19,74 +19,45 @@
 package org.celstec.arlearn2.delegators;
 
 import org.celstec.arlearn2.beans.account.Account;
-import org.celstec.arlearn2.beans.notification.RunModification;
 import org.celstec.arlearn2.beans.run.*;
-import org.celstec.arlearn2.cache.UserLoggedInCache;
 import org.celstec.arlearn2.cache.UsersCache;
-import org.celstec.arlearn2.delegators.notification.NotificationEngine;
-import org.celstec.arlearn2.endpoints.util.EnhancedUser;
-import org.celstec.arlearn2.jdo.UserLoggedInManager;
-import org.celstec.arlearn2.jdo.manager.AccountManager;
 import org.celstec.arlearn2.jdo.manager.UserManager;
-import org.celstec.arlearn2.tasks.beans.*;
+import org.celstec.arlearn2.tasks.beans.DeleteActions;
+import org.celstec.arlearn2.tasks.beans.DeleteResponses;
+import org.celstec.arlearn2.tasks.beans.UpdateGeneralItemsVisibility;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 
-public class UsersDelegator extends GoogleDelegator {
+public class UsersDelegator {
 
     public UsersDelegator() {
-        super();
+
     }
 
-    public UsersDelegator(String authtoken) {
-        super(authtoken);
-    }
-
-    public UsersDelegator(GoogleDelegator gd) {
-        super(gd);
-    }
-
-    public UsersDelegator(EnhancedUser user) {
-        super(user);
-    }
-
-    public UsersDelegator(Account account, String token) {
-        super(account, token);
-    }
+//    public UsersDelegator(EnhancedUser user) {
+//        super(user);
+//    }
+//
+//    public UsersDelegator(Account account, String token) {
+//        super(account, token);
+//    }
 
     public User createUser(User u) {
         User check = checkUser(u);
         if (check != null)
             return check;
-        Run run = (new RunDelegator(this)).getRun(u.getRunId());
+        Run run = (new RunDelegator()).getRun(u.getRunId());
 
         u.setEmail(u.getAccountType() + ":" + u.getLocalId());
         u.setGameId(run.getGameId());
         UserManager.addUser(u);
         UsersCache.getInstance().removeUser(u.getRunId()); // removing because
-        // user might be
-        // cached in a team
-        // (new NotifyUpdateRun(authToken,u.getRunId(), true, false,
-        // u.getEmail())).scheduleTask();
 
-        RunModification rm = new RunModification();
-        rm.setModificationType(RunModification.CREATED);
-        rm.setRun(run);
-//		NotificationEngine.getInstance().notify(u.getEmail(), rm);
-//        new NotificationDelegator(this).broadcast(run, u.getFullId());
-//        if (this.account != null) {
-//            new NotificationDelegator(this).broadcast(u, u.getFullId());
-//        }
-        (new UpdateGeneralItemsVisibility(authToken, this.account, u.getRunId(), u.getEmail(), 1)).scheduleTask();
+        (new UpdateGeneralItemsVisibility(u.getRunId(), u.getEmail(), 1)).scheduleTask();
 
-        //todo update when variables are again used
-//        (new UpdateVariableInstancesForUser(authToken, this.account, u.getFullId(), u.getRunId(), run.getGameId(), 1)).scheduleTask();
-//        (new UpdateVariableEffectInstancesForUser(authToken, this.account, u.getFullId(), u.getRunId(), run.getGameId(), 1)).scheduleTask();
-
-        AccountDelegator ad = new AccountDelegator(this);
+        AccountDelegator ad = new AccountDelegator();
         Account ac = ad.getContactDetails(u.getFullId());
 
         if (ac != null && ac.getError() == null) {
@@ -102,7 +73,7 @@ public class UsersDelegator extends GoogleDelegator {
             return u;
         }
         if (u.getTeamId() != null) {
-            TeamList tl = (new TeamsDelegator(this)).getTeams(u.getRunId());
+            TeamList tl = (new TeamsDelegator()).getTeams(u.getRunId());
             if (!tl.getTeams().isEmpty()) {
                 Team dbTeam = null;
                 for (Team t : tl.getTeams()) {
@@ -123,72 +94,16 @@ public class UsersDelegator extends GoogleDelegator {
         if (check != null)
             return check;
         UsersCache.getInstance().removeUser(u.getRunId()); // removing because
-        // user might be
-        // cached in a team
-//        u.setEmail(User.normalizeEmail(u.getEmail()));
 
         UserManager.hardDeleteUser(u.getRunId(), u.getEmail());
 
-        RunModification rm = new RunModification();
-        rm.setModificationType(RunModification.DELETED);
-        rm.setRun(run);
         UserManager.addUser(u);
 
-//		rm = new RunModification();
-//		rm.setModificationType(RunModification.CREATED);
-//		rm.setRun(run);
-//		ChannelNotificator.getInstance().notify(u.getEmail(), rm);
-        (new NotificationDelegator(this)).broadcast(u, u.getFullId());
         return u;
     }
 
-    public String getCurrentUserAccount() {
-        if (account != null) return account.getFullId();
-        String accountName = UserLoggedInCache.getInstance().getUser(this.authToken);
-        if (accountName == null) {
-            accountName = UserLoggedInManager.getUser(this.authToken);
-            if (accountName != null)
-                UserLoggedInCache.getInstance().putUser(this.authToken, accountName);
-        }
-        return accountName;
-    }
-
-    public Account getCurrentAccount() {
-        if (account != null) return account;
-        String accountName = UserLoggedInCache.getInstance().getUser(this.authToken);
-        if (accountName == null) {
-            accountName = UserLoggedInManager.getUser(this.authToken);
-
-
-        }
-        if (accountName != null) {
-            UserLoggedInCache.getInstance().putUser(this.authToken, accountName);
-            if (accountName.contains(":")) {
-                account = AccountManager.getAccount(accountName);
-            }
-        }
-        return account;
-    }
-
-    public Account getCurrentUserAccountObject() {
-        String accountName = getCurrentUserAccount();
-        if (accountName == null || !accountName.contains(":")) {
-            return null;
-        }
-        Account ac = new Account();
-        StringTokenizer st = new StringTokenizer(accountName, ":");
-        if (st.hasMoreTokens()) {
-            ac.setAccountType(Integer.parseInt(st.nextToken()));
-        }
-        if (st.hasMoreTokens()) {
-            ac.setLocalId(st.nextToken());
-        }
-        return ac;
-    }
-
-
     private void enrichListWithAccountInfo(List<User> users) {
-        AccountDelegator ad = new AccountDelegator(this);
+        AccountDelegator ad = new AccountDelegator();
         Iterator<User> it = users.iterator();
         while (it.hasNext()) {
             User u = it.next();
@@ -256,7 +171,6 @@ public class UsersDelegator extends GoogleDelegator {
     }
 
     public User getUserByEmail(Long runId, String fullId) {
-//        account = User.normalizeEmail(account); //TODO delete this line
         List<User> users = getUserList(runId, fullId);
         if (users.isEmpty())
             return null;
@@ -272,28 +186,16 @@ public class UsersDelegator extends GoogleDelegator {
     }
 
     public User deleteUser(Long runId, String fullId) {
-//        email = User.normalizeEmail(email);
         User user = getUserByEmail(runId, fullId);
-        // UserManager.deleteUser(runId, email);
+
         UserManager.setStatusDeleted(runId, fullId);
         UsersCache.getInstance().removeUser(runId); // removing because user
-        // might be cached in a team
-        (new DeleteActions(authToken, this.account, runId, fullId)).scheduleTask();
-        (new DeleteBlobs(authToken, this.account, runId, fullId)).scheduleTask();
-        (new DeleteResponses(authToken, this.account, runId, fullId)).scheduleTask();
-        (new UpdateGeneralItemsVisibility(authToken, this.account, runId, fullId, 2)).scheduleTask();
 
-        //update if used again
-//        (new UpdateVariableInstancesForUser(authToken, this.account, email, runId, null, 2)).scheduleTask();
-//        (new UpdateVariableEffectInstancesForUser(authToken, this.account, email, runId, null, 2)).scheduleTask();
 
-//        if (this.account != null) {
-//            // new bean is created, because apn can not handle large pieces of data
-//            User notificationUser = new User();
-//            notificationUser.setRunId(user.getRunId());
-//            notificationUser.setFullIdentifier(user.getFullId());
-//            new NotificationDelegator(this).broadcast(notificationUser, user.getFullId());
-//        }
+        (new DeleteActions(  runId, fullId)).scheduleTask();
+        (new DeleteResponses(runId, fullId)).scheduleTask();
+        (new UpdateGeneralItemsVisibility( runId, fullId, 2)).scheduleTask();
+
         return user;
     }
 
@@ -306,49 +208,11 @@ public class UsersDelegator extends GoogleDelegator {
 
     public void deleteUserByTeamId(Long runId, String teamId) {
         List<User> userList = getUserListByTeamId(runId, teamId);
-
         for (User u : userList) {
             UserManager.setStatusDeleted(runId, u.getEmail());
-//            notifyRunDeleted(runId, u.getEmail());
         }
         if (runId != null)
             UsersCache.getInstance().removeUser(runId);
     }
 
-    private void notifyRunDeleted(long runId, String email) {
-        RunModification rm = new RunModification();
-        rm.setModificationType(RunModification.DELETED);
-        rm.setRun(new Run());
-        rm.getRun().setRunId(runId);
-        NotificationEngine.getInstance().notify(email, rm);
-        new NotificationDelegator(this).broadcast(rm.getRun(), email);
-
-        // ChannelNotificator.getInstance().notify(email, rm);
-    }
-
-//    public void updateAllUsers() {
-//        UserManager.updateAll(this);
-//    }
-
-//	public static class Account {
-//		int type;
-//		String localId;
-//
-//		public int getType() {
-//			return type;
-//		}
-//
-//		public void setType(int type) {
-//			this.type = type;
-//		}
-//
-//		public String getLocalId() {
-//			return localId;
-//		}
-//
-//		public void setLocalId(String localId) {
-//			this.localId = localId;
-//		}
-//
-//	}
 }

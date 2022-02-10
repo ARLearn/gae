@@ -37,6 +37,7 @@ public class AccountEntity {
     public static String COL_GIVENNAME = "given_name";
     public static String COL_LABEL = "labels";
     public static String COL_LASTMODIFICATIONDATE = "lastModificationDate";
+    public static String COL_LASTLOGINDATE = "lastLoginDate";
     public static String COL_EXPIRATIONDATE = "expirationDate";
     public static String COL_ORGANISATIONID = "organisationId";
     public static String COL_ADMIN = "admin";
@@ -70,6 +71,7 @@ public class AccountEntity {
     private String picture;
     private String labels;
     private Long lastModificationDate;
+    private Long lastLoginDate;
     private Long expirationDate;
     private Long organisationId;
     private Boolean canPublishGames;
@@ -154,7 +156,15 @@ public class AccountEntity {
         this.lastModificationDate = lastModificationDate;
     }
 
-//    public Integer getAccountLevel() {
+    public Long getLastLoginDate() {
+        return lastLoginDate;
+    }
+
+    public void setLastLoginDate(Long lastLoginDate) {
+        this.lastLoginDate = lastLoginDate;
+    }
+
+    //    public Integer getAccountLevel() {
 //        return accountLevel;
 //    }
 //
@@ -262,6 +272,7 @@ public class AccountEntity {
         this.labels = (String) entity.getProperty(COL_LABEL);
         this.picture = (String) entity.getProperty(COL_PICTURE);
         this.lastModificationDate = (Long) entity.getProperty(COL_LASTMODIFICATIONDATE);
+        this.lastLoginDate = (Long) entity.getProperty(COL_LASTLOGINDATE);
         this.expirationDate = (Long) entity.getProperty(COL_EXPIRATIONDATE);
         this.organisationId = (Long) entity.getProperty(COL_ORGANISATIONID);
         this.advanced = (Boolean) entity.getProperty(COL_ADVANCED) == null ? false : (Boolean) entity.getProperty(COL_ADVANCED);
@@ -287,6 +298,7 @@ public class AccountEntity {
         result.setProperty(COL_LABEL, this.labels);
         result.setProperty(COL_PICTURE, this.picture);
         result.setProperty(COL_LASTMODIFICATIONDATE, this.lastModificationDate);
+        result.setProperty(COL_LASTLOGINDATE, this.lastLoginDate);
 //        result.setProperty(COL_ACCOUNTLEVEL, this.accountLevel);
         result.setProperty(COL_ALLOWTRACKLOCATION, this.allowTrackLocation);
         result.setProperty(COL_EXPIRATIONDATE, this.expirationDate);
@@ -319,7 +331,7 @@ public class AccountEntity {
         account.setSuspended(this.suspended);
         account.setAdmin(this.admin);
         account.setLastModificationDate(this.lastModificationDate);
-
+        account.setLastLoginDate(this.lastLoginDate);
         return account;
     }
 }

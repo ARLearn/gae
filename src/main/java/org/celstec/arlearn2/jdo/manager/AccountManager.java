@@ -1,18 +1,11 @@
 package org.celstec.arlearn2.jdo.manager;
 
-import javax.jdo.PersistenceManager;
-
 import com.google.appengine.api.datastore.*;
 import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.account.AccountList;
-import org.celstec.arlearn2.beans.generalItem.GeneralItem;
-import org.celstec.arlearn2.beans.run.User;
-import org.celstec.arlearn2.jdo.PMF;
+import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.classes.AccountEntity;
-import org.celstec.arlearn2.jdo.classes.GeneralItemEntity;
-import org.celstec.arlearn2.jdo.classes.OauthConfigurationEntity;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -132,15 +125,26 @@ public class AccountManager {
         return (getAccount(myAccount.getAccountType() + ":" + myAccount.getLocalId()));
     }
 
+    public static Account getAccount(EnhancedUser user) {
+        return (getAccount(user.getProvider() + ":" + user.getLocalId()));
+    }
+
     public static AccountEntity getAccount(int accountType, String localID)  {
         return getAccountEntity(accountType + ":" + localID);
     }
 
-    public static Account getAccount(String accountId) {
-            AccountEntity accountEntity = getAccountEntity(accountId);
-            if (accountEntity == null) return null;
-            return accountEntity.toAccount();
+    public static Account getAccount(String accountId, boolean resetLogin) {
+        AccountEntity accountEntity = getAccountEntity(accountId);
+        if (accountEntity == null) return null;
+        if (resetLogin) {
+            accountEntity.setLastLoginDate(System.currentTimeMillis());
+        }
+        datastore.put(accountEntity.toEntity());
+        return accountEntity.toAccount();
+    }
 
+    public static Account getAccount(String accountId) {
+            return getAccount(accountId, false);
     }
 
     public static AccountEntity getAccountEntity(String accountId){
@@ -207,6 +211,29 @@ public class AccountManager {
 //        }
         return itemsResult;
     }
+
+    //recentAccounts
+    public static AccountList recentAccounts(String cursorString) {
+        FetchOptions fetchOptions = FetchOptions.Builder.withLimit(25);
+        if (cursorString != null) {
+            fetchOptions.startCursor(Cursor.fromWebSafeString(cursorString));
+        }
+        AccountList itemsResult = new AccountList();
+        Query q = new Query(AccountEntity.KIND)
+                .addSort(AccountEntity.COL_LASTLOGINDATE, Query.SortDirection.DESCENDING);
+        PreparedQuery pq = datastore.prepare(q);
+
+
+        QueryResultList<Entity> results =pq.asQueryResultList(fetchOptions);
+        for (Entity result : results) {
+            itemsResult.addAccount(new AccountEntity(result).toAccount());
+        }
+        if (results.size() == 25) {
+            itemsResult.setResumptionToken(results.getCursor().toWebSafeString());
+        }
+        return itemsResult;
+    }
+
 
     public static Account queryViaEmail(String email) {
         AccountList itemsResult = new AccountList();
@@ -300,6 +327,10 @@ public class AccountManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void updateLastLogin(Account account) {
+
     }
 
 

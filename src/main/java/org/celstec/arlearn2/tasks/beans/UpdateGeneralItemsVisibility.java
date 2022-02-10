@@ -18,15 +18,14 @@
  ******************************************************************************/
 package org.celstec.arlearn2.tasks.beans;
 
-import java.util.logging.Logger;
-
-import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.generalItem.GeneralItem;
 import org.celstec.arlearn2.beans.generalItem.GeneralItemList;
 import org.celstec.arlearn2.beans.run.User;
 import org.celstec.arlearn2.delegators.GeneralItemDelegator;
 import org.celstec.arlearn2.delegators.UsersDelegator;
 import org.celstec.arlearn2.jdo.manager.GeneralItemVisibilityManager;
+
+import java.util.logging.Logger;
 
 public class UpdateGeneralItemsVisibility extends GenericBean{
 	
@@ -42,8 +41,8 @@ public class UpdateGeneralItemsVisibility extends GenericBean{
 
 	}
 	
-	public UpdateGeneralItemsVisibility(String token,  Account account,Long runId, String userEmail, Integer updateType) {
-		super(token, account);
+	public UpdateGeneralItemsVisibility( Long runId, String userEmail, Integer updateType) {
+		super();
 		this.runId = runId;
 		this.userEmail = userEmail;
 		this.updateType = updateType;
@@ -94,16 +93,12 @@ public class UpdateGeneralItemsVisibility extends GenericBean{
 	}
 
 	private void create() {
-		GeneralItemDelegator gid = null;
-					gid = new GeneralItemDelegator("auth=" + getToken());
-		UsersDelegator ud = new UsersDelegator(gid);
+		GeneralItemDelegator gid  = new GeneralItemDelegator();
+		UsersDelegator ud = new UsersDelegator();
 		User u = ud.getUserByEmail(getRunId(), getUserEmail());
 		GeneralItemList gil = gid.getGeneralItemsRun(getRunId());
         if (gil != null && gil.getGeneralItems() != null) {
 			for (GeneralItem gi: gil.getGeneralItems()) {
-
-
-
 				if (gi.getDependsOn() == null && GeneralItemDelegator.itemMatchesUserRoles(gi, u.getRoles()) && (gi.getDeleted() == null || !gi.getDeleted())) {
 					GeneralItemVisibilityManager.setItemVisible(gi.getId(), getRunId(), getUserEmail(), GeneralItemVisibilityManager.VISIBLE_STATUS, System.currentTimeMillis());
 				}

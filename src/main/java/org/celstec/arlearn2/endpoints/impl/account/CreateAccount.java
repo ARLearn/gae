@@ -1,16 +1,14 @@
 package org.celstec.arlearn2.endpoints.impl.account;
 
-import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.WriteResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.delegators.AccountDelegator;
 import org.celstec.arlearn2.endpoints.impl.portaluser.FirebaseAuthPersistence;
-import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.manager.AccountManager;
+
+import java.util.Map;
 
 public class CreateAccount {
 
@@ -31,15 +29,20 @@ public class CreateAccount {
                 .getInstance().createFirebaseUser(email, password, name);
 
         String fullId = "7:" + userRecord.getUid();
-        new AccountSearchIndex(fullId, userRecord.getDisplayName(), label, email, System.currentTimeMillis()+(365*24*3600000)).scheduleTask();
-        return AccountManager.overwriteAccount(userRecord.getUid(), userRecord.getUid(), 7,
+        Long expirationDate = System.currentTimeMillis()+(365*24*3600000);
+        new AccountSearchIndex(fullId, userRecord.getDisplayName(), label, email, expirationDate).scheduleTask();
+        Account account =  AccountManager.overwriteAccount(userRecord.getUid(), userRecord.getUid(), 7,
                 userRecord.getEmail().toLowerCase(),
                 userRecord.getDisplayName(),
                 null,
                 false,
-                -1l,
+                expirationDate,
                 label
         ).toAccount();
+
+        expirationCheck(account);
+
+        return account;
     }
 
     public Account updateUserWithoutAdmin(String uuid, String email, String name) {
@@ -59,16 +62,15 @@ public class CreateAccount {
     public Account updateAccount( Account account) throws FirebaseAuthException {
         FirebaseAuthPersistence.getInstance();
         if (account.getFirebaseId() == null) {
-            account.setFirebaseId(FirebaseAuthPersistence.getInstance().getUserViaEmail(account.getEmail()));
+            account.setFirebaseId(FirebaseAuthPersistence.getInstance().getFirebaseIdViaEmail(account.getEmail()));
         }
         UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(account.getFirebaseId());
         request.setDisplayName(account.getName());
         FirebaseAuth.getInstance().updateUser(request);
         new AccountSearchIndex(account.getFullId(), account.getName(), account.getLabel(), account.getEmail(), account.getExpirationDate()).scheduleTask();
 
-        if (account.getExpirationDate() != null) {
-            FirebaseAuthPersistence.getInstance().updateExpirationDate(account.getFirebaseId(), account.getExpirationDate());
-        }
+
+        expirationCheck(account);
         return new AccountDelegator().createAccount(
                 account.getFirebaseId(),
                 account.getLocalId(), account.getAccountType(), account.getEmail().toLowerCase(),
@@ -88,13 +90,14 @@ public class CreateAccount {
     public void setExpirationDate(String accountId, Long setExpirationDate) {
         Account account = AccountManager.setExpirationDate(accountId, setExpirationDate);
         new AccountSearchIndex(account.getFullId(), account.getName(), account.getLabel(), account.getEmail(), account.getExpirationDate()).scheduleTask();
-        if (account != null && account.getFirebaseId() != null) {
-            try {
-                FirebaseAuthPersistence.getInstance().updateExpirationDate(account.getFirebaseId(), setExpirationDate);
-            } catch (FirebaseAuthException e) {
-                e.printStackTrace();
-            }
-        }
+        expirationCheck(account);
+//        if (account != null && account.getFirebaseId() != null) {
+//            try {
+//                FirebaseAuthPersistence.getInstance().updateExpirationDate(account.getFirebaseId(), setExpirationDate);
+//            } catch (FirebaseAuthException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
     }
 
@@ -105,9 +108,11 @@ public class CreateAccount {
     public Account setAdvanced(String accountId, Boolean value) {
         Account account = AccountManager.setAdvanced(accountId, value);
         if (account != null && account.getFirebaseId() != null) {
-            System.out.println("in set advanced");
             try {
-                FirebaseAuthPersistence.getInstance().setAdvanced(account.getFirebaseId(), value);
+                Map<String, Object> customClaims = FirebaseAuthPersistence.getInstance().setAdvanced(account.getFirebaseId(), value);
+                if (customClaims != null) {
+                    account.setClaimsFromMap(customClaims);
+                }
             } catch (FirebaseAuthException e) {
                 e.printStackTrace();
             }
@@ -117,11 +122,12 @@ public class CreateAccount {
 
     public Account makeAdmin(String accountId, Boolean value) {
         Account account = AccountManager.setAdmin(accountId, value);
-        System.out.println("making admin 1 "+account);
         if (account != null && account.getFirebaseId() != null) {
             try {
-                System.out.println("making admin 2 "+account.getFirebaseId());
-                FirebaseAuthPersistence.getInstance().makeAdmin(account.getFirebaseId(), value);
+                Map<String, Object> customClaims = FirebaseAuthPersistence.getInstance().makeAdmin(account.getFirebaseId(), value);
+                if (customClaims != null) {
+                    account.setClaimsFromMap(customClaims);
+                }
             } catch (FirebaseAuthException e) {
                 e.printStackTrace();
             }
@@ -158,6 +164,30 @@ public class CreateAccount {
 
         } catch (FirebaseAuthException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void expirationCheck(Account account) {
+        Long now = System.currentTimeMillis();
+        if (account.getExpirationDate() == null || account.getExpirationDate() < now) {
+            String expiredClaims = System.getenv("USER_EXP_CLAIMS");
+            try {
+                FirebaseAuthPersistence.getInstance().setClaims(account.getFirebaseId(), expiredClaims);
+            } catch (FirebaseAuthException e) {
+                System.out.println("message type is "+e.getErrorCode());
+                if (e.getErrorCode().equals("user-not-found")) {
+                    account.setFirebaseId(null);
+                    new AccountDelegator().deleteAccount(account);
+                }
+                e.printStackTrace();
+            }
+        } else {
+            String activeClaims = System.getenv("USER_ACTIVE_CLAIMS");
+            try {
+                FirebaseAuthPersistence.getInstance().setClaims(account.getFirebaseId(), activeClaims);
+            } catch (FirebaseAuthException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

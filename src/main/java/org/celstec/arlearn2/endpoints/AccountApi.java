@@ -6,6 +6,7 @@ import com.google.api.server.spi.config.Api;
 
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.config.Nullable;
 import com.google.api.server.spi.response.ForbiddenException;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.search.Results;
@@ -182,7 +183,7 @@ public class AccountApi extends GenericApi {
             path = "/account/{fullId}/advanced/{value}"
     )
     public Account setAdvanced(final User user, @Named("fullId") String accountId, @Named("value") Boolean value) throws Exception {
-//        adminCheck(user);
+        adminCheck(user);
         EnhancedUser us = (EnhancedUser) user;
         return CreateAccount.getInstance().setAdvanced(accountId, value);
     }
@@ -195,7 +196,7 @@ public class AccountApi extends GenericApi {
             path = "/account/{fullId}/admin/{value}"
     )
     public Account makeAdmin(final User user, @Named("fullId") String accountId, @Named("value") Boolean value) throws Exception {
-//        adminCheck(user);
+        adminCheck(user);
         EnhancedUser us = (EnhancedUser) user;
         return CreateAccount.getInstance().makeAdmin(accountId, value);
     }
@@ -208,7 +209,6 @@ public class AccountApi extends GenericApi {
     )
     public Account canAddUsers(final User user, @Named("fullId") String accountId, @Named("value") Boolean value) throws Exception {
         adminCheck(user);
-        EnhancedUser us = (EnhancedUser) user;
         return AccountManager.setCanAddUsers(accountId, value);
     }
 
@@ -221,7 +221,6 @@ public class AccountApi extends GenericApi {
     )
     public Account canPublishGames(final User user, @Named("fullId") String accountId, @Named("value") Boolean value) throws Exception {
         adminCheck(user);
-        EnhancedUser us = (EnhancedUser) user;
         return AccountManager.setCanPublishGames(accountId, value);
     }
 
@@ -237,6 +236,33 @@ public class AccountApi extends GenericApi {
     }
 
     @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
+            name = "accountDetailsWithId",
+            path = "/account/{fullId}"
+    )
+    public Account getFullAccount(EnhancedUser user, @Named("fullId") String accountId) {
+        return new AccountDelegator().getContactDetails(accountId);
+    }
+
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
+            name = "accountDetailsWithIdAsAdmin",
+            path = "/admin/account/{fullId}"
+    )
+    public Account getFullAccountAsAdmin(EnhancedUser user, @Named("fullId") String accountId) throws Exception {
+        adminCheck(user);
+        Account account = new AccountDelegator().getContactDetails(accountId);
+        if (account != null && account.getFirebaseId() != null) {
+            UserRecord record = FirebaseAuthPersistence.getInstance().getUser(account.getFirebaseId());
+            if (record != null) {
+                account.setClaimsFromMap(record.getCustomClaims());
+            }
+        }
+
+        return account;
+    }
+
+    @ApiMethod(
             httpMethod = ApiMethod.HttpMethod.DELETE,
             name = "deleteAccount",
             path = "/account/{fullId}"
@@ -244,7 +270,11 @@ public class AccountApi extends GenericApi {
     public Account deleteAccount(final User user, @Named("fullId") String accountId) throws Exception {
         adminCheck(user);
         if (accountId.startsWith("7:")) {
-            FirebaseAuth.getInstance().deleteUser(accountId.substring(2));
+            try {
+                FirebaseAuth.getInstance().deleteUser(accountId.substring(2));
+            } catch(Exception e) {
+
+            }
             new AccountSearchIndex(accountId, "", "", true).scheduleTask();
             return AccountManager.deleteAccount(accountId);
         } else {
@@ -279,22 +309,27 @@ public class AccountApi extends GenericApi {
             name = "unSuspendAccount",
             path = "/account/unsuspend/{fullId}"
     )
-    public Account unSuspendAccount(EnhancedUser user, @Named("fullId") String accountId) throws ForbiddenException {
+    public Account unSuspendAccount(EnhancedUser user, @Named("fullId") String accountId) throws ForbiddenException, FirebaseAuthException {
         adminCheck(user);
         Account account = new AccountDelegator().getContactDetails(accountId);
         CreateAccount.getInstance().unsuspend(account);
+        account.setExpirationDate(System.currentTimeMillis()+(24*3600000 *365L));
+        CreateAccount.getInstance().updateAccount(account);
         return account;
     }
 
+//    curl --request POST \
+//            'https://serious-gaming-platform.appspot.com/api/account/unsuspend/2%3A100264977214117328076' \
+//            --header 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjNhYTE0OGNkMDcyOGUzMDNkMzI2ZGU1NjBhMzVmYjFiYTMyYTUxNDkiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoic3RlZmFhbiBpby10aGluZ3MiLCJhZG1pbiI6dHJ1ZSwiYWR2YW5jZWQiOnRydWUsImV4cGlyYXRpb25EYXRlIjotMSwiaXNzIjoiaHR0cHM6Ly9zZWN1cmV0b2tlbi5nb29nbGUuY29tL3NlcmlvdXMtZ2FtaW5nLXBsYXRmb3JtIiwiYXVkIjoic2VyaW91cy1nYW1pbmctcGxhdGZvcm0iLCJhdXRoX3RpbWUiOjE2MzcxNjI5NjMsInVzZXJfaWQiOiJjOWRyWE9RbWx2ZTNlenQxVzVjYWtCY0llRzQzIiwic3ViIjoiYzlkclhPUW1sdmUzZXp0MVc1Y2FrQmNJZUc0MyIsImlhdCI6MTY0MzEwMTA3MiwiZXhwIjoxNjQzMTA0NjcyLCJlbWFpbCI6InN0ZWZhYW5AaW8tdGhpbmdzLmV1IiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsic3RlZmFhbkBpby10aGluZ3MuZXUiXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.qqx_PAN6gEgmcNgA-LLak_kXQeaaNrM4yqTq31WV4wEjoUaFfOhDhXfhrIuSiUB74mueY4G14eAABz0pD1q5qU9uyIPtsaL2ANM9oZ6YL0uEgHZKaIeEiY4H1UGV82sUUuAoKTIBvdEFX-SsUpG9gc6YlG8cDhn3Wyo2MRwc24knt9CbzkozHUP8EXz6C2SBGJKb30rsq1obnw2ytW8dOFiqXunNGMEZeOdB4L5CT--OQyHIawY_BUatJiG4PYV3AguxNeG6AM-NsowDsYOIy7DvewgE_GJby8IknlzOmrmx0ZnV_zP4fBjgW1MPJ5jOGkis9J0hXzFUZV5NKMFhhQ' \
+//            --header 'Accept: application/json' \
+//            --header 'Content-Type: application/json' \
+//            --data '{}' \
+//            --compressed
 
-    @ApiMethod(
-            httpMethod = ApiMethod.HttpMethod.GET,
-            name = "accountDetailsWithId",
-            path = "/account/{fullId}"
-    )
-    public Account getFullAccount(EnhancedUser user, @Named("fullId") String accountId) {
-        return new AccountDelegator().getContactDetails(accountId);
-    }
+
+
+
+
 
     @ApiMethod(
             httpMethod = ApiMethod.HttpMethod.GET,
@@ -323,13 +358,22 @@ public class AccountApi extends GenericApi {
         new AccountDelegator().deleteAccount(us);
     }
 
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
+            name = "recentAccounts",
+            path = "/usermgt/recent"
+    )
+    public AccountList getRecentAccounts(EnhancedUser user, @Nullable @Named("resumptionToken") String cursor) {
+        return new AccountDelegator().recentAccounts(cursor);
+    }
 
     @ApiMethod(
             httpMethod = ApiMethod.HttpMethod.GET,
             name = "searchAllUsers",
             path = "/usermgt/accounts/{query}"
     )
-    public AccountList searchUsers(EnhancedUser user, @Named("query") String query) {
+    public AccountList searchUsers(EnhancedUser user, @Named("query") String query) throws ForbiddenException {
+        adminCheck(user);
         AccountList returnList = new AccountList();
         if (user.isAdmin()) {
 //            AccountManager.query(query)
@@ -353,7 +397,7 @@ public class AccountApi extends GenericApi {
                     if (exp != null) {
                         account.setExpirationDate(Long.parseLong(exp));
                     }
-                } catch (NullPointerException e) {
+                } catch (NullPointerException | NumberFormatException e ) {
 
                 }
                 returnList.addAccount(account);

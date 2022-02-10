@@ -45,11 +45,10 @@ public class ActionRelevancyPredictor implements Serializable {
 
     }
 
-    public static ActionRelevancyPredictor getActionRelevancyPredicator(long gameId, GoogleDelegator gd) {
-//		ActionRelevancyPredictor arp = GeneralitemsCache.getInstance().getActionsPredicator(gameId);
+    public static ActionRelevancyPredictor getActionRelevancyPredicator(long gameId) {
         ActionRelevancyPredictor arp = null; //GeneralitemsCache.getInstance().getActionsPredicator(gameId);
         if (arp == null) {
-            GeneralItemDelegator gid = new GeneralItemDelegator(gd);
+            GeneralItemDelegator gid = new GeneralItemDelegator();
             arp = new ActionRelevancyPredictor();
             arp.init(gameId, gid);
             GeneralitemsCache.getInstance().putActionsPredicator(arp, gameId);

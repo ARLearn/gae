@@ -18,25 +18,14 @@
  ******************************************************************************/
 package org.celstec.arlearn2.delegators;
 
-import org.celstec.arlearn2.beans.notification.GeneralItemModification;
-import org.celstec.arlearn2.beans.run.GeneralItemVisibility;
 import org.celstec.arlearn2.beans.run.GeneralItemVisibilityList;
-import org.celstec.arlearn2.delegators.notification.ChannelNotificator;
 import org.celstec.arlearn2.jdo.manager.GeneralItemVisibilityManager;
 
 
-public class GeneralItemVisibilityDelegator extends GoogleDelegator {
+public class GeneralItemVisibilityDelegator  {
 
     public GeneralItemVisibilityDelegator() {
         super();
-    }
-
-    public GeneralItemVisibilityDelegator(String authToken) {
-        super(authToken);
-    }
-
-    public GeneralItemVisibilityDelegator(GoogleDelegator gd) {
-        super(gd);
     }
 
     public GeneralItemVisibilityList getVisibleItems(Long runId, String email, Long from, Long until) {
@@ -48,16 +37,5 @@ public class GeneralItemVisibilityDelegator extends GoogleDelegator {
         list.setGeneralItemsVisibility(GeneralItemVisibilityManager.getGeneralitemsFromUntil(runId, email));//, from, until
         return list;
     }
-
-    public GeneralItemVisibility makeItemVisible(Long runId, String email, GeneralItemVisibility statement) {
-        GeneralItemVisibilityManager.setItemVisible(statement.getGeneralItemId(), runId, email, statement.getStatus(), statement.getTimeStamp());
-        GeneralItemModification gim = new GeneralItemModification();
-        gim.setModificationType(GeneralItemModification.VISIBLE);
-        gim.setRunId(runId);
-        gim.setItemId(statement.getGeneralItemId());
-//        ChannelNotificator.getInstance().notify(email, gim);
-        return statement;
-    }
-
 
 }

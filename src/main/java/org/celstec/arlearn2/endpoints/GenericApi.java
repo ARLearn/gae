@@ -34,17 +34,17 @@ import com.google.api.server.spi.auth.EnhancedEspAuthenticator;
         version = "v1",
         apiKeyRequired = AnnotationBoolean.FALSE,
         authenticators =  {EnhancedEspAuthenticator.class},
-        issuerAudiences = {@ApiIssuerAudience(name = "firebase", audiences = {"serious-gaming-platform-dev"})},
+        issuerAudiences = {@ApiIssuerAudience(name = "firebase", audiences = {"serious-gaming-platform"})},
         issuers = {
                 @ApiIssuer(
                         name = "firebase",
-                        issuer = "https://securetoken.google.com/serious-gaming-platform-dev",
+                        issuer = "https://securetoken.google.com/serious-gaming-platform",
                         jwksUri = "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com")
         }
 
 )
 public class GenericApi {
- public static String FIREBASE_DATABASE_URL = "https://serious-gaming-platform-dev.firebaseio.com";
+ public static String FIREBASE_DATABASE_URL = "https://serious-gaming-platform.firebaseio.com";
  protected void adminCheck(User user) throws ForbiddenException {
                 EnhancedUser us = (EnhancedUser) user;
                 if (!us.isAdmin()) {

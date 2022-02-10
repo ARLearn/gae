@@ -47,28 +47,25 @@ public class AccountIterator extends GenericBean {
                         account.getName(), null,
                         account.getExpirationDate() == null ? -1l : account.getExpirationDate(),
                         account.getLabel());
+            } else if (account.getAccountType() == 2) {
+                try {
+                    String fbId = FirebaseAuthPersistence.getInstance().getFirebaseIdViaEmail(account.getEmail());
+                    if (fbId != null) {
+                        account.setFirebaseId(fbId);
+                        ad.createAccount(account.getFirebaseId(),
+                                account.getLocalId(), account.getAccountType(), account.getEmail().toLowerCase(),
+                                account.getName(), null,
+                                account.getExpirationDate() == null ? -1l : account.getExpirationDate(),
+                                account.getLabel());
+                    }
+
+
+                } catch (FirebaseAuthException e) {
+                    e.printStackTrace();
+                }
             }
             if (account.getFirebaseId() != null) {
-                if (account.getExpirationDate() == null || account.getExpirationDate() < now) {
-                    String expiredClaims = System.getenv("USER_EXP_CLAIMS");
-                    try {
-                        FirebaseAuthPersistence.getInstance().setClaims(account.getFirebaseId(), expiredClaims);
-                    } catch (FirebaseAuthException e) {
-                        System.out.println("message type is "+e.getErrorCode());
-                        if (e.getErrorCode().equals("user-not-found")) {
-                            account.setFirebaseId(null);
-                            ad.deleteAccount(account);
-                        }
-                        e.printStackTrace();
-                    }
-                } else {
-                    String activeClaims = System.getenv("USER_ACTIVE_CLAIMS");
-                    try {
-                        FirebaseAuthPersistence.getInstance().setClaims(account.getFirebaseId(), activeClaims);
-                    } catch (FirebaseAuthException e) {
-                        e.printStackTrace();
-                    }
-                }
+                CreateAccount.getInstance().expirationCheck(account);
             }
             if (account.getFirebaseId() != null && account.getLastModificationDate() != null && account.getAccountType() == 8) {
                 if (account.getLastModificationDate() < (now - 24L *3600000 * 30 * 4)) {

@@ -18,12 +18,10 @@
  ******************************************************************************/
 package org.celstec.arlearn2.util;
 
-import java.util.logging.Logger;
-
 import org.celstec.arlearn2.beans.run.Team;
-import org.celstec.arlearn2.jdo.UserLoggedInManager;
 
 import javax.cache.Cache;
+import java.util.logging.Logger;
 
 public class TeamsCache {
 

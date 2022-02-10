@@ -18,21 +18,14 @@
  ******************************************************************************/
 package org.celstec.arlearn2.jdo.manager;
 
+import com.google.appengine.api.datastore.*;
+import org.celstec.arlearn2.beans.game.Game;
+import org.celstec.arlearn2.beans.serializer.json.JsonBeanSerialiser;
+import org.celstec.arlearn2.jdo.classes.GameEntity;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-//import javax.jdo.PersistenceManager;
-//import javax.jdo.Query;
-
-import com.google.appengine.api.datastore.*;
-import org.celstec.arlearn2.beans.deserializer.json.JsonBeanDeserializer;
-import org.celstec.arlearn2.beans.game.Config;
-import org.celstec.arlearn2.beans.game.Game;
-import org.celstec.arlearn2.beans.serializer.json.JsonBeanSerialiser;
-import org.celstec.arlearn2.jdo.PMF;
-import org.celstec.arlearn2.jdo.classes.AccountEntity;
-import org.celstec.arlearn2.jdo.classes.GameEntity;
 
 public class GameManager {
 
@@ -47,7 +40,7 @@ public class GameManager {
         GameEntity gameJdo = new GameEntity();
         gameJdo.setGameId(game.getGameId());
         gameJdo.setCreatorEmail(game.getCreator());
-        gameJdo.setOwner(myAccount);
+//        gameJdo.setOwner(myAccount);
         gameJdo.setFeedUrl(game.getFeedUrl());
         gameJdo.setTitle(game.getTitle());
         gameJdo.setSplashScreen(game.getSplashScreen());

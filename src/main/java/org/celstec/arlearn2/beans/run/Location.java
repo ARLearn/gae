@@ -19,9 +19,7 @@
 package org.celstec.arlearn2.beans.run;
 
 import org.celstec.arlearn2.beans.Bean;
-import org.celstec.arlearn2.beans.deserializer.json.BeanDeserializer;
 import org.celstec.arlearn2.beans.deserializer.json.RunBeanDeserializer;
-import org.celstec.arlearn2.beans.notification.Ping;
 import org.celstec.arlearn2.beans.serializer.json.BeanSerializer;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;

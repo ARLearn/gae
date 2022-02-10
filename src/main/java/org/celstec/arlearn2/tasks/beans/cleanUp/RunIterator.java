@@ -29,7 +29,7 @@ import org.celstec.arlearn2.delegators.GameDelegator;
 //import org.celstec.arlearn2.jdo.classes.RunJDO;
 import org.celstec.arlearn2.jdo.manager.RunManager;
 import org.celstec.arlearn2.tasks.beans.DeleteActions;
-import org.celstec.arlearn2.tasks.beans.DeleteBlobs;
+
 import org.celstec.arlearn2.tasks.beans.DeleteResponses;
 import org.celstec.arlearn2.tasks.beans.DeleteTeams;
 import org.celstec.arlearn2.tasks.beans.GenericBean;

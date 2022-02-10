@@ -1,8 +1,6 @@
 package org.celstec.arlearn2.delegators;
 
-import com.google.api.server.spi.auth.common.User;
 import com.google.appengine.api.datastore.EntityNotFoundException;
-import org.celstec.arlearn2.api.Service;
 import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.account.AccountList;
 import org.celstec.arlearn2.cache.AccountCache;
@@ -11,25 +9,10 @@ import org.celstec.arlearn2.endpoints.impl.portaluser.FirebaseAuthPersistence;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.manager.AccountManager;
 
-import java.util.List;
-import java.util.UUID;
-
-public class AccountDelegator extends GoogleDelegator {
+public class AccountDelegator {
 
     public AccountDelegator() {
-        super();
-    }
 
-    public AccountDelegator(String authToken) {
-        super(authToken);
-    }
-
-    public AccountDelegator(Service service) {
-        super(service);
-    }
-
-    public AccountDelegator(GoogleDelegator gd) {
-        super(gd);
     }
 
     public Account getAccountInfo(Account myAccount) {
@@ -38,21 +21,27 @@ public class AccountDelegator extends GoogleDelegator {
     }
 
     public Account getContactDetails(EnhancedUser user) throws EntityNotFoundException {
-        Account account = getContactDetails(user.createFullId());
+        Account account = getContactDetails(user.createFullId(), true);
         if (account == null && user != null) {
-            account = AccountManager.addAccount(user.getLocalId(), user.localId, user.getProvider(), user.getEmail(),user.name, "", user.name,user.picture, false).toAccount();
+            account = AccountManager.addAccount(user.getId(), user.localId, user.getProvider(), user.getEmail(),user.name, "", user.name,user.picture, false).toAccount();
             if (account != null) {
                 AccountCache.getInstance().storeAccountValue(account.getFullId(), account);
             }
         }
         if (account.getOrganisationId() != null) {
-
             account.enrichWithOrganisation(GetOrganization.getInstance().getOrganisation(account.getOrganisationId()));
         }
         return account;
     }
 
     public Account getContactDetails(String accountId) {
+        return getContactDetails(accountId, false);
+    }
+
+    public Account getContactDetails(String accountId, boolean resetLogin) {
+        if (resetLogin) {
+            return AccountManager.getAccount(accountId, true);
+        }
         Account account = AccountCache.getInstance().getAccount(accountId);
         if (account == null) {
             account = AccountManager.getAccount(accountId);
@@ -109,5 +98,8 @@ public class AccountDelegator extends GoogleDelegator {
         return AccountManager.listOrganisation(organisationId);
     }
 
+    public AccountList recentAccounts(String cursorString) {
+        return AccountManager.recentAccounts(cursorString);
+    }
 
 }

@@ -21,7 +21,7 @@ package org.celstec.arlearn2.endpoints;
  * ****************************************************************************
  */
 
-import com.google.api.server.spi.auth.EnhancedEspAuthenticator;
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
@@ -29,8 +29,6 @@ import com.google.api.server.spi.config.Nullable;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.ForbiddenException;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.api.server.spi.auth.common.User;
-
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
@@ -38,21 +36,17 @@ import org.celstec.arlearn2.beans.DependencyWrapper;
 import org.celstec.arlearn2.beans.GameIdentifierList;
 import org.celstec.arlearn2.beans.dependencies.Dependency;
 import org.celstec.arlearn2.beans.deserializer.json.JsonBeanDeserializer;
-import org.celstec.arlearn2.beans.game.*;
-import org.celstec.arlearn2.beans.generalItem.GeneralItem;
-import org.celstec.arlearn2.beans.notification.GameModification;
+import org.celstec.arlearn2.beans.game.Game;
+import org.celstec.arlearn2.beans.game.GameAccess;
+import org.celstec.arlearn2.beans.game.GameAccessList;
+import org.celstec.arlearn2.beans.game.GamesList;
 import org.celstec.arlearn2.delegators.GameAccessDelegator;
 import org.celstec.arlearn2.delegators.GameDelegator;
-import org.celstec.arlearn2.delegators.GeneralItemDelegator;
 import org.celstec.arlearn2.delegators.UsersDelegator;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
-import org.celstec.arlearn2.endpoints.util.LocalhostAuthenticator;
 import org.celstec.arlearn2.jdo.manager.UserManager;
-import org.celstec.arlearn2.tasks.clone.CloneMediaLibrary;
 import org.celstec.arlearn2.tasks.clone.InitiateClone;
 import org.codehaus.jettison.json.JSONException;
-
-import java.util.ArrayList;
 
 
 @Api(name = "games")
@@ -176,8 +170,8 @@ public class Games extends GenericApi {
             httpMethod = ApiMethod.HttpMethod.GET
     )
     public GameAccessList getGameAccess(final EnhancedUser user, @Named("gameId") Long gameId) throws UnauthorizedException {//Game newGame
-        GameAccessDelegator gad = new GameAccessDelegator(user);
-        return gad.getAccessList(gameId);
+        GameAccessDelegator gad = new GameAccessDelegator();
+        return gad.getAccessList(gameId, user.createFullId());
     }
 
     @ApiMethod(
@@ -190,7 +184,7 @@ public class Games extends GenericApi {
                                      @Named("fullId") String fullId,
                                      @Named("rights") int rights
     ) throws ForbiddenException {
-        GameAccessDelegator gad = new GameAccessDelegator(user);
+        GameAccessDelegator gad = new GameAccessDelegator();
         return gad.provideAccessWithCheck(gameId, fullId, rights, user.createFullId()); //
     }
 
@@ -206,7 +200,7 @@ public class Games extends GenericApi {
                                  @Named("gameId") Long gameId,
                                  @Named("fullId") String fullId
     ) {
-        GameAccessDelegator gad = new GameAccessDelegator(user);
+        GameAccessDelegator gad = new GameAccessDelegator();
         gad.removeAccessWithCheck(gameId, fullId);
     }
 
@@ -217,7 +211,7 @@ public class Games extends GenericApi {
             httpMethod = ApiMethod.HttpMethod.DELETE
     )
     public Game deleteGame(final EnhancedUser user, @Named("gameId") Long gameId) throws UnauthorizedException {//Game newGame
-        GameDelegator qg = new GameDelegator(user);
+        GameDelegator qg = new GameDelegator();
         Game g = qg.getGame(gameId);
         if (g.getError() != null) {
             return g;
@@ -227,19 +221,19 @@ public class Games extends GenericApi {
             throw new UnauthorizedException("Not authorized to delete this game");
 
         }
-        qg.deleteGame(gameId);
+        qg.deleteGame(gameId, user);
         g.setDeleted(true);
         return g;
     }
 
-    @ApiMethod(
-            name = "getGameContent",
-            path = "/game/{gameId}/content",
-            httpMethod = ApiMethod.HttpMethod.GET
-    )
-    public GameFileList getGameContent(final EnhancedUser user, @Named("gameId") Long gameId) throws UnauthorizedException {//Game newGame
-        return new GameDelegator().getGameContentDescription(gameId);
-    }
+//    @ApiMethod(
+//            name = "getGameContent",
+//            path = "/game/{gameId}/content",
+//            httpMethod = ApiMethod.HttpMethod.GET
+//    )
+//    public GameFileList getGameContent(final EnhancedUser user, @Named("gameId") Long gameId) throws UnauthorizedException {//Game newGame
+//        return new GameDelegator().getGameContentDescription(gameId);
+//    }
 
     @SuppressWarnings("ResourceParameter")
     @ApiMethod(
@@ -248,8 +242,8 @@ public class Games extends GenericApi {
     )
     public Game createGame(final User u, Game newGame) {//Game newGame
         EnhancedUser user = (EnhancedUser) u;
-        GameDelegator cg = new GameDelegator(user);
-        return cg.createGame(newGame, GameModification.CREATED);
+        GameDelegator cg = new GameDelegator();
+        return cg.createGame(newGame, user.createFullId());
     }
 
     @SuppressWarnings("ResourceParameter")
@@ -259,7 +253,7 @@ public class Games extends GenericApi {
     )
     public Game updateGame(final User u, @Named("gameId") Long gameId, Game updateGame) {//Game newGame
         EnhancedUser user = (EnhancedUser) u;
-        return (new GameDelegator(user)).updateGame(user, gameId, updateGame, GameModification.CREATED);
+        return (new GameDelegator()).updateGame(user, gameId, updateGame);
     }
 
 
@@ -402,7 +396,7 @@ public class Games extends GenericApi {
             httpMethod = ApiMethod.HttpMethod.GET
     )
     public GamesList myGames(final EnhancedUser user, @Nullable @Named("resumptionToken") String cursor) {//Game newGame
-        GameDelegator gameDelegator = new GameDelegator(user);
+        GameDelegator gameDelegator = new GameDelegator();
         return gameDelegator.getGames(cursor, 0, user.getProvider(), user.getLocalId());
     }
 

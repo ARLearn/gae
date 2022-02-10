@@ -99,7 +99,7 @@ public class GeneralItemSearchIndex  extends GenericBean {
 			GameDelegator gd = new GameDelegator();
 			Game g = gd.getGame(getGameId(), true);
 			if (g != null && g.getSharing() != null && g.getSharing().equals(Game.PUBLIC)) {
-				GeneralItemDelegator gid = new GeneralItemDelegator(gd);
+				GeneralItemDelegator gid = new GeneralItemDelegator();
 				GeneralItem gi = gid.getGeneralItemForGame(getGameId(), getGeneralItemId());
 				addToIndex(gi);
 			} else {

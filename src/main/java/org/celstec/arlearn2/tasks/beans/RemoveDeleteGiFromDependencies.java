@@ -34,7 +34,7 @@ public class RemoveDeleteGiFromDependencies extends GenericBean {
     }
 
     public RemoveDeleteGiFromDependencies(String token, long gameId, long generalItemId) {
-        super(token);
+        super();
         this.gameId = gameId;
         this.generalItemId = generalItemId;
     }
@@ -57,7 +57,7 @@ public class RemoveDeleteGiFromDependencies extends GenericBean {
 
     @Override
     public void run() {
-        GeneralItemDelegator gid = new GeneralItemDelegator("auth=" + getToken());
+        GeneralItemDelegator gid = new GeneralItemDelegator();
         GeneralItemList gil = gid.getGeneralItems(gameId);
         for (GeneralItem gi : gil.getGeneralItems()) {
             if (!gi.getDeleted()) {

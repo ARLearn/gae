@@ -18,7 +18,6 @@
  ******************************************************************************/
 package org.celstec.arlearn2.delegators;
 
-import org.celstec.arlearn2.api.Service;
 import org.celstec.arlearn2.beans.run.Response;
 import org.celstec.arlearn2.beans.run.ResponseList;
 import org.celstec.arlearn2.beans.run.Run;
@@ -26,26 +25,17 @@ import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.manager.ResponseManager;
 
 
-public class ResponseDelegator extends GoogleDelegator {
+public class ResponseDelegator  {
 
-    public ResponseDelegator(Service service) {
-        super(service);
+    public ResponseDelegator(){
     }
 
-    public ResponseDelegator(String authtoken) {
-        super(authtoken);
-    }
-
-    public ResponseDelegator(GoogleDelegator gd) {
-        super(gd);
-    }
-
-    public ResponseDelegator(EnhancedUser user) {
-        super(user);
-    }
+//    public ResponseDelegator(EnhancedUser user) {
+//        super(user);
+//    }
 
     public Response createResponse(Long runIdentifier, Response r) {
-        RunDelegator rd = new RunDelegator(this);
+        RunDelegator rd = new RunDelegator();
         Run run = rd.getRun(runIdentifier);
         if (run == null) {
             r.setError("invalid run identifier");
@@ -121,7 +111,4 @@ public class ResponseDelegator extends GoogleDelegator {
 
     }
 
-//    public CSVEntry csv(Long runIdentifier) {
-//        return CSVCache.getInstance().getCSV(runIdentifier);
-//    }
 }

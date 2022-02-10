@@ -2,7 +2,6 @@ package org.celstec.arlearn2.tasks.beans;
 
 import org.celstec.arlearn2.beans.run.User;
 import org.celstec.arlearn2.cache.UsersCache;
-import org.celstec.arlearn2.delegators.NotificationDelegator;
 import org.celstec.arlearn2.delegators.UsersDelegator;
 import org.celstec.arlearn2.jdo.manager.UserManager;
 
@@ -37,8 +36,8 @@ public class DeleteUserAfterDeleteRun extends GenericBean {
         super();
     }
 
-    public DeleteUserAfterDeleteRun(String token, Long runId) {
-        super(token);
+    public DeleteUserAfterDeleteRun(Long runId) {
+        super();
         this.runId = runId;
 
     }
@@ -53,7 +52,7 @@ public class DeleteUserAfterDeleteRun extends GenericBean {
 
     @Override
     public void run() {
-            UsersDelegator ud = new UsersDelegator(getToken());
+            UsersDelegator ud = new UsersDelegator();
 
             if (getRunId() != null) {
                 List<User> userList = ud.getUserList(runId);
@@ -63,12 +62,7 @@ public class DeleteUserAfterDeleteRun extends GenericBean {
                     // UserManager.deleteUser(runId, email);
                     UserManager.setStatusDeleted(runId, u.getFullId());
                     UsersCache.getInstance().removeUser(runId); // removing because user
-                    if (user.getEmail() != null) {
-                        User notificationUser = new User();
-                        notificationUser.setRunId(user.getRunId());
-                        notificationUser.setFullIdentifier(user.getFullId());
-                        new NotificationDelegator(getToken()).broadcast(notificationUser, user.getFullId());
-                    }
+
                 }
             }
 

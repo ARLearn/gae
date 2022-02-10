@@ -7,7 +7,6 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import org.celstec.arlearn2.beans.game.Game;
 import org.celstec.arlearn2.beans.generalItem.GeneralItem;
 import org.celstec.arlearn2.beans.generalItem.GeneralItemList;
-import org.celstec.arlearn2.beans.notification.GameModification;
 import org.celstec.arlearn2.delegators.GameDelegator;
 import org.celstec.arlearn2.delegators.GeneralItemDelegator;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
@@ -68,7 +67,7 @@ public class InitiateClone implements DeferredTask {
     }
 
     private void cloneGame() {
-        GameDelegator qg = new GameDelegator(user);
+        GameDelegator qg = new GameDelegator();
         Game g = qg.getGame(gameId);
         g.setTitle(g.getTitle() + " (copy) ");
         g.setSharing(g.PRIVATE);
@@ -78,7 +77,7 @@ public class InitiateClone implements DeferredTask {
         }
         System.out.println("set game id to null");
         g.setGameId(null);
-        Game newGame = qg.createGame(g, GameModification.CREATED);
+        Game newGame = qg.createGame(g, user.createFullId());
         cloneManifest.newGameId = newGame.getGameId();
         System.out.println("cloneManifest" + cloneManifest);
     }

@@ -185,7 +185,7 @@ public class GeneralItems extends GenericApi {
             jbd = new JsonBeanDeserializer(item.getDependencyAsString());
             GeneralItem generalItem = (GeneralItem) jbd.deserialize(GeneralItem.class);
 
-            if (!new GameAccessDelegator(us).canEdit(us.createFullId(), generalItem.getGameId())) {
+            if (!new GameAccessDelegator().canEdit(us.createFullId(), generalItem.getGameId())) {
                 throw new ForbiddenException("You cannot edit this game.");
             }
 

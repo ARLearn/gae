@@ -31,8 +31,8 @@ public class DeleteUsers extends GenericBean {
 		super();
 	}
 
-	public DeleteUsers(String token, Long runId, String userId, String teamId) {
-		super(token);
+	public DeleteUsers(Long runId, String userId, String teamId) {
+		super();
 		this.runId = runId;
 		this.userId = userId;
 		this.teamId = teamId;
@@ -66,7 +66,7 @@ public class DeleteUsers extends GenericBean {
 
 	@Override
 	public void run() {
-			UsersDelegator ud = new UsersDelegator(getToken());
+			UsersDelegator ud = new UsersDelegator();
 			if (getUserId()!=null) {
 				ud.deleteUser(getRunId(), getUserId());
 			} 

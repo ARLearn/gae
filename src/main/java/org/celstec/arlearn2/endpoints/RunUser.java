@@ -58,7 +58,7 @@ public class RunUser extends GenericApi{
     public void deleteUser(EnhancedUser user,
                             @Named("runId") Long runId,
                             @Named("fullId") String fullId) {
-        new UsersDelegator(user).deleteUser(runId, fullId);
+        new UsersDelegator().deleteUser(runId, fullId);
     }
 
     @ApiMethod(
@@ -68,6 +68,6 @@ public class RunUser extends GenericApi{
     )
     public void deleteMe(EnhancedUser user,
                            @Named("runId") Long runId) {
-        new UsersDelegator(user).deleteUser(runId, user.createFullId());
+        new UsersDelegator().deleteUser(runId, user.createFullId());
     }
 }

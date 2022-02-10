@@ -74,25 +74,42 @@ public class FirebaseAuthPersistence {
         return FirebaseAuth.getInstance().updateUser(request);
     }
 
-    public UserRecord updateExpirationDate(String uid, Long expirationDate) throws FirebaseAuthException {
-        UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(uid);
-        Map<String, Object> claimsOld = FirebaseAuth.getInstance().getUser(uid).getCustomClaims();
-        Map<String, Object> claims = new HashMap<>();
-        claims.putAll(claimsOld);
-        claims.put("expirationDate", expirationDate);
-        request.setCustomClaims(claims);
-        return FirebaseAuth.getInstance().updateUser(request);
-    }
+//    public UserRecord updateExpirationDate(String uid, Long expirationDate) throws FirebaseAuthException {
+//        UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(uid);
+//        Map<String, Object> claimsOld = FirebaseAuth.getInstance().getUser(uid).getCustomClaims();
+//        Map<String, Object> claims = new HashMap<>();
+//        claims.putAll(claimsOld);
+//        claims.put("expirationDate", expirationDate);
+//        request.setCustomClaims(claims);
+//        return FirebaseAuth.getInstance().updateUser(request);
+//    }
 
-    public UserRecord setAdvanced(String uid, boolean value) throws FirebaseAuthException {
+    public Map<String, Object> setAdvanced(String uid, boolean value) throws FirebaseAuthException {
         UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(uid);
         Map<String, Object> claimsOld = FirebaseAuth.getInstance().getUser(uid).getCustomClaims();
         Map<String, Object> claims = new HashMap<>();
         claims.putAll(claimsOld);
         claims.put("advanced", value);
+        if (!value) {
+            claims.remove("advanced");
+        }
         request.setCustomClaims(claims);
-        System.out.println("updating custom claims" +claims);
-        return FirebaseAuth.getInstance().updateUser(request);
+        FirebaseAuth.getInstance().updateUser(request);
+        return claims;
+    }
+
+    public Map<String, Object>  makeAdmin(String uid, boolean value) throws FirebaseAuthException {
+        UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(uid);
+        Map<String, Object> claimsOld = FirebaseAuth.getInstance().getUser(uid).getCustomClaims();
+        Map<String, Object> claims = new HashMap<>();
+        claims.putAll(claimsOld);
+        claims.put("admin", value);
+        if (!value) {
+            claims.remove("admin");
+        }
+        request.setCustomClaims(claims);
+        FirebaseAuth.getInstance().updateUser(request);
+        return claims;
     }
 
     public UserRecord setClaims(String uid, String claimsString) throws FirebaseAuthException {
@@ -113,15 +130,7 @@ public class FirebaseAuthPersistence {
         return FirebaseAuth.getInstance().updateUser(request);
     }
 
-    public UserRecord makeAdmin(String uid, boolean value) throws FirebaseAuthException {
-        UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(uid);
-        Map<String, Object> claimsOld = FirebaseAuth.getInstance().getUser(uid).getCustomClaims();
-        Map<String, Object> claims = new HashMap<>();
-        claims.putAll(claimsOld);
-        claims.put("admin", value);
-        request.setCustomClaims(claims);
-        return FirebaseAuth.getInstance().updateUser(request);
-    }
+
 
     public UserRecord updateUser(String uid, String displayName, Long customerId, Long distributorId, List<String> roles) throws FirebaseAuthException {
         UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(uid);
@@ -137,7 +146,7 @@ public class FirebaseAuthPersistence {
         return FirebaseAuth.getInstance().getUser(uuid);
     }
 
-    public String getUserViaEmail(String email)  throws FirebaseAuthException {
+    public String getFirebaseIdViaEmail(String email)  throws FirebaseAuthException {
         return FirebaseAuth.getInstance().getUserByEmail(email).getUid();
     }
 

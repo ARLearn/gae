@@ -29,8 +29,8 @@ public class DeleteGeneralItems  extends GenericBean {
 		super();
 	}
 
-    public DeleteGeneralItems(String authToken, Account account, Long gameIdentifier) {
-        super(authToken, account);
+    public DeleteGeneralItems(Long gameIdentifier) {
+        super();
         this.gameId = gameIdentifier;
     }
 
@@ -45,9 +45,8 @@ public class DeleteGeneralItems  extends GenericBean {
 	@Override
 	public void run() {
 
-			GeneralItemDelegator gid = new GeneralItemDelegator(getAccountBean(), getToken());
+			GeneralItemDelegator gid = new GeneralItemDelegator();
 
-//			CreateGeneralItems cgi = new CreateGeneralItems("auth=" + getToken());
 			if (getGameId() !=null) gid.deleteGeneralItems(getGameId());
 
 		

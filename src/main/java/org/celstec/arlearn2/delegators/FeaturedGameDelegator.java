@@ -1,11 +1,8 @@
 package org.celstec.arlearn2.delegators;
 
-import org.celstec.arlearn2.api.Service;
-import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.game.Game;
 import org.celstec.arlearn2.beans.game.GamesList;
 import org.celstec.arlearn2.jdo.manager.FeaturedGameManager;
-import org.celstec.arlearn2.tasks.beans.GenericBean;
 
 /**
  * ****************************************************************************
@@ -27,28 +24,9 @@ import org.celstec.arlearn2.tasks.beans.GenericBean;
  * Contributors: Stefaan Ternier
  * ****************************************************************************
  */
-public class FeaturedGameDelegator extends GoogleDelegator {
-    public FeaturedGameDelegator(String authToken) {
-        super(authToken);
-    }
+public class FeaturedGameDelegator  {
 
     public FeaturedGameDelegator() {
-    }
-
-    public FeaturedGameDelegator(GoogleDelegator gd) {
-        super(gd);
-    }
-
-    public FeaturedGameDelegator(Account account, String token) {
-        super(account, token);
-    }
-
-    public FeaturedGameDelegator(Service service) {
-        super(service);
-    }
-
-    public FeaturedGameDelegator(GenericBean bean) {
-        super(bean);
     }
 
     public GamesList getFeaturedGames(String lang) {

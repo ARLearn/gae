@@ -31,13 +31,13 @@ public class DeleteActions extends GenericBean {
 		super();
 	}
 	
-	public DeleteActions(String token,  Account account,Long runId) {
-		super(token, account);
+	public DeleteActions( Long runId) {
+		super();
 		this.runId = runId;
 	}
 	
-	public DeleteActions(String token, Account account, Long runId, String fullAccount) {
-		super(token, account);
+	public DeleteActions( Long runId, String fullAccount) {
+		super();
 		this.runId = runId;
 		this.fullAccount = fullAccount;
 	}
@@ -60,8 +60,12 @@ public class DeleteActions extends GenericBean {
 
     @Override
 	public void run() {
-			ActionDelegator ad = new ActionDelegator(getAccountBean(), getToken());
-			if (fullAccount == null) ad.deleteActions(getRunId());
-			ad.deleteActions(getRunId(), getFullAccount());
+			ActionDelegator ad = new ActionDelegator();
+			if (fullAccount == null) {
+				ad.deleteActions(getRunId());
+			} else {
+				ad.deleteActions(getRunId(), getFullAccount());
+			}
+
 	}
 }

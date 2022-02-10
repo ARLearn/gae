@@ -1,16 +1,10 @@
 package org.celstec.arlearn2.jdo.manager;
 
 import com.google.appengine.api.datastore.*;
-//import com.google.web.bindery.autobean.shared.AutoBeanFactory;
-import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.store.Category;
 import org.celstec.arlearn2.beans.store.CategoryList;
-import org.celstec.arlearn2.jdo.PMF;
-
 import org.celstec.arlearn2.jdo.classes.CategoryEntity;
 
-//import javax.jdo.PersistenceManager;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

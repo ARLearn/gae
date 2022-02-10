@@ -18,12 +18,8 @@
  ******************************************************************************/
 package org.celstec.arlearn2.delegators;
 
-import org.celstec.arlearn2.api.Service;
-import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.dependencies.ActionDependency;
 import org.celstec.arlearn2.beans.run.*;
-import org.celstec.arlearn2.endpoints.util.EnhancedUser;
-import org.celstec.arlearn2.jdo.manager.AccountManager;
 import org.celstec.arlearn2.jdo.manager.ActionManager;
 import org.celstec.arlearn2.tasks.beans.UpdateGeneralItems;
 import org.celstec.arlearn2.util.ActionCache;
@@ -31,30 +27,11 @@ import org.celstec.arlearn2.util.ActionCache;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class ActionDelegator extends GoogleDelegator {
+public class ActionDelegator  {
 
     private static final Logger logger = Logger.getLogger(ActionDelegator.class.getName());
 
-    public ActionDelegator() {
-        super();
-    }
-
-    public ActionDelegator(Service service) {
-        super(service);
-    }
-
-    public ActionDelegator(String authtoken) {
-        super(authtoken);
-    }
-
-    public ActionDelegator(GoogleDelegator gd) {
-        super(gd);
-    }
-
-    public ActionDelegator(Account account, String authToken) {
-        super(account, authToken);
-    }
-
+    public ActionDelegator() {}
 
     public ActionList getActionList(Long runId) {
         ActionList al = ActionCache.getInstance().getRunActions(runId);
@@ -67,34 +44,27 @@ public class ActionDelegator extends GoogleDelegator {
 
     private static final Logger log = Logger.getLogger(ActionDelegator.class.getName());
 
-    public Action createAction(Action action, String userId) {
+    public Action createAction(Action action, String userFullId) {
 
         if (action.getRunId() == null) {
             action.setError("No run identifier specified");
             return action;
         }
 
-
-        RunDelegator rd = new RunDelegator(this);
+        RunDelegator rd = new RunDelegator();
         Run r = rd.getRun(action.getRunId());
         UsersDelegator qu = new UsersDelegator();
 
-        User u = qu.getUserByEmail(action.getRunId(), userId);
+        User u = qu.getUserByEmail(action.getRunId(), userFullId);
         if (u == null) {
             action.setError("User not found");
-//            AccountManager.createAnonymousUser(us.getProvider(), us.getLocalId(), us.createFullId());
             log.severe("user not found");
             return action;
         }
-        // check if this action needs to be recorded as progress --support no longer available
-//        CreateProgressRecord cpr = new CreateProgressRecord(this);
-////		cpr.updateProgress(action.getRunId(), action.getAction(), action.getUserEmail(), u.getTeamId());
-//        cpr.updateProgress(action, u.getTeamId());
 
-        // check if this action needs to be recorded as score
-        RunDelegator qr = new RunDelegator(this);
+        RunDelegator qr = new RunDelegator();
         Run run = qr.getRun(action.getRunId());
-        ActionRelevancyPredictor arp = ActionRelevancyPredictor.getActionRelevancyPredicator(run.getGameId(), this);
+        ActionRelevancyPredictor arp = ActionRelevancyPredictor.getActionRelevancyPredicator(run.getGameId());
 
         //TODO migrate these to list of relevant dependecies (getActionDependencies[])
         boolean relevancy = arp.isRelevant(action);
@@ -102,21 +72,10 @@ public class ActionDelegator extends GoogleDelegator {
         action.setIdentifier(actionId);
         ActionCache.getInstance().removeRunAction(action.getRunId());
 
-        RunAccessDelegator rad = new RunAccessDelegator(this);
-        NotificationDelegator nd = new NotificationDelegator(this);
-        for (RunAccess ra : rad.getRunAccess(r.getRunId()).getRunAccess()) {
-            nd.broadcast(action, ra.getAccount());
-        }
-//		ChannelNotificator.getInstance().notify(r.getOwner(), action);
-        if (relevancy) {
-            (new UpdateGeneralItems(authToken, action.getRunId(), action.getAction(), userId, action.getGeneralItemId(), action.getGeneralItemType())).scheduleTask();
-        }
-//        System.out.println("Now also schedule the variable update!");
-//        (new UpdateVariables(authToken, action.getRunId(), action.getAction(), action.getUserEmail(), action.getGeneralItemId(), action.getGeneralItemType(), action.getTimestamp())).scheduleTask();
-//        if (qu.getCurrentAccount().getAccountType().equals(Account.ECO)) {
-//            (new SendToLearningLocker(authToken, action.getRunId(), action.getAction(), userId, action.getTimestamp(), run.getGame().getTitle(), action.getGeneralItemId())).scheduleTask();
-//        }
 
+        if (relevancy) {
+            (new UpdateGeneralItems( action.getRunId(), action.getAction(), userFullId, action.getGeneralItemId(), action.getGeneralItemType())).scheduleTask();
+        }
         return action;
     }
 
@@ -133,19 +92,6 @@ public class ActionDelegator extends GoogleDelegator {
         return false;
     }
 
-//	private List<ActionDependency> getActionDependencies(Long runId) {
-//		RunDelegator qr = new RunDelegator(this);
-//		Run run = qr.getRun(runId);
-//		List<ActionDependency> gil = GeneralitemsCache.getInstance().getGameActions(run.getGameId(), null, null);
-//		if (gil == null) {
-//			System.out.println("not from cache");
-//			GeneralItemDelegator gd = new GeneralItemDelegator(this);
-//			gil = getActionDependencies(gd.getGeneralItems(run.getGameId()).getGeneralItems());
-//			GeneralitemsCache.getInstance().putGameActionsList(gil, run.getGameId(), null, null);
-//		}
-//		return gil;
-//	}
-
 
     public void deleteActions(Long runId) {
         ActionManager.deleteActions(runId);
@@ -155,11 +101,6 @@ public class ActionDelegator extends GoogleDelegator {
     public void deleteActions(Long runId, String email) {
         ActionManager.deleteActions(runId, email);
         ActionCache.getInstance().removeRunAction(runId);
-    }
-
-
-    public Object getActionsFromUntil(Long runIdentifier, Long from, Long until, String cursor) {
-        return ActionManager.getActions(runIdentifier, from, until, cursor);
     }
 
     public ActionList getActionsFromUntil(Long runIdentifier, String user, Long from, Long until, String cursor) {

@@ -44,7 +44,7 @@ public class PlayerApi extends GenericApi {
     )
     public AccountList getContacts(EnhancedUser user, @Named("tillTime") long time) {
         CollaborationDelegator cd = new CollaborationDelegator();
-        return cd.getContacts(user.getProvider(), user.getLocalId(),0l, time, null);
+        return cd.getContacts(user,0l, time, null);
     }
 
     @ApiMethod(
@@ -67,8 +67,8 @@ public class PlayerApi extends GenericApi {
             , @Named("time") long time
             , @Named("cursor") String cursor) {
 
-        CollaborationDelegator cd = new CollaborationDelegator(user);
-        return cd.getContacts(user.getProvider(), user.getLocalId(), 0l, time, cursor);
+        CollaborationDelegator cd = new CollaborationDelegator();
+        return cd.getContacts(user, 0l, time, cursor);
     }
 
     @ApiMethod(
@@ -77,9 +77,8 @@ public class PlayerApi extends GenericApi {
             path = "/player/pendingInvitations"
     )
     public AccountList getPending(EnhancedUser user) {
-
-        CollaborationDelegator cd = new CollaborationDelegator(user);
-        return cd.pendingInvitations();
+        CollaborationDelegator cd = new CollaborationDelegator();
+        return cd.pendingInvitations(user);
     }
 
     @ApiMethod(
@@ -99,8 +98,8 @@ public class PlayerApi extends GenericApi {
             path = "/player/confirmInvitation/{invitationId}"
     )
     public void confirmInvitation(EnhancedUser user, @Named("invitationId") String invitationId) {
-        CollaborationDelegator cd = new CollaborationDelegator(user);
-        cd.confirmAddContact(invitationId);
+        CollaborationDelegator cd = new CollaborationDelegator();
+        cd.confirmAddContact(invitationId, user);
     }
 
 
@@ -121,7 +120,7 @@ public class PlayerApi extends GenericApi {
     )
     public void removePending(EnhancedUser user, @Named("identifier") String identifier) {
 
-        CollaborationDelegator cd = new CollaborationDelegator(user);
+        CollaborationDelegator cd = new CollaborationDelegator();
         cd.removeInvitation(identifier);
     }
 
@@ -131,10 +130,11 @@ public class PlayerApi extends GenericApi {
             path = "/player/reinvite/{invitationId}"
     )
     public void resendInvitation(EnhancedUser user, @Named("invitationId") String invitationId) {
-        CollaborationDelegator cd = new CollaborationDelegator(user);
+        CollaborationDelegator cd = new CollaborationDelegator();
         cd.resendInvitation(invitationId, ((EnhancedUser) user).name);
     }
 
+    @SuppressWarnings("ResourceParameter")
     @ApiMethod(
             httpMethod = ApiMethod.HttpMethod.POST,
             name = "addcontact",
@@ -142,11 +142,11 @@ public class PlayerApi extends GenericApi {
     )
     public void addContacts(final User user, ConnectionInvitation metadata) {
         EnhancedUser us = (EnhancedUser) user;
-        CollaborationDelegator cd = new CollaborationDelegator(us);
+        CollaborationDelegator cd = new CollaborationDelegator();
         if (metadata.addpers) {
-            cd.addContactViaEmail(metadata.email, metadata.note, ((EnhancedUser) user).name);
+            cd.addContactViaEmail(metadata.email, metadata.note, ((EnhancedUser) user).name, us);
         } else {
-            cd.addContactViaEmail(metadata.email, "default note", ((EnhancedUser) user).name);
+            cd.addContactViaEmail(metadata.email, "default note", ((EnhancedUser) user).name, us);
         }
 
     }
@@ -159,8 +159,8 @@ public class PlayerApi extends GenericApi {
     )
     public void removeContacts(EnhancedUser user, @Named("accountType") int accountType, @Named("localId") String localId) {
 
-        CollaborationDelegator cd = new CollaborationDelegator(user);
-        cd.removeContact(accountType, localId);
+        CollaborationDelegator cd = new CollaborationDelegator();
+        cd.removeContact(accountType, localId, user);
     }
 
 

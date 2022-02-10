@@ -19,8 +19,6 @@
 package org.celstec.arlearn2.beans.generalItem;
 
 import org.celstec.arlearn2.beans.Bean;
-import org.celstec.arlearn2.beans.GamePackage;
-import org.celstec.arlearn2.beans.deserializer.json.JsonBeanDeserializer;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 

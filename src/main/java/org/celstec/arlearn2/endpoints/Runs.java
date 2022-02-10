@@ -104,7 +104,7 @@ public class Runs extends GenericApi {
             path = "/run/access/{runId}/list"
     )
     public RunAccessList getRunAccessList(EnhancedUser user, @Named("runId") Long runId) {
-        RunAccessDelegator rad = new RunAccessDelegator(user);
+        RunAccessDelegator rad = new RunAccessDelegator();
 
         return rad.getRunAccess(runId);
     }
@@ -115,7 +115,7 @@ public class Runs extends GenericApi {
             path = "/run/access/game/{gameId}/list"
     )
     public RunAccessList getRunAccessListGame(EnhancedUser user, @Named("gameId") Long gameId) {
-        RunAccessDelegator rad = new RunAccessDelegator(user);
+        RunAccessDelegator rad = new RunAccessDelegator();
 
         return rad.getRunsAccess(gameId, user.getProvider(), user.getLocalId());
     }
@@ -131,10 +131,10 @@ public class Runs extends GenericApi {
                                     @Named("fullId") String fullId,
                                     @Named("rights") int rights
     ) {
-        RunAccessDelegator rad = new RunAccessDelegator(user);
+        RunAccessDelegator rad = new RunAccessDelegator();
         Run run = getRun(user, runId);
         if (run != null) {
-            return rad.provideAccessWithCheck(runId, run.getGameId(), fullId, rights);
+            return rad.provideAccessWithCheck(runId, run.getGameId(), user, rights);
         }
         return null;
     }
@@ -148,7 +148,7 @@ public class Runs extends GenericApi {
                                  @Named("runId") Long runId,
                                  @Named("fullId") String fullId
     ) {
-        RunAccessDelegator gad = new RunAccessDelegator(user);
+        RunAccessDelegator gad = new RunAccessDelegator();
         gad.removeAccessWithCheck(runId, fullId);
     }
 
@@ -163,7 +163,7 @@ public class Runs extends GenericApi {
         org.celstec.arlearn2.beans.run.User userbean = new org.celstec.arlearn2.beans.run.User();
         userbean.setFullIdentifier(fullId);
         userbean.setRunId(runId);
-        return new UsersDelegator(user).createUser(userbean);
+        return new UsersDelegator().createUser(userbean);
     }
 
     @ApiMethod(
@@ -184,7 +184,7 @@ public class Runs extends GenericApi {
     public RunList getMyRuns(final EnhancedUser user,
                                              @Named("gameId") Long gameId, @Nullable @Named("resumptionToken") String cursor
     ) {
-        return new RunDelegator(user).getRuns(cursor, gameId, user.getProvider(), user.getLocalId());
+        return new RunDelegator().getRuns(cursor, gameId, user.getProvider(), user.getLocalId());
     }
 
     @SuppressWarnings("ResourceParameter")
@@ -195,7 +195,7 @@ public class Runs extends GenericApi {
     )
     public Run createRun(final User user, Run run){
         EnhancedUser us = (EnhancedUser) user;
-        return new RunDelegator(us).createRun(run);
+        return new RunDelegator().createRun(us, run);
     }
 
     @SuppressWarnings("ResourceParameter")
@@ -211,11 +211,11 @@ public class Runs extends GenericApi {
         };
         run.setLastModificationDate(System.currentTimeMillis());
         run.setServerCreationTime(run.getLastModificationDate());
-        run = new RunDelegator(us).createRun(run);
+        run = new RunDelegator().createRun(us, run);
         org.celstec.arlearn2.beans.run.User userbean = new org.celstec.arlearn2.beans.run.User();
         userbean.setFullIdentifier(((EnhancedUser) user).createFullId());
         userbean.setRunId(run.getRunId());
-        new UsersDelegator((EnhancedUser) user).createUser(userbean);
+        new UsersDelegator().createUser(userbean);
         return run;
     }
 
@@ -226,6 +226,6 @@ public class Runs extends GenericApi {
     )
     public Run deleteRun(final User user, @Named("runId") Long runId) {
         EnhancedUser us = (EnhancedUser) user;
-        return new RunDelegator(us).deleteRun(runId);
+        return new RunDelegator().deleteRun(runId, us);
     }
 }

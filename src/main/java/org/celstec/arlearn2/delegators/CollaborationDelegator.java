@@ -8,74 +8,34 @@ import org.celstec.arlearn2.jdo.classes.ContactEntity;
 import org.celstec.arlearn2.jdo.manager.AccountManager;
 import org.celstec.arlearn2.jdo.manager.ContactManager;
 
-public class CollaborationDelegator extends GoogleDelegator {
+public class CollaborationDelegator {
 
-    public CollaborationDelegator(String authtoken) {
-        super(authtoken);
-    }
-    public CollaborationDelegator(EnhancedUser user) {
-        super(user);
-    }
+//    public CollaborationDelegator(EnhancedUser user) {
+//        super(user);
+//    }
 
     public CollaborationDelegator() {
         super();
     }
-    public CollaborationDelegator(GoogleDelegator gd) {
-        super(gd);
-    }
+//    public CollaborationDelegator(GoogleDelegator gd) {
+//        super(gd);
+//    }
 
     public Account getContactDetails(String addContactToken) {
         Account myAccount = ContactManager.getContactViaId(addContactToken);
         if (myAccount == null) return null;
-        AccountDelegator ad = new AccountDelegator(this);
+        AccountDelegator ad = new AccountDelegator();
         myAccount = ad.getAccountInfo(myAccount);
         if (myAccount == null) return null;
         return myAccount;
     }
 
-    public void addContactViaEmail(String toEmail) {
+
+
+    public void addContactViaEmail(String toEmail, String note, String from, EnhancedUser us) {
         com.google.apphosting.api.ApiProxy.getCurrentEnvironment();
-//		String version = SystemProperty.version.get();
-//		String applicationVersion = 
-        Account fullAccount = getMyAccount();
-        if (fullAccount == null) return;
-        ContactEntity jdo = ContactManager.addContactInvitation(fullAccount.getLocalId(), fullAccount.getAccountType(), toEmail, "");
 
-        String msgBody = "<html><body>";
-        msgBody += "Hi,<br>";
-        msgBody += "<p>";
-        msgBody += fullAccount.getName() + " has invited you to become his ARLearn contact";
-        msgBody += "</p>";
-        msgBody += "<p>";
-        msgBody += "Click  <a href=\"http://" + SystemProperty.applicationId.get() + ".appspot.com/contact.html?id=" + jdo.getUniqueId() + "\">here</a> to accept this invitation.";
-        msgBody += "</p>";
-        msgBody += "</body></html>";
-
-        MailDelegator md;
-
-        System.out.println("sending mail");
-        System.out.println("from  " + fullAccount.getEmail());
-        System.out.println("name  " + fullAccount.getName());
-        System.out.println("to  " + toEmail);
-        System.out.println("body  " + msgBody);
-        md = new MailDelegator(getAuthToken());
-        md.sendMail("no-reply@" + SystemProperty.applicationId.get() + ".appspotmail.com", fullAccount.getName(), toEmail, "Pending contact request", msgBody);
-
-
-    }
-
-    public void addContactViaEmail(String toEmail, String note, String from) {
-        com.google.apphosting.api.ApiProxy.getCurrentEnvironment();
-//		String version = SystemProperty.version.get();
-//		String applicationVersion =
-        Account fullAccount = getMyAccount();
-        String name = "Somebody";
-        if (fullAccount != null) {
-            name = fullAccount.getName();
-        }
-//        System.out.println("fullaccount "+this.account);
-//        System.out.println("fullaccount "+this.account.getLocalId()+ " " + this.account.getAccountType());
-        ContactEntity jdo = ContactManager.addContactInvitation(this.account.getLocalId(), this.account.getAccountType(), toEmail, from);
+        ContactEntity jdo = ContactManager.addContactInvitation(us.getLocalId(), us.getProvider(), toEmail, from);
 
         String msgBody = "<html><body>";
         msgBody += "Hi,<br>";
@@ -84,29 +44,23 @@ public class CollaborationDelegator extends GoogleDelegator {
         msgBody += "</p>";
         msgBody += note;
         msgBody += "<p>";
-        msgBody += "Click  <a href=\"http://" + SystemProperty.applicationId.get() + ".appspot.com/#/portal/root/pending/\">here</a> to accept this invitation.";
+        msgBody += "Click  <a href=\"http://" + SystemProperty.applicationId.get() + ".appspot.com/#/connections/pending/\">here</a> to accept this invitation.";
         msgBody += "</p>";
         msgBody += "</body></html>";
 
         MailDelegator md;
 
-        System.out.println("sending mail");
-        System.out.println("from  " + this.account.getEmail());
-        System.out.println("name  " + from);
-        System.out.println("to  " + toEmail);
-        System.out.println("body  " + msgBody);
-        md = new MailDelegator(getAuthToken());
+        md = new MailDelegator();
         md.sendMail("no-reply@" + SystemProperty.applicationId.get() + ".appspotmail.com", from, toEmail, "Pending contact request", msgBody);
 
 
     }
 
-    public String confirmAddContact(String addContactToken) {
-        Account fullAccount = getMyAccount();
+    public String confirmAddContact(String addContactToken, EnhancedUser user) {
+        Account fullAccount = getMyAccount(user);
         if (fullAccount == null) return null;
         Account targetAccount = ContactManager.getContactViaId(addContactToken);
-//        System.out.println("fullAccount account is "+ fullAccount.getFullId()+" "+fullAccount.getLocalId()+ " "+fullAccount.getAccountType());
-//        System.out.println("target account is "+ targetAccount.getFullId()+" "+targetAccount.getLocalId()+ " "+targetAccount.getAccountType());
+
         ContactManager.addContact(fullAccount, targetAccount, addContactToken);
         return "{}";
     }
@@ -119,18 +73,13 @@ public class CollaborationDelegator extends GoogleDelegator {
         msgBody += "Hi,<br>";
         msgBody += "<p>";
         msgBody += from + " is still waiting for you to become his contact";
-        msgBody += "Click  <a href=\"http://" + SystemProperty.applicationId.get() + ".appspot.com/#/portal/root/pending/\">here</a> to accept this invitation.";
+        msgBody += "Click  <a href=\"http://" + SystemProperty.applicationId.get() + ".appspot.com/#/connections/pending/\">here</a> to accept this invitation.";
         msgBody += "</p>";
         msgBody += "</body></html>";
 
         MailDelegator md;
 
-        System.out.println("sending mail");
-        System.out.println("from  " + this.account.getEmail());
-        System.out.println("name  " + from);
-        System.out.println("to  " + toEmail);
-        System.out.println("body  " + msgBody);
-        md = new MailDelegator(getAuthToken());
+        md = new MailDelegator();
         md.sendMail("no-reply@" + SystemProperty.applicationId.get() + ".appspotmail.com", from, toEmail, "Pending contact request", msgBody);
     }
 
@@ -141,25 +90,27 @@ public class CollaborationDelegator extends GoogleDelegator {
         return  AccountManager.getAccount(contact.getFullId());
     }
 
-    public Account getMyAccount() {
-        UsersDelegator qu = new UsersDelegator(this);
-        Account myAccount = qu.getCurrentUserAccountObject();
-        if (myAccount == null) {
-            return null;
-        }
-        return AccountManager.getAccount(myAccount);
+    public Account getMyAccount(EnhancedUser user) {
+        return AccountManager.getAccount(user);
     }
 
-    public AccountList getContacts(int providerId, String localId, Long from, Long until, String cursor) {
-        UsersDelegator qu = new UsersDelegator(this);
-        Account myAccount = qu.getCurrentUserAccountObject();
-        return ContactManager.getContacts(providerId, localId, from, until, cursor, new AccountDelegator(this));
-    }
-
-    public AccountList pendingInvitations() {
-        UsersDelegator qu = new UsersDelegator(this);
+//    public Account getMyAccount() {
+//        UsersDelegator qu = new UsersDelegator();
 //        Account myAccount = qu.getCurrentUserAccountObject();
-        return ContactManager.pendingInvitations(this.account);
+//        if (myAccount == null) {
+//            return null;
+//        }
+//        return AccountManager.getAccount(myAccount);
+//    }
+
+    public AccountList getContacts(EnhancedUser user, Long from, Long until, String cursor) {
+        return ContactManager.getContacts(user.getProvider(), user.getLocalId(), from, until, cursor, new AccountDelegator());
+    }
+
+    public AccountList pendingInvitations(EnhancedUser user) {
+
+//        Account myAccount = qu.getCurrentUserAccountObject();
+        return ContactManager.pendingInvitations(user.getProvider(), user.getLocalId());
     }
 
 
@@ -167,8 +118,8 @@ public class CollaborationDelegator extends GoogleDelegator {
         ContactManager.removeInvitation(invitation);
     }
 
-    public void removeContact(Integer accountType, String localId) {
-        Account fullAccount = getMyAccount();
+    public void removeContact(Integer accountType, String localId, EnhancedUser user) {
+        Account fullAccount = getMyAccount(user);
         ContactManager.removeContact(fullAccount.getAccountType(), fullAccount.getLocalId(), accountType, localId);
     }
 }

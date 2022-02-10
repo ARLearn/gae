@@ -44,19 +44,15 @@ public abstract class GenericBean  implements Runnable{
 		
 	}
 
-    public GenericBean(String token, String account) {
-        this.token = token;
+    public GenericBean( String account) {
+
         this.account = account;
     }
 
-    public GenericBean(String token, Account account) {
-        this(token, account.toString());
+    public GenericBean(Account account) {
+        this(account.toString());
     }
 	
-	public GenericBean(String token) {
-		super();
-		this.token = token;
-	}
 
 	public String getToken() {
 		return token;

@@ -1,67 +1,46 @@
 package org.celstec.arlearn2.delegators;
 
-import org.celstec.arlearn2.api.Service;
 import org.celstec.arlearn2.beans.account.Account;
-import org.celstec.arlearn2.beans.run.Run;
 import org.celstec.arlearn2.beans.run.RunAccess;
 import org.celstec.arlearn2.beans.run.RunAccessList;
-import org.celstec.arlearn2.beans.run.RunList;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.classes.RunAccessEntity;
-import org.celstec.arlearn2.jdo.manager.GameAccessManager;
 import org.celstec.arlearn2.jdo.manager.RunAccessManager;
 
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
 
-public class RunAccessDelegator extends GoogleDelegator {
+public class RunAccessDelegator  {
 
-    public RunAccessDelegator(Service service) {
-        super(service);
+//    public RunAccessDelegator(EnhancedUser user) {
+//        super(user);
+//    }
+
+    public RunAccessDelegator() {
+
     }
 
-    public RunAccessDelegator(String authtoken) {
-        super(authtoken);
-    }
-
-    public RunAccessDelegator(EnhancedUser user) {
-        super(user);
-    }
-
-    public RunAccessDelegator(GoogleDelegator gd) {
-        super(gd);
-    }
-
-    public RunAccess provideAccessWithCheck(Long runIdentifier, Long gameId, String account, Integer accessRight) {
+    public RunAccess provideAccessWithCheck(Long runIdentifier, Long gameId, EnhancedUser account, Integer accessRight) {
         return provideAccess(runIdentifier, gameId, account, accessRight);
     }
 
-    public RunAccess provideAccess(Long runIdentifier, Long gameId, String account, int accessRights) {
-        StringTokenizer st = new StringTokenizer(account, ":");
-        int accountType = 0;
-        String localID = null;
-        if (st.hasMoreTokens()) {
-            accountType = Integer.parseInt(st.nextToken());
-        }
-        if (st.hasMoreTokens()) {
-            localID = st.nextToken();
-        }
-        return RunAccessManager.addRunAccess(localID, accountType, runIdentifier, gameId, accessRights);
+    public RunAccess provideAccess(Long runIdentifier, Long gameId, EnhancedUser us, int accessRights) {
+        return RunAccessManager.addRunAccess(us.localId, us.getProvider(), runIdentifier, gameId, accessRights);
     }
 
     public void provideAccess(Long runIdentifier, Long gameId, Account account, int accessRights) {
         RunAccessManager.addRunAccess(account.getLocalId(), account.getAccountType(), runIdentifier, gameId, accessRights);
     }
 
-    public RunAccessList getRunsAccess(Long from, Long until) {
-        RunAccessList gl = new RunAccessList();
-        if (account != null) {
-            return getRunsAccess(account.getFullId(), from, until);
-        }
-        gl.setError("login to retrieve your list of runs");
-        return gl;
-    }
+//    public RunAccessList getRunsAccess(Long from, Long until) {
+//        RunAccessList gl = new RunAccessList();
+//        if (account != null) {
+//            return getRunsAccess(account.getFullId(), from, until);
+//        }
+//        gl.setError("login to retrieve your list of runs");
+//        return gl;
+//    }
 
 //    public RunAccessList getRunsAccess(Long gameId) {
 //        RunAccessList gl = new RunAccessList();
@@ -119,9 +98,18 @@ public class RunAccessDelegator extends GoogleDelegator {
         return ral;
     }
 
-    public boolean isOwner(Long runId) {
+    public boolean isOwner(Long runId, EnhancedUser us) {
         try {
-            return RunAccessManager.getAccessById(account.getFullId() + ":" + runId).getAccessRights() == RunAccessEntity.OWNER;
+            return RunAccessManager.getAccessById(us.createFullId() + ":" + runId).getAccessRights() == RunAccessEntity.OWNER;
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
+
+    public boolean isOwner(Long runId, String fullId) {
+        try {
+            return RunAccessManager.getAccessById(fullId + ":" + runId).getAccessRights() == RunAccessEntity.OWNER;
         } catch (Exception e) {
             return false;
         }

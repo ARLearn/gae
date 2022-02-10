@@ -36,13 +36,8 @@ public class GeneralItemManager {
 	static {
 		datastore = DatastoreServiceFactory.getDatastoreService();
 	}
-//	private static final String params[] = new String[]{"gameId", "id", "type"};
-//	private static final String paramsNames[] = new String[]{"gameParam", "generalItemIdParam", "typeParam"};
-//	private static final String types[] = new String[]{"Long", "com.google.appengine.api.datastore.Key", "String"};
-
 
 	public static Key addGeneralItem(GeneralItem bean) {
-//		PersistenceManager pm = PMF.get().getPersistenceManager();
 		GeneralItemEntity gi = new GeneralItemEntity();
 		gi.setGameId(bean.getGameId());
 		if (bean.getId() != null) gi.setIdentifier(bean.getId());

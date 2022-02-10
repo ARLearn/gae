@@ -19,15 +19,11 @@
 package org.celstec.arlearn2.tasks.beans;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.google.appengine.api.search.*;
 import org.celstec.arlearn2.beans.game.Game;
 import org.celstec.arlearn2.beans.generalItem.GeneralItem;
 import org.celstec.arlearn2.delegators.GameDelegator;
 import org.celstec.arlearn2.delegators.GeneralItemDelegator;
-import org.celstec.arlearn2.delegators.NotificationDelegator;
 
 public class GameSearchIndex extends GenericBean {
 
@@ -100,16 +96,14 @@ public class GameSearchIndex extends GenericBean {
         this.lat = lat;
     }
 
-
-	private static final Logger log = Logger.getLogger(NotificationDelegator.class.getName());
 	@Override
 	public void run() {
-		log.log(Level.WARNING, "GameSearchIndex run ");
+
 
 		try {
 
 			if (sharingType != null && sharingType.equals(Game.PUBLIC)) {
-				log.log(Level.WARNING, "adding to index  ");
+
 				addToIndex();
 			} else {
 				removeFromIndex();
@@ -121,14 +115,14 @@ public class GameSearchIndex extends GenericBean {
 				throw e;
 			}
 		} catch (Exception e) {
-			log.log(Level.SEVERE, "error", e);
+
 			e.printStackTrace();
 		}
 	}
 
 	private void addGisToIndex() {
 		GameDelegator gd = new GameDelegator();
-		GeneralItemDelegator gid = new GeneralItemDelegator(gd);
+		GeneralItemDelegator gid = new GeneralItemDelegator();
 		for (GeneralItem gi :gid.getGeneralItems(getGameId()).getGeneralItems()){
 			GeneralItemSearchIndex.scheduleGiTask(gi);
 		}
@@ -150,9 +144,7 @@ public class GameSearchIndex extends GenericBean {
             builder.addField(Field.newBuilder().setName("location").setGeoPoint(new GeoPoint(getLat(), getLng())));
         }
         Document doc = builder.build();
-		log.log(Level.WARNING, "doc is "+doc);
 		getIndex().put(doc);
-		log.log(Level.WARNING, "index is  "+getIndex());
 	}
 
 	public Index getIndex() {

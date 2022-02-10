@@ -1,13 +1,6 @@
 package org.celstec.arlearn2.tasks.beans.cleanUp;
 
-import com.google.appengine.api.datastore.Cursor;
-//import com.google.appengine.datanucleus.query.JDOCursorHelper;
-import org.celstec.arlearn2.beans.run.Run;
-import org.celstec.arlearn2.delegators.RunDelegator;
-import org.celstec.arlearn2.jdo.PMF;
 import org.celstec.arlearn2.jdo.classes.RunAccessEntity;
-import org.celstec.arlearn2.jdo.manager.RunAccessManager;
-import org.celstec.arlearn2.jdo.manager.RunManager;
 import org.celstec.arlearn2.tasks.beans.GenericBean;
 
 import javax.jdo.PersistenceManager;

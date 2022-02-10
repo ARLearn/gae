@@ -19,7 +19,7 @@
 package org.celstec.arlearn2.beans.generalItem;
 
 import org.celstec.arlearn2.beans.Bean;
-import org.celstec.arlearn2.beans.GamePackage;
+
 import org.celstec.arlearn2.beans.dependencies.Dependency;
 import org.celstec.arlearn2.beans.deserializer.json.JsonBeanDeserializer;
 import org.celstec.arlearn2.beans.deserializer.json.ListDeserializer;

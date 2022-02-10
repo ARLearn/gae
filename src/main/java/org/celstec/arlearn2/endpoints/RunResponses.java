@@ -4,6 +4,7 @@ import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.response.ForbiddenException;
 import org.celstec.arlearn2.beans.run.Response;
 
 import org.celstec.arlearn2.beans.run.ResponseList;
@@ -23,7 +24,7 @@ public class RunResponses extends GenericApi {
     public Response createRunResponse(final User user, Response response) {
         EnhancedUser us = (EnhancedUser) user;
         response.setUserId(us.createFullId());
-        return new ResponseDelegator(us).createResponse(response.getRunId(), response);
+        return new ResponseDelegator().createResponse(response.getRunId(), response);
     }
 
     @ApiMethod(
@@ -35,7 +36,7 @@ public class RunResponses extends GenericApi {
             final User user, @Named("reponseId") Long responseId
     ) {
         EnhancedUser us = (EnhancedUser) user;
-        Response response = new ResponseDelegator(us).revokeResponse(responseId, us.createFullId());
+        Response response = new ResponseDelegator().revokeResponse(responseId, us.createFullId());
 
         if (response.getRevoked()) {
             //todo delete response from datastore
@@ -61,7 +62,30 @@ public class RunResponses extends GenericApi {
         if (cursor == null || cursor.length() < 3) {
             cursor = null;
         }
-        return new ResponseDelegator(us).getResponsesFromUntil(runId, from, until, cursor);
+        return new ResponseDelegator().getResponsesFromUntil(runId, from, until, cursor);
+    }
+
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
+            name = "runAllResponsesForItem",
+            path = "/run/response/runId/{runId}/item/{itemId}/from/{from}/until/{until}/cursor/{cursor}"
+    )
+    public ResponseList getAllResponsesForItem(
+            final User user,
+            @Named("runId") Long runId,
+            @Named("itemId") Long itemId,
+            @Named("from") Long from,
+            @Named("until") Long until,
+            @Named("cursor") String cursor
+    ) throws ForbiddenException {
+        EnhancedUser us = (EnhancedUser) user;
+        if (us == null) {
+            throw new ForbiddenException("login to access the results");
+        }
+        if (cursor == null || cursor.length() < 3) {
+            cursor = null;
+        }
+        return new ResponseDelegator().getResponsesFromUntil(runId,itemId, from, until, cursor);
     }
 
     @ApiMethod(
@@ -80,7 +104,7 @@ public class RunResponses extends GenericApi {
         if (cursor == null || cursor.length() < 3) {
             cursor = null;
         }
-        return new ResponseDelegator(us).getResponsesFromUntil(runId, from, until, cursor, us.createFullId());
+        return new ResponseDelegator().getResponsesFromUntil(runId, from, until, cursor, us.createFullId());
     }
 
     @ApiMethod(
@@ -94,7 +118,7 @@ public class RunResponses extends GenericApi {
             @Named("itemId") Long itemId
     ) {
         EnhancedUser us = (EnhancedUser) user;
-        return new ResponseDelegator(us).getResponses(runId, itemId, us.createFullId());
+        return new ResponseDelegator().getResponses(runId, itemId, us.createFullId());
     }
 
     @ApiMethod(
@@ -112,7 +136,7 @@ public class RunResponses extends GenericApi {
         if (cursor == null || cursor.length() < 3) {
             cursor = null;
         }
-        return new ResponseDelegator(us).getResponsesCursor(runId, itemId, cursor);
+        return new ResponseDelegator().getResponsesCursor(runId, itemId, cursor);
     }
 
 }
