@@ -43,6 +43,63 @@ import java.util.List;
 @Api(name = "runs")
 public class Runs extends GenericApi {
 
+    //checked methods
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.POST,
+            name = "createRun",
+            path = "/run/create"
+    )
+    public Run createRun(final User user, Run run){
+        EnhancedUser us = (EnhancedUser) user;
+        return new RunDelegator().createRun(us, run);
+    }
+
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
+            name = "addUserToRun",
+            path = "/run/{runId}/addUser/{fullId}"
+    )
+    public org.celstec.arlearn2.beans.run.User addUserToRun(EnhancedUser user,
+                                                            @Named("runId") Long runId,
+                                                            @Named("fullId") String fullId) {
+        org.celstec.arlearn2.beans.run.User userbean = new org.celstec.arlearn2.beans.run.User();
+        userbean.setFullIdentifier(fullId);
+        userbean.setRunId(runId);
+        return new UsersDelegator().createUser(userbean);
+    }
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.POST,
+            name = "createRunWithSelf",
+            path = "/run/create/withSelf"
+    )
+    public Run createRunWithSelf(final User user, Run run){
+        EnhancedUser us = (EnhancedUser) user;
+        if (AccountManager.getAccount(us.createFullId()) == null) {
+            AccountManager.overwriteAccount(us.getId(), us.getLocalId(), us.getProvider(), us.getEmail(), user.getEmail(), null, false, 0l, "onlineplay");
+        };
+        run.setLastModificationDate(System.currentTimeMillis());
+        run.setServerCreationTime(run.getLastModificationDate());
+        run = new RunDelegator().createRun(us, run);
+        org.celstec.arlearn2.beans.run.User userbean = new org.celstec.arlearn2.beans.run.User();
+        userbean.setFullIdentifier(((EnhancedUser) user).createFullId());
+        userbean.setRunId(run.getRunId());
+        new UsersDelegator().createUser(userbean);
+        return run;
+    }
+
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
+            name = "addMe",
+            path = "/run/{runId}/addMe"
+    )
+    public Run addMe(EnhancedUser user, @Named("runId") Long runId) throws ForbiddenException {
+        return new RunDelegator().selfRegister(runId, user);
+    }
+
     @ApiMethod(
             httpMethod = ApiMethod.HttpMethod.GET,
             name = "accountDetails",
@@ -51,6 +108,18 @@ public class Runs extends GenericApi {
     public RunList getUserEmail(EnhancedUser user, @Named("gameId") Long gameId) {
         return new RunDelegator().getParticipateRuns(gameId, user.createFullId());
     }
+
+
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
+            name = "participateRunsIgnoreDelted",
+            path = "/runs/participate/ignoreDeleted/{gameId}"
+    )
+    public RunList getUserEmailIgnoreDeleted(EnhancedUser user, @Named("gameId") Long gameId) {
+        return new RunDelegator().getParticipateRunsIgnoreDeleted(gameId, user.createFullId());
+    }
+
+    //unchecked
 
     @ApiMethod(
             httpMethod = ApiMethod.HttpMethod.GET,
@@ -89,14 +158,6 @@ public class Runs extends GenericApi {
         throw new UnauthorizedException("You are not authorized to view this run");
     }
 
-    @ApiMethod(
-            httpMethod = ApiMethod.HttpMethod.GET,
-            name = "addMe",
-            path = "/run/{runId}/addMe"
-    )
-    public Run addMe(EnhancedUser user, @Named("runId") Long runId) throws ForbiddenException {
-        return new RunDelegator().selfRegister(runId, user);
-    }
 
     @ApiMethod(
             httpMethod = ApiMethod.HttpMethod.GET,
@@ -152,19 +213,7 @@ public class Runs extends GenericApi {
         gad.removeAccessWithCheck(runId, fullId);
     }
 
-    @ApiMethod(
-            httpMethod = ApiMethod.HttpMethod.GET,
-            name = "addUserToRun",
-            path = "/run/{runId}/addUser/{fullId}"
-    )
-    public org.celstec.arlearn2.beans.run.User addUserToRun(EnhancedUser user,
-                            @Named("runId") Long runId,
-                            @Named("fullId") String fullId) {
-        org.celstec.arlearn2.beans.run.User userbean = new org.celstec.arlearn2.beans.run.User();
-        userbean.setFullIdentifier(fullId);
-        userbean.setRunId(runId);
-        return new UsersDelegator().createUser(userbean);
-    }
+
 
     @ApiMethod(
             httpMethod = ApiMethod.HttpMethod.GET,
@@ -187,37 +236,9 @@ public class Runs extends GenericApi {
         return new RunDelegator().getRuns(cursor, gameId, user.getProvider(), user.getLocalId());
     }
 
-    @SuppressWarnings("ResourceParameter")
-    @ApiMethod(
-            httpMethod = ApiMethod.HttpMethod.POST,
-            name = "createRun",
-            path = "/run/create"
-    )
-    public Run createRun(final User user, Run run){
-        EnhancedUser us = (EnhancedUser) user;
-        return new RunDelegator().createRun(us, run);
-    }
 
-    @SuppressWarnings("ResourceParameter")
-    @ApiMethod(
-            httpMethod = ApiMethod.HttpMethod.POST,
-            name = "createRunWithSelf",
-            path = "/run/create/withSelf"
-    )
-    public Run createRunWithSelf(final User user, Run run){
-        EnhancedUser us = (EnhancedUser) user;
-        if (AccountManager.getAccount(us.createFullId()) == null) {
-            AccountManager.overwriteAccount(us.getId(), us.getLocalId(), us.getProvider(), us.getEmail(), user.getEmail(), null, false, 0l, "onlineplay");
-        };
-        run.setLastModificationDate(System.currentTimeMillis());
-        run.setServerCreationTime(run.getLastModificationDate());
-        run = new RunDelegator().createRun(us, run);
-        org.celstec.arlearn2.beans.run.User userbean = new org.celstec.arlearn2.beans.run.User();
-        userbean.setFullIdentifier(((EnhancedUser) user).createFullId());
-        userbean.setRunId(run.getRunId());
-        new UsersDelegator().createUser(userbean);
-        return run;
-    }
+
+
 
     @ApiMethod(
             httpMethod = ApiMethod.HttpMethod.DELETE,

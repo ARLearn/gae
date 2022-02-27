@@ -35,6 +35,7 @@ import org.celstec.arlearn2.jdo.manager.UserManager;
 import org.celstec.arlearn2.tasks.beans.DeleteGeneralItems;
 import org.celstec.arlearn2.tasks.beans.DeleteRuns;
 import org.celstec.arlearn2.tasks.beans.GameSearchIndex;
+import org.celstec.arlearn2.tasks.game.DeleteGameCloudStorage;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -190,6 +191,7 @@ public class GameDelegator {
         MyGamesCache.getInstance().removeGameList(gameIdentifier, null, myAccount, null, null);
         (new DeleteRuns(gameIdentifier, myAccount)).scheduleTask();
         (new DeleteGeneralItems(gameIdentifier)).scheduleTask();
+        DeleteGameCloudStorage.setup(gameIdentifier);
 
         return g;
     }

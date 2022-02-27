@@ -19,7 +19,6 @@
 package org.celstec.arlearn2.delegators;
 
 import com.google.api.server.spi.response.ForbiddenException;
-import org.celstec.arlearn2.beans.game.Config;
 import org.celstec.arlearn2.beans.game.Game;
 import org.celstec.arlearn2.beans.run.*;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
@@ -38,25 +37,7 @@ public class RunDelegator {
     private static final Logger logger = Logger.getLogger(RunDelegator.class.getName());
 
     public RunDelegator() {
-
     }
-
-//    public RunDelegator(EnhancedUser user) {
-//        super(user);
-//    }
-//
-//    public RunDelegator(GenericBean bean) {
-//        super(bean);
-//    }
-
-
-//    public RunDelegator(GoogleDelegator gd) {
-//        super(gd);
-//    }
-
-//    public RunDelegator(Account account, String authToken) {
-//        super(account, authToken);
-//    }
 
     public Run getRun(Long runId) {
         return getRun(runId, true);
@@ -77,19 +58,6 @@ public class RunDelegator {
         return r;
     }
 
-//    public RunList getRuns() {
-//        RunList rl = new RunList();
-//        UsersDelegator qu = new UsersDelegator();
-//        String myAccount = qu.getCurrentUserAccount();
-//
-//        if (myAccount == null) {
-//            rl.setError("login to retrieve your list of games");
-//        } else {
-//            rl.setRuns(RunManager.getRunsWithAccount(myAccount));
-//        }
-//        return rl;
-//    }
-
     public long getRunDuration(Long runId) {
         Run r = getRun(runId);
         if (r == null) {
@@ -102,14 +70,11 @@ public class RunDelegator {
         return System.currentTimeMillis() - r.getStartTime();
     }
 
-
-
     public boolean hasParticipateRuns(Long gameId, String fullId) {
         return UserManager.hasUserListByGameId(gameId, fullId);
     }
 
     public RunList getParticipateRuns(Long gameId, String fullId) {
-
         Iterator<User> it = UserManager.getUserListByGameId(gameId, fullId).iterator();
         RunList rl = new RunList();
         while (it.hasNext()) {
@@ -124,23 +89,16 @@ public class RunDelegator {
             }
         }
         rl.setServerTime(System.currentTimeMillis());
-
         return rl;
     }
 
-    public RunList getRuns(String accountId) {
-        UsersDelegator qu = new UsersDelegator();
-
-        // TODO migrate this method to UserQuery
-        // TODO add this to cache
-        // TODO migrate RunsCache
-        Iterator<User> it = UserManager.getUserList(accountId).iterator();
+    public RunList getParticipateRunsIgnoreDeleted(Long gameId, String fullId) {
+        Iterator<User> it = UserManager.getUserListByGameIdIgnoreDeleted(gameId, fullId).iterator();
         RunList rl = new RunList();
         while (it.hasNext()) {
-            User user = (User) it.next();
+            User user = it.next();
             Run r = getRun(user.getRunId());
             if (r != null) {
-                if (r.getDeleted() == null || r.getDeleted() == false) r.setDeleted(user.getDeleted());
                 rl.addRun(r);
             } else {
                 logger.severe("following run does not exist" + user.getRunId());
@@ -148,32 +106,8 @@ public class RunDelegator {
             }
         }
         rl.setServerTime(System.currentTimeMillis());
-
         return rl;
     }
-
-//    public RunList getParticipateRuns(Long from, Long until) {
-//        UsersDelegator qu = new UsersDelegator();
-//        String myAccount = qu.getCurrentUserAccount();
-//        // TODO migrate this method to UserQuery
-//        // TODO add this to cache
-//        // TODO migrate RunsCache
-//        Iterator<User> it = UserManager.getUserList(myAccount, from, until).iterator();
-//        RunList rl = new RunList();
-//        while (it.hasNext()) {
-//            User user = (User) it.next();
-//            Run r = getRun(user.getRunId());
-//            if (r != null) {
-//                if (user.getDeleted() != null && user.getDeleted()) r.setDeleted(user.getDeleted());
-//                rl.addRun(r);
-//            } else {
-//                logger.severe("following run does not exist" + user.getRunId());
-//
-//            }
-//        }
-//        rl.setServerTime(System.currentTimeMillis());
-//        return rl;
-//    }
 
     public Run createRun(EnhancedUser us, Run run) {
         if (run.getRunId() != null) RunsCache.getInstance().removeRun(run.getRunId());
@@ -197,12 +131,7 @@ public class RunDelegator {
             run.setError("Game with id '" + run.getGameId() + "' does not exist");
             return run;
         }
-
         return createRunWithAccount(us, run);
-//		} else {
-//			run.setRunId(RunManager.addRun(run.getTitle(), myAccount, game.getGameId(), run.getRunId(), run.getStartTime(), run.getServerCreationTime(), run));
-//			return run;
-//		}
     }
 
     private Run createRunWithAccount(EnhancedUser us, Run run) {
@@ -214,10 +143,7 @@ public class RunDelegator {
         return run;
     }
 
-
     public Run deleteRun(Long runId, EnhancedUser us) {
-        UsersDelegator qu = new UsersDelegator();
-//        String myAccount = qu.getCurrentUserAccount();
         return deleteRun(getRun(runId), us.createFullId());
     }
 
@@ -235,13 +161,10 @@ public class RunDelegator {
             run.setError("You are not the owner of this run");
             return run;
         }
-//		RunManager.deleteRun(r.getRunId());
         RunManager.setStatusDeleted(r.getRunId());
         RunAccessManager.resetGameAccessLastModificationDate(r.getRunId());
         RunsCache.getInstance().removeRun(r.getRunId());
         (new UpdateGeneralItemsVisibility( r.getRunId(), null, 2)).scheduleTask();
-
-
 
         (new DeleteActions(r.getRunId())).scheduleTask();
         (new DeleteTeams( r.getRunId(), null)).scheduleTask();
@@ -249,6 +172,7 @@ public class RunDelegator {
         (new DeleteUserAfterDeleteRun(r.getRunId())).scheduleTask();
 
         (new DeleteResponses( r.getRunId())).scheduleTask();
+        DeleteRunCloudStorage.setup(r.getRunId(), null);
         return r;
     }
 
@@ -259,39 +183,11 @@ public class RunDelegator {
         }
     }
 
-    public Config getConfig(Long runId) {
-        Run r = getRun(runId);
-        GameDelegator gd = new GameDelegator();
-        return gd.getGame(r.getGameId(), false).getConfig();
-    }
-
     public List<Run> getRunsForGame(long gameId) {
         return RunManager.getRunsWithGameId( gameId);
 
     }
 
-
-    public RunList getTaggedRuns(String tagId) {
-        RunList rl = new RunList();
-        rl.setRuns(RunManager.getRunsWithTagId(tagId));
-        return rl;
-    }
-
-
-//    private Run selfRegister(Run run) { //, String myAccount
-//        TeamsDelegator td = new TeamsDelegator();
-//        TeamList tl = td.getTeams(run.getRunId());
-//        for (Team team : tl.getTeams()) {
-//            if ("default".equals(team.getName())) {
-//                return selfRegister(run, team); //, myAccount
-//            }
-//        }
-//        if (!tl.getTeams().isEmpty()) {
-//            return selfRegister(run, tl.getTeams().get(0)); //, myAccount
-//        }
-//        Team team = td.createTeam(run.getRunId(), null, "default");
-//        return selfRegister(run,  team); //myAccount,
-//    }
 
     private Run selfRegister(Run run, Team team, EnhancedUser myAccount) { //, String myAccount
         UsersDelegator ud = new UsersDelegator();
@@ -302,27 +198,10 @@ public class RunDelegator {
         u.setTeamId(team.getTeamId());
         u.setFullIdentifier(myAccount.createFullId());
         u.setGameId(run.getGameId());
-        ud.selfRegister(u, run);
+        ud.selfRegister(u);
 
         return run;
     }
-
-
-
-//    public Run selfRegister(Long runId) {
-//        UsersDelegator qu = new UsersDelegator();
-//        String myAccount = qu.getCurrentUserAccount();
-//
-//
-//        Run r = RunManager.getRun(runId);
-//        if (r != null) { //&& runList.get(0).getTagId() != null
-//            return selfRegister(r);
-//        } else {
-//            Run run = new Run();
-//            run.setError("No run with runId " + runId + " exists");
-//            return run;
-//        }
-//    }
 
     public Run selfRegister(Long runId, EnhancedUser enhancedUser) throws ForbiddenException {
         Run r = RunManager.getRun(runId);

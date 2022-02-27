@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.celstec.arlearn2.jdo.classes.GameEntity.COL_AMOUNT_OF_PLAYS;
+
 public class GameManager {
 
     private static DatastoreService datastore;
@@ -59,19 +61,34 @@ public class GameManager {
         if (game.getConfig() != null) {
             gameJdo.setConfig(game.getConfig().toString());
         }
-        return datastore.put(gameJdo.toEntity()).getId();
-//		try {
-//			GameJDO persistentGame = pm.makePersistent(gameJdo);
-//			return persistentGame.getGameId();
-//
-//		} finally {
-//			pm.close();
-//		}
+//        return datastore.put(gameJdo.toEntity()).getId();
+        return addGameEntity(gameJdo.toEntity());
+    }
+
+    public static Long addGameEntity(Entity entity) {
+        return datastore.put(entity).getId();
+    }
+
+    public static void incrementPlayCount(Long gameId) {
+        Transaction txn = datastore.beginTransaction();
+        try {
+            Entity gameAsEntity = getGameAsEntity(gameId);
+            Object plays = gameAsEntity.getProperty(COL_AMOUNT_OF_PLAYS);
+            Long playsAsLong = 1L;
+            if (plays != null) {
+                playsAsLong = (Long) plays + 1;
+            }
+            gameAsEntity.setProperty(COL_AMOUNT_OF_PLAYS, playsAsLong);
+            datastore.put(txn, gameAsEntity);
+            txn.commit();
+        } finally {
+            if (txn.isActive()) {
+                txn.rollback();
+            }
+        }
     }
 
     public static Long addGame(Game game) {
-//		PersistenceManager pm = PMF.get().getPersistenceManager();
-
         GameEntity gameJdo = new GameEntity();
         gameJdo.setGameId(game.getGameId());
         gameJdo.setTitle(game.getTitle());
@@ -82,8 +99,6 @@ public class GameManager {
         gameJdo.setLng(game.getLng());
         gameJdo.setLanguage(game.getLanguage());
         gameJdo.setTheme(game.getTheme());
-//		gameJdo.setAppStoreUrl(game.getAppStoreUrl());
-//		gameJdo.setGooglePlayUrl(game.getGooglePlayUrl());
         gameJdo.setMessageListScreen(game.getMessageListScreen());
         gameJdo.setMessageListTypes(game.getMessageListTypes());
         gameJdo.setBoardHeight(game.getBoardHeight());
@@ -105,13 +120,6 @@ public class GameManager {
         gameJdo.setWebEnabled(game.getWebEnabled());
         return datastore.put(gameJdo.toEntity()).getId();
 
-//		try {
-//			GameJDO persistentGame = pm.makePersistent(gameJdo);
-//			return persistentGame.getGameId();
-//
-//		} finally {
-//			pm.close();
-//		}
     }
 
 
@@ -121,6 +129,14 @@ public class GameManager {
     }
 
     public static Game getGame(Long gameId) {
+        Entity result = getGameAsEntity(gameId);
+        if (result == null){
+            return null;
+        }
+        return new GameEntity(result).toGame();
+    }
+
+    public static Entity getGameAsEntity(Long gameId) {
         Key key = KeyFactory.createKey(GameEntity.KIND, gameId);
         Entity result = null;
         try {
@@ -129,22 +145,7 @@ public class GameManager {
             System.out.println("error ");
             return null;
         }
-        return new GameEntity(result).toGame();
-    }
-
-
-    public static void makeGameFeatured(Long gameId, boolean featured) {
-        Key key = KeyFactory.createKey(GameEntity.KIND, gameId);
-
-        GameEntity result = null;
-        try {
-            result = new GameEntity(datastore.get(key));
-            result.setFeatured(featured);
-            datastore.put(result.toEntity());
-        } catch (EntityNotFoundException e) {
-
-
-        }
+        return result;
     }
 
     public static List<Game> getFeaturedGames() {

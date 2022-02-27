@@ -18,13 +18,16 @@
  ******************************************************************************/
 package org.celstec.arlearn2.delegators;
 
+import com.google.appengine.api.taskqueue.DeferredTask;
 import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.run.*;
 import org.celstec.arlearn2.cache.UsersCache;
 import org.celstec.arlearn2.jdo.manager.UserManager;
 import org.celstec.arlearn2.tasks.beans.DeleteActions;
 import org.celstec.arlearn2.tasks.beans.DeleteResponses;
+import org.celstec.arlearn2.tasks.beans.DeleteRunCloudStorage;
 import org.celstec.arlearn2.tasks.beans.UpdateGeneralItemsVisibility;
+import org.celstec.arlearn2.tasks.game.IncrementPlayCount;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -56,6 +59,8 @@ public class UsersDelegator {
         UsersCache.getInstance().removeUser(u.getRunId()); // removing because
 
         (new UpdateGeneralItemsVisibility(u.getRunId(), u.getEmail(), 1)).scheduleTask();
+
+        IncrementPlayCount.setup(run.getGameId());
 
         AccountDelegator ad = new AccountDelegator();
         Account ac = ad.getContactDetails(u.getFullId());
@@ -89,15 +94,15 @@ public class UsersDelegator {
         return null;
     }
 
-    public User selfRegister(User u, Run run) {
+    public User selfRegister(User u) {
         User check = checkUser(u);
         if (check != null)
             return check;
+
         UsersCache.getInstance().removeUser(u.getRunId()); // removing because
-
         UserManager.hardDeleteUser(u.getRunId(), u.getEmail());
-
         UserManager.addUser(u);
+        IncrementPlayCount.setup(u.getGameId());
 
         return u;
     }
@@ -195,6 +200,7 @@ public class UsersDelegator {
         (new DeleteActions(  runId, fullId)).scheduleTask();
         (new DeleteResponses(runId, fullId)).scheduleTask();
         (new UpdateGeneralItemsVisibility( runId, fullId, 2)).scheduleTask();
+        DeleteRunCloudStorage.setup(runId, fullId);
 
         return user;
     }

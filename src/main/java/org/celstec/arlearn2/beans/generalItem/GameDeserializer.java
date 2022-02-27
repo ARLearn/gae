@@ -69,5 +69,6 @@ public class GameDeserializer extends GameBeanDeserializer {
 		if (object.has("endsOn")) g.setEndsOn((Dependency) JsonBeanDeserializer.deserialize(Dependency.class, object.getJSONObject("endsOn")));
 		if (object.has("boardHeight")) g.setBoardHeight(object.getInt("boardHeight"));
 		if (object.has("boardWidth")) g.setBoardWidth(object.getInt("boardWidth"));
+		if (object.has("amountOfPlays")) g.setAmountOfPlays(object.getLong("amountOfPlays"));
     }
 }

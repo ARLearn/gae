@@ -94,14 +94,10 @@ public class CollaborationDelegator {
         return AccountManager.getAccount(user);
     }
 
-//    public Account getMyAccount() {
-//        UsersDelegator qu = new UsersDelegator();
-//        Account myAccount = qu.getCurrentUserAccountObject();
-//        if (myAccount == null) {
-//            return null;
-//        }
-//        return AccountManager.getAccount(myAccount);
-//    }
+
+    public AccountList getContacts(EnhancedUser user, String cursor) {
+        return ContactManager.getContacts(user.getProvider(), user.getLocalId(), cursor, new AccountDelegator());
+    }
 
     public AccountList getContacts(EnhancedUser user, Long from, Long until, String cursor) {
         return ContactManager.getContacts(user.getProvider(), user.getLocalId(), from, until, cursor, new AccountDelegator());

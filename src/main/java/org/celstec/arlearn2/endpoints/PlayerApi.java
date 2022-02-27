@@ -39,6 +39,26 @@ public class PlayerApi extends GenericApi {
 
     @ApiMethod(
             httpMethod = ApiMethod.HttpMethod.GET,
+            name = "myContacts",
+            path = "/player/myContacts"
+    )
+    public AccountList getMyContacts(EnhancedUser user) {
+        CollaborationDelegator cd = new CollaborationDelegator();
+        return cd.getContacts(user, null);
+    }
+
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
+            name = "myContactsCursor",
+            path = "/player/myContacts/cursor/{cursor}"
+    )
+    public AccountList getMyContactsCursor(EnhancedUser user, @Named("cursor") String cursor) {
+        CollaborationDelegator cd = new CollaborationDelegator();
+        return cd.getContacts(user, cursor);
+    }
+
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
             name = "contacts",
             path = "/player/myContacts/{tillTime}"
     )

@@ -118,9 +118,45 @@ public class ContactManager {
 
 
 	}
-	
+
+	public static AccountList getContacts(int providerId, String localId, String cursorString, AccountDelegator accountDelegator) {
+		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(ACCOUNTS_IN_LIST);
+		if (cursorString != null) {
+			fetchOptions.startCursor(Cursor.fromWebSafeString(cursorString));
+		}
+		Query.CompositeFilter filter;
+
+			filter = Query.CompositeFilterOperator.and(
+					new Query.FilterPredicate(ContactEntity.COL_FROMACCOUNTTYPE, Query.FilterOperator.EQUAL, providerId),
+					new Query.FilterPredicate(ContactEntity.COL_FROMLOCALID, Query.FilterOperator.EQUAL,  localId)
+			);
+
+		Query q = new Query(ContactEntity.KIND);
+		q.setFilter(filter);
+		PreparedQuery pq = datastore.prepare(q);
+
+		AccountList returnList = new AccountList();
+		QueryResultList<Entity> results =pq.asQueryResultList(fetchOptions);
+		for (Entity result : results) {
+			ContactEntity contactEntity = new ContactEntity(result);
+			if (contactEntity.getToLocalId() != null) {
+				try {
+					Account contactDetails = accountDelegator.getContactDetails(contactEntity.getToFullId());
+					if ( contactDetails!= null) returnList.addAccount(contactDetails);
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println("unable to read account "+contactEntity.getToLocalId());
+				}
+			}
+		}
+		if (results.size() == ACCOUNTS_IN_LIST) {
+			returnList.setResumptionToken(results.getCursor().toWebSafeString());
+		}
+		returnList.setServerTime(System.currentTimeMillis());
+		return returnList;
+	}
+
 	public static AccountList getContacts(int providerId, String localId, Long from, Long until, String cursorString, AccountDelegator accountDelegator) {
-//		System.out.println("fetching from "+myAccount.getFullId()+" "+myAccount.getLocalId()+" "+myAccount.getAccountType()+" "+from+" "+until);
 		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(ACCOUNTS_IN_LIST);
 		if (cursorString != null) {
 			fetchOptions.startCursor(Cursor.fromWebSafeString(cursorString));

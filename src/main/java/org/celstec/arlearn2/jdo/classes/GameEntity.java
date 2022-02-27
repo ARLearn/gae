@@ -63,6 +63,7 @@ public class GameEntity {
     public static String COL_WEB_ENABLED = "webEnabled";
     public static String COL_ICON_ABBREV = "iconAbbreviation";
     public static String COL_ENDS_ON = "endsOn";
+    public static String COL_AMOUNT_OF_PLAYS = "amountOfPlays";
 
     //from GameClass
     private Key gameId;
@@ -110,6 +111,7 @@ public class GameEntity {
     private Boolean privateMode;
     private Boolean webEnabled;
     private String iconAbbreviation;
+    private Long amountOfPlays;
 
     public Long getGameId() {
         return gameId.getId();
@@ -249,22 +251,6 @@ public class GameEntity {
         this.theme = theme;
     }
 
-//    public String getGooglePlayUrl() {
-//        return googlePlayUrl;
-//    }
-//
-//    public void setGooglePlayUrl(String googlePlayUrl) {
-//        this.googlePlayUrl = googlePlayUrl;
-//    }
-//
-//    public String getAppStoreUrl() {
-//        return appStoreUrl;
-//    }
-//
-//    public void setAppStoreUrl(String appStoreUrl) {
-//        this.appStoreUrl = appStoreUrl;
-//    }
-
     public String getMessageListScreen() {
         return messageListScreen;
     }
@@ -321,6 +307,14 @@ public class GameEntity {
         this.iconAbbreviation = iconAbbreviation;
     }
 
+    public Long getAmountOfPlays() {
+        return amountOfPlays;
+    }
+
+    public void setAmountOfPlays(Long amountOfPlays) {
+        this.amountOfPlays = amountOfPlays;
+    }
+
     public GameEntity() {
 
     }
@@ -362,6 +356,9 @@ public class GameEntity {
         this.privateMode = (Boolean) entity.getProperty(COL_PRIVATE_MODE);
         this.webEnabled = (Boolean) entity.getProperty(COL_WEB_ENABLED);
         this.iconAbbreviation = (String) entity.getProperty(COL_ICON_ABBREV);
+        if (entity.getProperty(COL_AMOUNT_OF_PLAYS) != null) {
+            this.amountOfPlays = ((Long) entity.getProperty(COL_AMOUNT_OF_PLAYS)).longValue();
+        }
     }
 
     public Entity toEntity() {
@@ -400,6 +397,7 @@ public class GameEntity {
         result.setProperty(COL_PRIVATE_MODE, this.privateMode);
         result.setProperty(COL_WEB_ENABLED, this.webEnabled);
         result.setProperty(COL_ICON_ABBREV, this.iconAbbreviation);
+        result.setProperty(COL_AMOUNT_OF_PLAYS, this.amountOfPlays);
         return result;
 
     }
@@ -417,8 +415,6 @@ public class GameEntity {
         game.setLng(getLng());
         game.setLat(getLat());
         game.setLanguage(getLanguage());
-//        game.setAppStoreUrl(getAppStoreUrl());
-//        game.setGooglePlayUrl(getGooglePlayUrl());
         game.setMessageListScreen(getMessageListScreen());
         game.setMessageListTypes(getMessageListTypes());
         game.setBoardWidth(getBoardWidth());
@@ -434,7 +430,6 @@ public class GameEntity {
             try {
                 jbd = new JsonBeanDeserializer(getConfig());
                 Config config = (Config) jbd.deserialize(Config.class);
-//				config.setBoundingBoxSouth(5.5d);
                 game.setConfig(config);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -469,8 +464,12 @@ public class GameEntity {
         } else {
             game.setIconAbbreviation(this.iconAbbreviation);
         }
+        if (getAmountOfPlays() == null) {
+            game.setAmountOfPlays(0L);
+        } else {
+            game.setAmountOfPlays(getAmountOfPlays());
+        }
         return game;
     }
-
 
 }

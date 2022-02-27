@@ -60,6 +60,8 @@ public class Game extends GameBean implements Serializable, Comparable<Game>{
 
     private Dependency endsOn;
 
+    private Long amountOfPlays;
+
     public Game() {
 
     }
@@ -282,5 +284,15 @@ public class Game extends GameBean implements Serializable, Comparable<Game>{
     public void setBoardHeight(Integer boardHeight) {
         this.boardHeight = boardHeight;
     }
+
+    public Long getAmountOfPlays() {
+        return amountOfPlays;
+    }
+
+    public void setAmountOfPlays(Long amountOfPlays) {
+        this.amountOfPlays = amountOfPlays;
+    }
 }
+
+
 

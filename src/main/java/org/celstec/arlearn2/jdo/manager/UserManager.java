@@ -297,6 +297,25 @@ public class UserManager {
         return userArrayList;
     }
 
+    public static List<User> getUserListByGameIdIgnoreDeleted(Long gameId, String email) {
+        Query.CompositeFilter filter = Query.CompositeFilterOperator.and(
+                new Query.FilterPredicate(UserEntity.COL_GAMEID, Query.FilterOperator.EQUAL, gameId),
+                new Query.FilterPredicate(UserEntity.COL_EMAIL, Query.FilterOperator.EQUAL, email),
+                new Query.FilterPredicate(UserEntity.COL_DELETED, Query.FilterOperator.EQUAL, false)
+        );
+        ArrayList<User> userArrayList = new ArrayList<User>();
+        Query q = new Query(UserEntity.KIND)
+                .setFilter(filter);
+
+        PreparedQuery pq = datastore.prepare(q);
+//		System.out.println("user query ");
+        for (Entity result : pq.asIterable()) {
+            userArrayList.add(new UserEntity(result).toBean());
+        }
+        return userArrayList;
+    }
+
+
     public static boolean userExists(Long gameId, String email) {
         return datastore
                 .prepare(
