@@ -23,6 +23,7 @@ public class GameAccessList extends Bean{
 	}
 
 	private Long serverTime;
+	private Long from;
 	private String resumptionToken;
 
 	public String getMyFullId() {
@@ -61,6 +62,14 @@ public class GameAccessList extends Bean{
 		gamesAccess.add(ga);
 	}
 
+	public Long getFrom() {
+		return from;
+	}
+
+	public void setFrom(Long from) {
+		this.from = from;
+	}
+
 	public static BeanSerializer serializer = new BeanSerializer() {
 
 		@Override
@@ -70,6 +79,8 @@ public class GameAccessList extends Bean{
 			try {
 				if (gal.getServerTime() != null)
 					returnObject.put("serverTime", gal.getServerTime());
+				if (gal.getFrom() != null)
+					returnObject.put("from", gal.getFrom());
 				if (gal.getResumptionToken() != null)
 					returnObject.put("resumptionToken", gal.getResumptionToken());
 				if (gal.getGameAccess() != null)
@@ -99,6 +110,8 @@ public class GameAccessList extends Bean{
 			GameAccessList giList = (GameAccessList) genericBean;
 			if (object.has("serverTime"))
 				giList.setServerTime(object.getLong("serverTime"));
+			if (object.has("from"))
+				giList.setFrom(object.getLong("from"));
 			if (object.has("resumptionToken"))
 				giList.setResumptionToken(object.getString("resumptionToken"));
 			if (object.has("gamesAccess"))

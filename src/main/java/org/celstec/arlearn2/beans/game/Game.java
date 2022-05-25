@@ -62,6 +62,9 @@ public class Game extends GameBean implements Serializable, Comparable<Game>{
 
     private Long amountOfPlays;
 
+    private Boolean showGrid;
+    private Integer gridSize;
+
     public Game() {
 
     }
@@ -291,6 +294,22 @@ public class Game extends GameBean implements Serializable, Comparable<Game>{
 
     public void setAmountOfPlays(Long amountOfPlays) {
         this.amountOfPlays = amountOfPlays;
+    }
+
+    public Boolean getShowGrid() {
+        return showGrid;
+    }
+
+    public void setShowGrid(Boolean showGrid) {
+        this.showGrid = showGrid;
+    }
+
+    public Integer getGridSize() {
+        return gridSize;
+    }
+
+    public void setGridSize(Integer gridSize) {
+        this.gridSize = gridSize;
     }
 }
 

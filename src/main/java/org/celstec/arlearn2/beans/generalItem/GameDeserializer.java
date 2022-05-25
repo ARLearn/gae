@@ -70,5 +70,8 @@ public class GameDeserializer extends GameBeanDeserializer {
 		if (object.has("boardHeight")) g.setBoardHeight(object.getInt("boardHeight"));
 		if (object.has("boardWidth")) g.setBoardWidth(object.getInt("boardWidth"));
 		if (object.has("amountOfPlays")) g.setAmountOfPlays(object.getLong("amountOfPlays"));
+
+		if (object.has("showGrid")) g.setShowGrid(object.getBoolean("showGrid"));
+		if (object.has("gridSize")) g.setGridSize(object.getInt("gridSize"));
     }
 }

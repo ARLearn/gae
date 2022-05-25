@@ -63,6 +63,8 @@ public class GameSerializer extends GameBeanSerializer{
 
 			if (game.getIconAbbreviation() != null) returnObject.put("iconAbbreviation", game.getIconAbbreviation());
 			if (game.getAmountOfPlays() != null) returnObject.put("amountOfPlays", game.getAmountOfPlays());
+			if (game.getGridSize() != null) returnObject.put("gridSize", game.getGridSize());
+			if (game.getShowGrid() != null) returnObject.put("showGrid", game.getShowGrid());
         } catch (JSONException e) {
 			e.printStackTrace();
 		}

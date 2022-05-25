@@ -26,6 +26,7 @@ import org.celstec.arlearn2.beans.game.GameAccess;
 import org.celstec.arlearn2.beans.game.GameAccessList;
 import org.celstec.arlearn2.beans.game.GamesList;
 import org.celstec.arlearn2.beans.run.User;
+import org.celstec.arlearn2.beans.run.UserList;
 import org.celstec.arlearn2.cache.MyGamesCache;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.classes.GameAccessEntity;
@@ -39,6 +40,7 @@ import org.celstec.arlearn2.tasks.game.DeleteGameCloudStorage;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 public class GameDelegator {
 
@@ -46,13 +48,33 @@ public class GameDelegator {
         super();
     }
 
-    public GamesList getGames(String resumptionToken, long from, int provider, String localId) {
+    public GamesList getGames(String resumptionToken, Long from, int provider, String localId) {
         GamesList gl = new GamesList();
         GameAccessList gameAccessList = GameAccessManager.getGameList(provider, localId, resumptionToken, from);
         gl.setServerTime(gameAccessList.getServerTime());
+        gl.setFrom(from);
         gl.setResumptionToken(gameAccessList.getResumptionToken());
         for (GameAccess ga : gameAccessList.getGameAccess()) {
             Game g = getGame(ga.getGameId());
+            if (ga.getAccessRights() < 0) {
+                g.setDeleted(true);
+            }
+            gl.addGame(g);
+        }
+        return gl;
+    }
+
+    public GamesList getGamesParticipate(String cursor, Long from, String fullId) {
+        GamesList gl = new GamesList();
+        UserList usersList = UserManager.getUserList(fullId, from, cursor);
+        gl.setServerTime(System.currentTimeMillis());
+        gl.setFrom(from);
+        gl.setResumptionToken(usersList.getResumptionToken());
+        for (User ga : usersList.getUsers()) {
+            Game g = getGame(ga.getGameId());
+            if (ga.getDeleted()) {
+                g.setDeleted(true);
+            }
             gl.addGame(g);
         }
         return gl;
@@ -86,10 +108,8 @@ public class GameDelegator {
         if (game == null) {
             game = GameManager.getGame(gameId);
             if (game == null) {
-                System.out.println("game is null");
                 if (nullIfGameDoesNotExist) return null;
                 GameAccessManager.deleteGame(gameId);
-                System.out.println("return game does not exist");
                 game = new Game();
                 game.setGameId(gameId);
                 game.setError("game does not exist");
@@ -103,7 +123,9 @@ public class GameDelegator {
 
 
     public Game updateGame(EnhancedUser u, Long gameId, Game updateGame) {
+        Long lastModificationDate = System.currentTimeMillis();
         Game oldGame = GameManager.getGame(gameId);
+        System.out.println("oldGame "+ oldGame.getAmountOfPlays());
         oldGame.setIconAbbreviation(updateGame.getIconAbbreviation());
         oldGame.setDescription(updateGame.getDescription());
         oldGame.setSplashScreen(updateGame.getSplashScreen());
@@ -112,7 +134,7 @@ public class GameDelegator {
         oldGame.setPrivateMode(updateGame.getPrivateMode());
         oldGame.setLicenseCode(updateGame.getLicenseCode());
         oldGame.setSharing(updateGame.getSharing());
-        oldGame.setLastModificationDate(System.currentTimeMillis());
+        oldGame.setLastModificationDate(lastModificationDate);
         oldGame.setMessageListScreen(updateGame.getMessageListScreen());
         oldGame.setBoardHeight(updateGame.getBoardHeight());
         oldGame.setBoardWidth(updateGame.getBoardWidth());
@@ -121,6 +143,34 @@ public class GameDelegator {
         oldGame.setTheme(updateGame.getTheme());
         oldGame.setTitle(updateGame.getTitle());
         oldGame.setWebEnabled(updateGame.getWebEnabled());
+        oldGame.setShowGrid(updateGame.getShowGrid());
+        oldGame.setGridSize(updateGame.getGridSize());
+
+        GameManager.addGame(oldGame);
+        resetCache(gameId, u);
+
+        GameAccessManager.updateLastModificationDateGameAcessEntries(gameId, lastModificationDate);
+        return oldGame;
+    }
+
+
+
+
+    public Game updateShowGrid(EnhancedUser u, Long gameId, Boolean showGrid) {
+        Game oldGame = GameManager.getGame(gameId);
+
+        oldGame.setShowGrid(showGrid);
+        if (oldGame.getGridSize() == null) {
+            oldGame.setGridSize(20);
+        }
+        GameManager.addGame(oldGame);
+        resetCache(gameId, u);
+        return oldGame;
+    }
+
+    public Game updateGridSize(EnhancedUser u, Long gameId, Integer size) {
+        Game oldGame = GameManager.getGame(gameId);
+        oldGame.setGridSize(size);
         GameManager.addGame(oldGame);
         resetCache(gameId, u);
         return oldGame;
@@ -216,6 +266,8 @@ public class GameDelegator {
         IndexSpec indexSpec = IndexSpec.newBuilder().setName("game_index").build();
         return SearchServiceFactory.getSearchService().getIndex(indexSpec);
     }
+
+
 
 //    public GameFileList getGameContentDescription(Long gameId) {
 //        return FilePathManager.getFilePathByGameId(gameId);

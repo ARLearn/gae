@@ -42,6 +42,11 @@ public class UserListDeserializer extends BeanDeserializer{
 	public void initBean(JSONObject object, Bean genericBean) throws JSONException {
 		super.initBean(object, genericBean);
 		UserList userlist = (UserList) genericBean;
+		if (object.has("serverTime")) userlist.setServerTime(object.getLong("serverTime"));
+		if (object.has("from"))
+			userlist.setFrom(object.getLong("from"));
+		if (object.has("resumptionToken"))
+			userlist.setResumptionToken(object.getString("resumptionToken"));
 		if (object.has("users")) userlist.setUsers(ListDeserializer.toBean(object.getJSONArray("users"), User.class));
 	}
 

@@ -8,6 +8,7 @@ import org.celstec.arlearn2.beans.deserializer.json.BeanDeserializer;
 import org.celstec.arlearn2.beans.deserializer.json.ListDeserializer;
 import org.celstec.arlearn2.beans.serializer.json.BeanSerializer;
 import org.celstec.arlearn2.beans.serializer.json.ListSerializer;
+import org.celstec.arlearn2.jdo.classes.RunAccessEntity;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -22,6 +23,7 @@ public class RunAccessList extends Bean{
 	}
 
 	private Long serverTime;
+	private Long from;
 	private String resumptionToken;
 
 	public Long getServerTime() {
@@ -51,6 +53,13 @@ public class RunAccessList extends Bean{
 	public void setResumptionToken(String resumptionToken) {
 		this.resumptionToken = resumptionToken;
 	}
+	public Long getFrom() {
+		return from;
+	}
+
+	public void setFrom(Long from) {
+		this.from = from;
+	}
 
 	public static BeanSerializer serializer = new BeanSerializer() {
 
@@ -61,6 +70,8 @@ public class RunAccessList extends Bean{
 			try {
 				if (gal.getServerTime() != null)
 					returnObject.put("serverTime", gal.getServerTime());
+				if (gal.getFrom() != null)
+					returnObject.put("from", gal.getFrom());
 				if (gal.getResumptionToken() != null)
 					returnObject.put("resumptionToken", gal.getResumptionToken());
 				if (gal.getRunAccess() != null)
@@ -88,6 +99,8 @@ public class RunAccessList extends Bean{
 		public void initBean(JSONObject object, Bean genericBean) throws JSONException {
 			super.initBean(object, genericBean);
 			RunAccessList giList = (RunAccessList) genericBean;
+			if (object.has("from"))
+				giList.setFrom(object.getLong("from"));
 			if (object.has("serverTime"))
 				giList.setServerTime(object.getLong("serverTime"));
 			if (object.has("resumptionToken"))
@@ -96,5 +109,21 @@ public class RunAccessList extends Bean{
 				giList.setRunAccess(ListDeserializer.toBean(object.getJSONArray("runAccess"), RunAccess.class));
 		}
 	};
+
+	public int amountOfAdmins() {
+		int amount = 0;
+		for (RunAccess access : runAccess) {
+			if (access.getAccessRights() == RunAccessEntity.OWNER) amount++;
+		}
+		return amount;
+	}
+
+	public boolean isAdmin(String fullId) {
+		int amount = 0;
+		for (RunAccess access : runAccess) {
+			if (access.getAccessRights() == RunAccessEntity.OWNER && access.getAccount().equals(fullId)) return true;
+		}
+		return false;
+	}
 }
 

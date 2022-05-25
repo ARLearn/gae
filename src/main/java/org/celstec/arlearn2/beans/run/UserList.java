@@ -28,8 +28,28 @@ public class UserList extends RunBean{
 	
 	private List<User> users = new ArrayList<User>();
 
+	private Long serverTime;
+	private Long from;
+	private String resumptionToken;
+
 	public UserList() {
 
+	}
+
+	public Long getServerTime() {
+		return serverTime;
+	}
+
+	public void setServerTime(Long serverTime) {
+		this.serverTime = serverTime;
+	}
+
+	public Long getFrom() {
+		return from;
+	}
+
+	public void setFrom(Long from) {
+		this.from = from;
 	}
 
 	public List<User> getUsers() {
@@ -41,5 +61,13 @@ public class UserList extends RunBean{
 	}
 	public void addUser(User u) {
 		this.users.add(u);
+	}
+
+	public String getResumptionToken() {
+		return resumptionToken;
+	}
+
+	public void setResumptionToken(String resumptionToken) {
+		this.resumptionToken = resumptionToken;
 	}
 }

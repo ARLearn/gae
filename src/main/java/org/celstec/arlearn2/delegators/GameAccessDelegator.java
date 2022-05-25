@@ -65,7 +65,7 @@ public class GameAccessDelegator  {
 
     }
 
-    public void removeAccessWithCheck(Long gameIdentifier, String fullId) {
+    public GameAccess removeAccessWithCheck(Long gameIdentifier, String fullId) {
         StringTokenizer st = new StringTokenizer(fullId, ":");
         int accountType = 0;
         String localID = null;
@@ -75,11 +75,8 @@ public class GameAccessDelegator  {
         if (st.hasMoreTokens()) {
             localID = st.nextToken();
         }
-        GameAccessManager.removeGameAccess(localID, accountType, gameIdentifier);
-//        Game game = new Game();
-//        game.setGameId(gameIdentifier);
-//        game.setDeleted(true);
-//        new NotificationDelegator(this).broadcast(game, account);
+        return provideAccess(gameIdentifier, fullId, -1);
+//        GameAccessManager.removeGameAccess(localID, accountType, gameIdentifier);
     }
 
     public GameAccessList getGamesAccess(String account, Long from, Long until) {

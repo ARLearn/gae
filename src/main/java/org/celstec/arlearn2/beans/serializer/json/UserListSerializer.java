@@ -18,7 +18,6 @@
  ******************************************************************************/
 package org.celstec.arlearn2.beans.serializer.json;
 
-import org.celstec.arlearn2.beans.run.RunList;
 import org.celstec.arlearn2.beans.run.UserList;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -30,6 +29,11 @@ public class UserListSerializer extends RunBeanSerialiser{
 		UserList ul = (UserList) bean;
 		JSONObject returnObject = super.toJSON(bean);
 		try {
+			if (ul.getServerTime() != null) returnObject.put("serverTime", ul.getServerTime());
+			if (ul.getFrom() != null)
+				returnObject.put("from", ul.getFrom());
+			if (ul.getResumptionToken() != null)
+				returnObject.put("resumptionToken", ul.getResumptionToken());
 			if (ul.getUsers() != null) returnObject.put("users", ListSerializer.toJSON(ul.getUsers()));
 		} catch (JSONException e) {
 			e.printStackTrace();

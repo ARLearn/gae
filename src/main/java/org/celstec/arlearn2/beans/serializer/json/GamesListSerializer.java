@@ -30,6 +30,8 @@ public class GamesListSerializer extends BeanSerializer{
 		JSONObject returnObject = super.toJSON(bean);
 		try {
 			if (gamesList.getServerTime() != null) returnObject.put("serverTime", gamesList.getServerTime());
+			if (gamesList.getFrom() != null)
+				returnObject.put("from", gamesList.getFrom());
 			if (gamesList.getResumptionToken() != null)
 				returnObject.put("resumptionToken", gamesList.getResumptionToken());
 			if (gamesList.getGames() != null) returnObject.put("games", ListSerializer.toJSON(gamesList.getGames()));

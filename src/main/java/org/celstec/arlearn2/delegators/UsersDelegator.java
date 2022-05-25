@@ -221,4 +221,10 @@ public class UsersDelegator {
             UsersCache.getInstance().removeUser(runId);
     }
 
+    public UserList getRunUsersSince(String cursor, long from, String fullId) {
+        UserList usersList = UserManager.getUserList(fullId, from, cursor);
+        usersList.setServerTime(System.currentTimeMillis());
+        usersList.setFrom(from);
+        return usersList;
+    }
 }

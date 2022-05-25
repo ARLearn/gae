@@ -118,17 +118,26 @@ public class GameManager {
         }
         gameJdo.setPrivateMode(game.getPrivateMode());
         gameJdo.setWebEnabled(game.getWebEnabled());
+        gameJdo.setShowGrid(game.getShowGrid());
+        gameJdo.setGridSize(game.getGridSize());
+        gameJdo.setAmountOfPlays(game.getAmountOfPlays());
         return datastore.put(gameJdo.toEntity()).getId();
 
     }
 
 
     public static void deleteGame(Long gameId) {
-        Key key = KeyFactory.createKey(GameEntity.KIND, gameId);
-        datastore.delete(key);
+//        Key key = KeyFactory.createKey(GameEntity.KIND, gameId);
+//        datastore.delete(key);
+        GameEntity gameJdo = new GameEntity();
+        gameJdo.setGameId(gameId);
+        gameJdo.setDeleted(true);
+        gameJdo.setLastModificationDate(System.currentTimeMillis());
+        datastore.put(gameJdo.toEntity());
     }
 
     public static Game getGame(Long gameId) {
+        System.out.println("retreive "+gameId);
         Entity result = getGameAsEntity(gameId);
         if (result == null){
             return null;

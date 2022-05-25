@@ -32,6 +32,7 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.celstec.arlearn2.beans.DependencyWrapper;
 import org.celstec.arlearn2.beans.GameIdentifierList;
 import org.celstec.arlearn2.beans.dependencies.Dependency;
@@ -62,14 +63,7 @@ public class Games extends GenericApi {
     }
 
 
-    @ApiMethod(
-            httpMethod = ApiMethod.HttpMethod.GET,
-            name = "gamesInWichIParticipate",
-            path = "/games/participateWithCursor/{cursor}"
-    )
-    public GameIdentifierList getGamesParticipate(EnhancedUser user, @Named("cursor") String cursorString) {
-        return UserManager.getUserList(user.createFullId(), cursorString.equals("-") ? null : cursorString);
-    }
+
 
     @ApiMethod(
             httpMethod = ApiMethod.HttpMethod.GET,
@@ -80,30 +74,17 @@ public class Games extends GenericApi {
         return CollectionResponse.<Long>builder().setItems(UserManager.getGameIdList(user.createFullId())).build();
     }
 
-//curl -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImY1YzlhZWJlMjM0ZGE2MDE2YmQ3Yjk0OTE2OGI4Y2Q1YjRlYzllZWIiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiU3RlZmFhbiBUZXJuaWVyIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hLS9BQXVFN21BZWY4Y2tsYTRvaWRnVkVzdFpSTkpPWUhqblFRN3ZLbk9RX2pKZUdrMCIsImlzcyI6Imh0dHBzOi8vc2VjdXJldG9rZW4uZ29vZ2xlLmNvbS9zZXJpb3VzLWdhbWluZy1wbGF0Zm9ybSIsImF1ZCI6InNlcmlvdXMtZ2FtaW5nLXBsYXRmb3JtIiwiYXV0aF90aW1lIjoxNTg5ODk1MDA2LCJ1c2VyX2lkIjoiVUh2N3pCWmxESlFFQldsbXFTZ1ZoTzUwVzVEMiIsInN1YiI6IlVIdjd6QlpsREpRRUJXbG1xU2dWaE81MFc1RDIiLCJpYXQiOjE1ODk5MDAwOTMsImV4cCI6MTU4OTkwMzY5MywiZW1haWwiOiJzdGVmYWFuLnRlcm5pZXJAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMTY3NDM0NDkzNDk5MjA4NTAxNTAiXSwiZW1haWwiOlsic3RlZmFhbi50ZXJuaWVyQGdtYWlsLmNvbSJdfSwic2lnbl9pbl9wcm92aWRlciI6Imdvb2dsZS5jb20ifX0.UsPbAipi74rgUN6TgCcNfWhuK1ONQroSPvjaiOeUffWXTzMxVwS_CMpHhvBc-yvdGA4QI-ldn6SXExDMC6MYNxzlmhAHTsROyY9nEEqlccgR9ogj9a90vhjtU78C8ZmSTnHERAbEKkmPGYpv61jExRzAziYac_GKxoE99RXI9vZ5N3d0o77bCBWB6JnvVbBaVMFwgz1vW_S_JWqHV5N37O3Plb8cXjPvf0lI0W4j__2Mt6fFzs1XhKBd4l8SlN6Xz_Wuler-y18nIoge13Uf9UhSZthvqjUFS2kZXruhpON5ItmJYt9-DzSnnBcQLEwSrzm0outOEWU5xF5smeAPrA"   http://localhost:8080/api/game/clone/5629499534
-
     @ApiMethod(
             name = "getGame",
             path = "/game/{gameId}",
             httpMethod = ApiMethod.HttpMethod.GET
     )
     public Game getGame(final EnhancedUser user, @Named("gameId") Long gameId) throws UnauthorizedException {//Game newGame
-//        GameDelegator qg = new GameDelegator();
-//        Game g = qg.getGame(gameId);
-//        if (g.getError() != null) {
-//            return g;
-//        }
-
         GameDelegator qg = new GameDelegator();
         Game g = qg.getGame(gameId);
         if (g.getError() != null) {
             return g;
         }
-//        Queue queue = QueueFactory.getDefaultQueue();
-//        queue.add(
-//                TaskOptions.Builder
-//                        .withPayload(new InitiateClone(g.getGameId(), user)
-////                        ));
 
         if (g.getSharing() == null || g.getSharing() == Game.PRIVATE) {
 
@@ -111,7 +92,12 @@ public class Games extends GenericApi {
             if (!gad.canView(gameId, user.createFullId())) {
                 UsersDelegator ud = new UsersDelegator();
                 if (!ud.userExists(gameId, user.createFullId())) {
-                    throw new UnauthorizedException("Not authorized to view this game");
+//                    throw new UnauthorizedException("Not authorized to view this game");
+
+                    g = new Game();
+                    g.setGameId(gameId);
+                    g.setDeleted(true);
+                    return g;
                 }
             }
         }
@@ -135,34 +121,8 @@ public class Games extends GenericApi {
                 TaskOptions.Builder
                         .withPayload(new InitiateClone(g.getGameId(), user)
                         ));
-
-//        queue.add(
-//                TaskOptions.Builder
-//                        .withPayload(new CloneMediaLibrary()
-//                        ));
-
-
-//        if (g.getSharing() == null || g.getSharing() == Game.PRIVATE) {
-//
-//            GameAccessDelegator gad = new GameAccessDelegator();
-//            if (!gad.canView(gameId, user.createFullId())) {
-//                UsersDelegator ud = new UsersDelegator();
-//                if (!ud.userExists(gameId, user.createFullId())) {
-//                    throw new UnauthorizedException("Not authorized to view this game");
-//                }
-//            }
-//        }
         return g;
     }
-//    @ApiMethod(
-//            name = "getListOfContributors",
-//            path = "/game/{gameId}/accesslist",
-//            httpMethod = ApiMethod.HttpMethod.GET
-//    )
-//    public GameAccessList accessList(final EnhancedUser user, @Named("gameId") Long gameId) {//Game newGame
-//        GameAccessDelegator gad = new GameAccessDelegator(user);
-//        return gad.getAccessList(gameId);
-//    }
 
     @ApiMethod(
             name = "getGameAccess",
@@ -173,6 +133,20 @@ public class Games extends GenericApi {
         GameAccessDelegator gad = new GameAccessDelegator();
         return gad.getAccessList(gameId, user.createFullId());
     }
+
+    @ApiMethod(
+            name = "getGameAccessForUser",
+            path = "/game/access/user/{since}",
+            httpMethod = ApiMethod.HttpMethod.GET
+    )
+    public GameAccessList getGameAccessUser(final EnhancedUser user,
+                                            @Named("since") long from,
+                                            @Nullable @Named("resumptionToken") String cursor
+    ) throws UnauthorizedException {//Game newGame
+        GameAccessDelegator gad = new GameAccessDelegator();
+        return gad.getGamesAccess(user.createFullId(), cursor, from);
+    }
+
 
     @ApiMethod(
             name = "giveGameAccess",
@@ -196,12 +170,12 @@ public class Games extends GenericApi {
             path = "/game/access/revoke/{gameId}/{fullId}",
             httpMethod = ApiMethod.HttpMethod.DELETE
     )
-    public void revokeGameAccess(final EnhancedUser user,
+    public GameAccess revokeGameAccess(final EnhancedUser user,
                                  @Named("gameId") Long gameId,
                                  @Named("fullId") String fullId
     ) {
         GameAccessDelegator gad = new GameAccessDelegator();
-        gad.removeAccessWithCheck(gameId, fullId);
+        return gad.removeAccessWithCheck(gameId, fullId);
     }
 
 
@@ -218,7 +192,11 @@ public class Games extends GenericApi {
         }
         GameAccessDelegator gad = new GameAccessDelegator();
         if (!gad.isOwner(user.createFullId(), gameId)) {
-            throw new UnauthorizedException("Not authorized to delete this game");
+            g = new Game();
+            g.setGameId(gameId);
+            g.setDeleted(true);
+            return g;
+//            throw new UnauthorizedException("Not authorized to delete this game");
 
         }
         qg.deleteGame(gameId, user);
@@ -251,9 +229,8 @@ public class Games extends GenericApi {
             name = "update_game",
             path = "/game/{gameId}/update"
     )
-    public Game updateGame(final User u, @Named("gameId") Long gameId, Game updateGame) {//Game newGame
-        EnhancedUser user = (EnhancedUser) u;
-        return (new GameDelegator()).updateGame(user, gameId, updateGame);
+    public Game updateGame(final User u, @Named("gameId") Long gameId, Game updateGame) {
+        return (new GameDelegator()).updateGame((EnhancedUser) u, gameId, updateGame);
     }
 
 
@@ -286,16 +263,6 @@ public class Games extends GenericApi {
         return null;
     }
 
-
-//    @SuppressWarnings("ResourceParameter")
-//    @ApiMethod(
-//            httpMethod = ApiMethod.HttpMethod.POST,
-//            name = "endstate_update",
-//            path = "/game/endstate/{gameId}"
-//    )
-//    public DependencyWrapper wrapperPost(final User user, DependencyWrapper dependency,  @Named("gameId") Long gameId){
-//        return dependency;
-//    }
     @SuppressWarnings("ResourceParameter")
     @ApiMethod(
             name = "update_end_state",
@@ -331,6 +298,38 @@ public class Games extends GenericApi {
         return null;
     }
 
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(
+            name = "update_show_grid",
+            path = "/game/{gameId}/grid/show/{show}",
+            httpMethod = ApiMethod.HttpMethod.POST
+    )
+    public Game updateShowGrid(final User user,
+                               DependencyWrapper dependency,
+                               @Named("gameId") Long gameId,
+                               @Named("show") Boolean show
+                               ) {
+        EnhancedUser enhancedUser = (EnhancedUser) user;
+        GameDelegator gd = new GameDelegator();
+        return  gd.updateShowGrid(enhancedUser, gameId, show);
+    }
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(
+            name = "update_grid_size",
+            path = "/game/{gameId}/grid/size/{size}",
+            httpMethod = ApiMethod.HttpMethod.POST
+    )
+    public Game updateGridSize(final User user,
+                               DependencyWrapper dependency,
+                               @Named("gameId") Long gameId,
+                               @Named("size") Integer size
+    ) {
+        EnhancedUser enhancedUser = (EnhancedUser) user;
+        GameDelegator gd = new GameDelegator();
+        return  gd.updateGridSize(enhancedUser, gameId, size);
+    }
 
     @SuppressWarnings("ResourceParameter")
     @ApiMethod(
@@ -397,7 +396,41 @@ public class Games extends GenericApi {
     )
     public GamesList myGames(final EnhancedUser user, @Nullable @Named("resumptionToken") String cursor) {//Game newGame
         GameDelegator gameDelegator = new GameDelegator();
-        return gameDelegator.getGames(cursor, 0, user.getProvider(), user.getLocalId());
+        return gameDelegator.getGames(cursor, 1l, user.getProvider(), user.getLocalId());
     }
+
+    @ApiMethod(
+            name = "myGamesSince",
+            path = "/game/list/{since}",
+            httpMethod = ApiMethod.HttpMethod.GET
+    )
+    public GamesList myGamesSince(final EnhancedUser user,
+                                  @Named("since") long from,
+                                  @Nullable @Named("resumptionToken") String cursor) {//Game newGame
+        GameDelegator gameDelegator = new GameDelegator();
+        return gameDelegator.getGames(cursor, from, user.getProvider(), user.getLocalId());
+    }
+
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
+            name = "gamesInWichIParticipate",
+            path = "/games/participateWithCursor/{cursor}"
+    )
+    public GameIdentifierList getGamesParticipate(EnhancedUser user, @Named("cursor") String cursorString) {
+        return UserManager.getUserList(user.createFullId(), cursorString.equals("-") ? null : cursorString);
+    }
+
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
+            name = "participateGamesSince",
+            path = "/game/participate/list/{since}"
+    )
+    public GamesList getGamesParticipateSince(
+            final EnhancedUser user,
+            @Named("since") long from,
+            @Nullable @Named("resumptionToken") String cursorString) {
+        return (new GameDelegator()).getGamesParticipate(cursorString, from, user.createFullId());
+    }
+
 
 }

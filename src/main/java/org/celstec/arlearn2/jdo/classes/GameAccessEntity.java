@@ -26,6 +26,8 @@ import org.celstec.arlearn2.beans.game.GameAccess;
  * ****************************************************************************
  */
 public class GameAccessEntity {
+    public final static int GAME_DELETED = -2;
+    public final static int ACCESS_REMOVED = -1;
     public final static int OWNER = 1;
     public final static int CAN_EDIT = 2;
     public final static int CAN_VIEW = 3;
@@ -65,6 +67,7 @@ public class GameAccessEntity {
     public GameAccess toBean() {
 
         GameAccess gameAccess = new GameAccess();
+        gameAccess.setIdentifier(getUniqueId());
         gameAccess.setAccount(getAccountType()+":"+getLocalId());
         gameAccess.setAccessRights(getAccessRights());
         gameAccess.setGameId(getGameId());

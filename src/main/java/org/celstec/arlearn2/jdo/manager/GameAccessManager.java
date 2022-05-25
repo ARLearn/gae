@@ -41,12 +41,13 @@ public class GameAccessManager {
 	}
 
 
-	public static GameAccessList getGameList(int accountType, String localId, String cursorString, long from) {
+	public static GameAccessList getGameList(int accountType, String localId, String cursorString, Long from) {
 		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(ACCESS_IN_LIST);
 		if (cursorString != null) {
 			fetchOptions.startCursor(Cursor.fromWebSafeString(cursorString));
 		}
 		GameAccessList returnList = new GameAccessList();
+		returnList.setFrom(from);
 		Query q = new Query(GameAccessEntity.KIND);
 		Query.CompositeFilter accountFilter = Query.CompositeFilterOperator.and(
 				new Query.FilterPredicate(GameAccessEntity.COL_LOCALID, Query.FilterOperator.EQUAL, localId),
@@ -67,6 +68,17 @@ public class GameAccessManager {
 		returnList.setServerTime(System.currentTimeMillis());
 		return returnList;
 	}
+
+	public static void updateLastModificationDateGameAcessEntries(Long gameId, Long lastModificationDate) {
+		Query q = new Query(GameAccessEntity.KIND);//.addSort("name", SortDirection.ASCENDING);
+		q.setFilter(new Query.FilterPredicate(GameAccessEntity.COL_GAMEID, Query.FilterOperator.EQUAL, gameId));
+		PreparedQuery pq = datastore.prepare(q);
+		for (Entity result : pq.asIterable()) {
+			result.setProperty(GameAccessEntity.COL_LASTMODIFICATIONDATEGAME, lastModificationDate);
+			datastore.put(result);
+		}
+	}
+
 
 	public static List<GameAccess> getGameList(int accountType, String localId, Long from, Long until) {
 		Query.CompositeFilter filter;
@@ -118,10 +130,10 @@ public class GameAccessManager {
 	
 
 
-	public static void removeGameAccess(String localID, int accountType, Long gameIdentifier) {
-			Key key = KeyFactory.createKey(GameAccessEntity.KIND, accountType+":"+localID+":"+gameIdentifier);
-			datastore.delete(key);
-	}
+//	public static void removeGameAccess(String localID, int accountType, Long gameIdentifier) {
+//			Key key = KeyFactory.createKey(GameAccessEntity.KIND, accountType+":"+localID+":"+gameIdentifier);
+//			datastore.delete(key);
+//	}
 	
 	public static GameAccessEntity getAccessById(String accessId) {
 		Key key = KeyFactory.createKey(GameAccessEntity.KIND, accessId);
@@ -135,11 +147,16 @@ public class GameAccessManager {
 	}
 
     public static void deleteGame(Long gameId) {
+		Long lastModificationDate = System.currentTimeMillis();
 		Query q = new Query(GameAccessEntity.KIND);//.addSort("name", SortDirection.ASCENDING);
 		q.setFilter(new Query.FilterPredicate(GameAccessEntity.COL_GAMEID, Query.FilterOperator.EQUAL, gameId));
 		PreparedQuery pq = datastore.prepare(q);
 		for (Entity result : pq.asIterable()) {
-			datastore.delete(result.getKey());
+//			datastore.delete(result.getKey());
+
+			result.setProperty(GameAccessEntity.COL_LASTMODIFICATIONDATEGAME, lastModificationDate);
+			result.setProperty(GameAccessEntity.COL_ACCESSRIGHTS, GameAccessEntity.GAME_DELETED);
+			datastore.put(result);
 		}
     }
 }

@@ -65,6 +65,9 @@ public class GameEntity {
     public static String COL_ENDS_ON = "endsOn";
     public static String COL_AMOUNT_OF_PLAYS = "amountOfPlays";
 
+    public static String COL_SHOW_GRID = "showGrid";
+    public static String COL_GRID_SIZE = "gridSize";
+
     //from GameClass
     private Key gameId;
     protected Boolean deleted;
@@ -112,6 +115,9 @@ public class GameEntity {
     private Boolean webEnabled;
     private String iconAbbreviation;
     private Long amountOfPlays;
+
+    private Boolean showGrid;
+    private Integer gridSize;
 
     public Long getGameId() {
         return gameId.getId();
@@ -315,6 +321,22 @@ public class GameEntity {
         this.amountOfPlays = amountOfPlays;
     }
 
+    public Boolean getShowGrid() {
+        return showGrid;
+    }
+
+    public void setShowGrid(Boolean showGrid) {
+        this.showGrid = showGrid;
+    }
+
+    public Integer getGridSize() {
+        return gridSize;
+    }
+
+    public void setGridSize(Integer gridSize) {
+        this.gridSize = gridSize;
+    }
+
     public GameEntity() {
 
     }
@@ -355,9 +377,15 @@ public class GameEntity {
         }
         this.privateMode = (Boolean) entity.getProperty(COL_PRIVATE_MODE);
         this.webEnabled = (Boolean) entity.getProperty(COL_WEB_ENABLED);
+
+
         this.iconAbbreviation = (String) entity.getProperty(COL_ICON_ABBREV);
         if (entity.getProperty(COL_AMOUNT_OF_PLAYS) != null) {
             this.amountOfPlays = ((Long) entity.getProperty(COL_AMOUNT_OF_PLAYS)).longValue();
+        }
+        this.showGrid = (Boolean) entity.getProperty(COL_SHOW_GRID);
+        if (entity.getProperty(COL_GRID_SIZE) != null) {
+            this.gridSize = ((Long) entity.getProperty(COL_GRID_SIZE)).intValue();
         }
     }
 
@@ -398,6 +426,8 @@ public class GameEntity {
         result.setProperty(COL_WEB_ENABLED, this.webEnabled);
         result.setProperty(COL_ICON_ABBREV, this.iconAbbreviation);
         result.setProperty(COL_AMOUNT_OF_PLAYS, this.amountOfPlays);
+        result.setProperty(COL_SHOW_GRID, this.showGrid);
+        result.setProperty(COL_GRID_SIZE, this.gridSize);
         return result;
 
     }
@@ -465,10 +495,16 @@ public class GameEntity {
             game.setIconAbbreviation(this.iconAbbreviation);
         }
         if (getAmountOfPlays() == null) {
+            System.out.println("set to zero");
             game.setAmountOfPlays(0L);
         } else {
+            System.out.println("set to getAmountOfPlays");
             game.setAmountOfPlays(getAmountOfPlays());
         }
+
+        game.setShowGrid(showGrid);
+        game.setGridSize(gridSize);
+
         return game;
     }
 

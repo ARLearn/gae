@@ -69,6 +69,7 @@ public class RunAccessEntity {
     public RunAccess toBean() {
 
         RunAccess runAccess = new RunAccess();
+        runAccess.setIdentifier(getUniqueId());
         runAccess.setAccount(getAccountType()+":"+getLocalId());
         runAccess.setAccessRights(getAccessRights());
         runAccess.setRunId(getRunId());

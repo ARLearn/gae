@@ -4,7 +4,9 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
 import com.google.api.server.spi.response.UnauthorizedException;
+import org.celstec.arlearn2.beans.game.GamesList;
 import org.celstec.arlearn2.beans.run.UserList;
+import org.celstec.arlearn2.delegators.GameDelegator;
 import org.celstec.arlearn2.delegators.UsersDelegator;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 
@@ -48,6 +50,18 @@ public class RunUser extends GenericApi{
     )
     public UserList userForRunId(EnhancedUser user, @Named("runId") Long runId) {
         return new UsersDelegator().getUsers(runId);
+    }
+
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
+            name = "runUsersSince",
+            path = "/run/user/list/{since}"
+    )
+    public UserList getRunUsersSince(
+            final EnhancedUser user,
+            @Named("since") long from,
+            @Nullable @Named("resumptionToken") String cursorString) {
+        return (new UsersDelegator()).getRunUsersSince(cursorString, from, user.createFullId());
     }
 
     @ApiMethod(

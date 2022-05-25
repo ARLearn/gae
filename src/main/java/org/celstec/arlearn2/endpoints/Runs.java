@@ -10,6 +10,7 @@ import com.google.api.server.spi.response.ForbiddenException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import org.celstec.arlearn2.beans.game.Game;
 import org.celstec.arlearn2.beans.game.GameAccess;
+import org.celstec.arlearn2.beans.game.GameAccessList;
 import org.celstec.arlearn2.beans.run.Run;
 import org.celstec.arlearn2.beans.run.RunAccess;
 import org.celstec.arlearn2.beans.run.RunAccessList;
@@ -191,11 +192,11 @@ public class Runs extends GenericApi {
                                     @Named("runId") Long runId,
                                     @Named("fullId") String fullId,
                                     @Named("rights") int rights
-    ) {
+    ) throws ForbiddenException {
         RunAccessDelegator rad = new RunAccessDelegator();
         Run run = getRun(user, runId);
         if (run != null) {
-            return rad.provideAccessWithCheck(runId, run.getGameId(), user, rights);
+            return rad.provideAccessWithCheck(runId, run.getGameId(), fullId, rights);
         }
         return null;
     }
@@ -236,10 +237,6 @@ public class Runs extends GenericApi {
         return new RunDelegator().getRuns(cursor, gameId, user.getProvider(), user.getLocalId());
     }
 
-
-
-
-
     @ApiMethod(
             httpMethod = ApiMethod.HttpMethod.DELETE,
             name = "deleteRun",
@@ -248,5 +245,17 @@ public class Runs extends GenericApi {
     public Run deleteRun(final User user, @Named("runId") Long runId) {
         EnhancedUser us = (EnhancedUser) user;
         return new RunDelegator().deleteRun(runId, us);
+    }
+
+    @ApiMethod(
+            name = "getRunAccessForUser",
+            path = "/run/access/user/{since}",
+            httpMethod = ApiMethod.HttpMethod.GET
+    )
+    public RunAccessList getRunAccessUser(final EnhancedUser user,
+                                            @Named("since") long from,
+                                            @Nullable @Named("resumptionToken") String cursor
+    ) throws UnauthorizedException {//Game newGame
+        return new RunAccessDelegator().getRunAccess(user.createFullId(), cursor, from);
     }
 }

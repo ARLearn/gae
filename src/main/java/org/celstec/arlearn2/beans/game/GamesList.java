@@ -18,19 +18,20 @@
  ******************************************************************************/
 package org.celstec.arlearn2.beans.game;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Vector;
-
 import org.celstec.arlearn2.beans.Bean;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GamesList extends Bean implements Serializable{
 	
 	public static String gamesType = "org.celstec.arlearn2.beans.game.Game";
 	
-	private List<Game> games = new Vector();
+	private List<Game> games = new ArrayList<Game>();
 	
 	private Long serverTime;
+	private Long from;
 	private String resumptionToken;
 
 	public String getResumptionToken() {
@@ -63,6 +64,14 @@ public class GamesList extends Bean implements Serializable{
 
 	public void addGame(Game game) {
 		games.add(game);
+	}
+
+	public Long getFrom() {
+		return from;
+	}
+
+	public void setFrom(Long from) {
+		this.from = from;
 	}
 	
 }

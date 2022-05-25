@@ -41,6 +41,8 @@ public class GamesListDeserializer  extends BeanDeserializer{
 		super.initBean(object, genericBean);
 		GamesList gamesList = (GamesList) genericBean;
 		if (object.has("serverTime")) gamesList.setServerTime(object.getLong("serverTime"));
+		if (object.has("from"))
+			gamesList.setFrom(object.getLong("from"));
 		if (object.has("resumptionToken"))
 			gamesList.setResumptionToken(object.getString("resumptionToken"));
 		if (object.has("games")) gamesList.setGames(ListDeserializer.toBean(object.getJSONArray("games"), Game.class));

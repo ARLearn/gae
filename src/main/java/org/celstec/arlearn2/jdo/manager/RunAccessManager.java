@@ -3,6 +3,7 @@ package org.celstec.arlearn2.jdo.manager;
 import com.google.appengine.api.datastore.*;
 import org.celstec.arlearn2.beans.game.Game;
 //import org.celstec.arlearn2.beans.game.GameAccessList;
+import org.celstec.arlearn2.beans.game.GameAccessList;
 import org.celstec.arlearn2.beans.run.RunAccess;
 import org.celstec.arlearn2.beans.run.RunAccessList;
 //import org.celstec.arlearn2.jdo.classes.GameAccessEntity;
@@ -120,6 +121,33 @@ public class RunAccessManager {
 
 	}
 
+	public static RunAccessList getRunListFrom(int accountType, String localId, String cursorString, long from) {
+		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(ACCESS_IN_LIST);
+		if (cursorString != null) {
+			fetchOptions.startCursor(Cursor.fromWebSafeString(cursorString));
+		}
+		RunAccessList returnList = new RunAccessList();
+		returnList.setFrom(from);
+		Query q = new Query(RunAccessEntity.KIND);
+		Query.CompositeFilter accountFilter = Query.CompositeFilterOperator.and(
+				new Query.FilterPredicate(RunAccessEntity.COL_LOCALID, Query.FilterOperator.EQUAL, localId),
+				new Query.FilterPredicate(RunAccessEntity.COL_ACCOUNTTYPE, Query.FilterOperator.EQUAL, accountType),
+				new Query.FilterPredicate(RunAccessEntity.COL_LASTMODIFICATIONDATERUN, Query.FilterOperator.GREATER_THAN_OR_EQUAL, from)
+		);
+		q.setFilter(accountFilter);
+		q.addSort(RunAccessEntity.COL_LASTMODIFICATIONDATERUN, Query.SortDirection.DESCENDING);
+		PreparedQuery pq = datastore.prepare(q);
+		QueryResultList<Entity> results =pq.asQueryResultList(fetchOptions);
+		for (Entity result : results) {
+			RunAccessEntity object = new RunAccessEntity(result);
+			returnList.addRunAccess(object.toBean());
+		}
+		if (results.size() == ACCESS_IN_LIST) {
+			returnList.setResumptionToken(results.getCursor().toWebSafeString());
+		}
+		returnList.setServerTime(System.currentTimeMillis());
+		return returnList;
+	}
 
 	public static RunAccessList getRunList(int accountType, String localId, String cursorString, long gameId) {
 		FetchOptions fetchOptions = FetchOptions.Builder.withLimit(ACCESS_IN_LIST);

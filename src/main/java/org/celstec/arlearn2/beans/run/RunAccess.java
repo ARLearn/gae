@@ -7,12 +7,21 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 public class RunAccess extends Bean{
-	
+
+	private String identifier;
 	private String account;
 	private Integer accessRights;
 	private Long runId;
 	private Long gameId;
-	
+
+	public String getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
+	}
+
 	public String getAccount() {
 		return account;
 	}
@@ -61,6 +70,7 @@ public class RunAccess extends Bean{
 		public void initBean(JSONObject object, Bean genericBean) throws JSONException {
 			super.initBean(object, genericBean);
 			RunAccess bean = (RunAccess) genericBean;
+			if (object.has("identifier")) bean.setIdentifier(object.getString("identifier"));
 			if (object.has("account")) bean.setAccount(object.getString("account"));
 			if (object.has("accessRights")) bean.setAccessRights(object.getInt("accessRights"));
 			if (object.has("runId")) bean.setRunId(object.getLong("runId"));
@@ -75,6 +85,7 @@ public class RunAccess extends Bean{
 			RunAccess teamBean = (RunAccess) bean;
 			JSONObject returnObject = super.toJSON(bean);
 			try {
+				if (teamBean.getIdentifier() != null) returnObject.put("identifier", teamBean.getIdentifier());
 				if (teamBean.getAccount() != null) returnObject.put("account", teamBean.getAccount());
 				if (teamBean.getAccessRights() != null) returnObject.put("accessRights", teamBean.getAccessRights());
 				if (teamBean.getRunId() != null) returnObject.put("runId", teamBean.getRunId());

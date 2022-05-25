@@ -1,10 +1,12 @@
 package org.celstec.arlearn2.delegators;
 
+import com.google.api.server.spi.response.ForbiddenException;
 import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.run.RunAccess;
 import org.celstec.arlearn2.beans.run.RunAccessList;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.classes.RunAccessEntity;
+import org.celstec.arlearn2.jdo.manager.GameAccessManager;
 import org.celstec.arlearn2.jdo.manager.RunAccessManager;
 
 import java.util.Iterator;
@@ -19,6 +21,28 @@ public class RunAccessDelegator  {
 
     public RunAccessDelegator() {
 
+    }
+
+    public RunAccess provideAccessWithCheck(Long runIdentifier, Long gameId, String fullId, Integer accessRight) throws ForbiddenException {
+        StringTokenizer st = new StringTokenizer(fullId, ":");
+        Integer accountType = null;
+        String localId = null;
+        if (st.hasMoreTokens()) {
+            accountType = Integer.parseInt(st.nextToken());
+        }
+        if (st.hasMoreTokens()) {
+            localId = (st.nextToken());
+        }
+        if (accountType == null ||localId == null) {
+            return null;
+        }
+        RunAccessList ral = getRunAccess(runIdentifier);
+        if (accessRight != RunAccessEntity.OWNER  && ral.amountOfAdmins() <= 1) {
+            if (ral.isAdmin(fullId)) {
+                throw new ForbiddenException("LAST_ADMIN");
+            }
+        }
+        return RunAccessManager.addRunAccess(localId, accountType, runIdentifier, gameId, accessRight);
     }
 
     public RunAccess provideAccessWithCheck(Long runIdentifier, Long gameId, EnhancedUser account, Integer accessRight) {
@@ -91,6 +115,19 @@ public class RunAccessDelegator  {
         return rl;
     }
 
+
+    public RunAccessList getRunAccess(String account, String resumptionToken, long from) {
+        StringTokenizer st = new StringTokenizer(account, ":");
+        int accountType = 0;
+        String localID = null;
+        if (st.hasMoreTokens()) {
+            accountType = Integer.parseInt(st.nextToken());
+        }
+        if (st.hasMoreTokens()) {
+            localID = st.nextToken();
+        }
+        return RunAccessManager.getRunListFrom(accountType, localID, resumptionToken,from);
+    }
 
     public RunAccessList getRunAccess(Long runId) {
         RunAccessList ral = new RunAccessList();

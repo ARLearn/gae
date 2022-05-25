@@ -31,6 +31,7 @@ import org.codehaus.jettison.json.JSONObject;
 
 public class User extends Account{
 
+	private String identifier;
 	private Long runId;
 	private Boolean deleted;
 	private String teamId;
@@ -61,6 +62,14 @@ public class User extends Account{
 			nullSafeEquals(getRunId(), other.getRunId()) &&
 			nullSafeEquals(getTeamId(), other.getTeamId()) &&
 			nullSafeEquals(getRoles(), other.getRoles()) ; 
+	}
+
+	public String getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
 	}
 
 	public Long getRunId() {
@@ -143,6 +152,7 @@ public class User extends Account{
 			super.initBean(object, genericBean);
 			User bean = (User) genericBean;
 
+			if (object.has("identifier")) bean.setIdentifier(object.getString("identifier"));
 			if (object.has("runId")) bean.setRunId(object.getLong("runId"));
 			if (object.has("deleted")) bean.setDeleted(object.getBoolean("deleted"));
 			if (object.has("teamId")) bean.setTeamId(object.getString("teamId"));
@@ -160,6 +170,7 @@ public class User extends Account{
 			User runBean = (User) bean;
 			JSONObject returnObject = super.toJSON(bean);
 			try {
+				if (runBean.getIdentifier() != null) returnObject.put("identifier", runBean.getIdentifier());
 				if (runBean.getRunId() != null) returnObject.put("runId", runBean.getRunId());
 				if (runBean.getDeleted() != null) returnObject.put("deleted", runBean.getDeleted());
 				if (runBean.getTeamId() != null) returnObject.put("teamId", runBean.getTeamId());

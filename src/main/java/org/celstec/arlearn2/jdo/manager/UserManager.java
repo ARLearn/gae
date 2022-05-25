@@ -21,15 +21,18 @@ package org.celstec.arlearn2.jdo.manager;
 import com.google.appengine.api.datastore.*;
 import org.celstec.arlearn2.beans.GameIdentifierList;
 import org.celstec.arlearn2.beans.run.User;
+import org.celstec.arlearn2.beans.run.UserList;
 import org.celstec.arlearn2.beans.serializer.json.JsonBeanSerialiser;
 import org.celstec.arlearn2.jdo.classes.UserEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-;
+
 
 public class UserManager {
+    private static final int ACCESS_IN_LIST = 5;
+
     private static DatastoreService datastore;
 
     static {
@@ -134,6 +137,10 @@ public class UserManager {
 
     }
 
+//    public static List<User> getGameList(int accountType, String localId, String cursorString, Long from) {
+//
+//    }
+
     public static List<User> getUserList(String email) {
         ArrayList<User> userArrayList = new ArrayList<User>();
         Query q = new Query(UserEntity.KIND)
@@ -207,23 +214,48 @@ public class UserManager {
         return userArrayList;
 
     }
+    public static UserList getUserList(String fullId, Long from, String cursorString) {
+        FetchOptions fetchOptions = FetchOptions.Builder.withLimit(ACCESS_IN_LIST);
+        if (cursorString != null) {
+            fetchOptions.startCursor(Cursor.fromWebSafeString(cursorString));
+        }
+        UserList returnList = new UserList();
 
+        Query.CompositeFilter filter = Query.CompositeFilterOperator.and(
+                    new Query.FilterPredicate(UserEntity.COL_EMAIL, Query.FilterOperator.EQUAL, fullId),
+                    new Query.FilterPredicate(UserEntity.COL_LASTMODIFICATIONDATE, Query.FilterOperator.GREATER_THAN_OR_EQUAL, from)
+            );
+        Query q = new Query(UserEntity.KIND);
+        q.setFilter(filter);
+        q.addSort(UserEntity.COL_LASTMODIFICATIONDATE, Query.SortDirection.DESCENDING);
+        PreparedQuery pq = datastore.prepare(q);
+        QueryResultList<Entity> results =pq.asQueryResultList(fetchOptions);
 
-    public static List<User> getUserList(String email, Long from, Long until) {
+        for (Entity result : results) {
+            UserEntity object = new UserEntity(result);
+            returnList.addUser(object.toBean());
+        }
+        if (results.size() == ACCESS_IN_LIST) {
+            returnList.setResumptionToken(results.getCursor().toWebSafeString());
+        }
+        return returnList;
+    }
+
+    public static List<User> getUserList(String fullId, Long from, Long until) {
         Query.CompositeFilter filter;
         if (from == null) {
             filter = Query.CompositeFilterOperator.and(
-                    new Query.FilterPredicate(UserEntity.COL_EMAIL, Query.FilterOperator.EQUAL, email),
+                    new Query.FilterPredicate(UserEntity.COL_EMAIL, Query.FilterOperator.EQUAL, fullId),
                     new Query.FilterPredicate(UserEntity.COL_LASTMODIFICATIONDATE, Query.FilterOperator.LESS_THAN_OR_EQUAL, until)
             );
         } else if (until == null) {
             filter = Query.CompositeFilterOperator.and(
-                    new Query.FilterPredicate(UserEntity.COL_EMAIL, Query.FilterOperator.EQUAL, email),
+                    new Query.FilterPredicate(UserEntity.COL_EMAIL, Query.FilterOperator.EQUAL, fullId),
                     new Query.FilterPredicate(UserEntity.COL_LASTMODIFICATIONDATE, Query.FilterOperator.GREATER_THAN_OR_EQUAL, from)
             );
         } else {
             filter = Query.CompositeFilterOperator.and(
-                    new Query.FilterPredicate(UserEntity.COL_EMAIL, Query.FilterOperator.EQUAL, email),
+                    new Query.FilterPredicate(UserEntity.COL_EMAIL, Query.FilterOperator.EQUAL, fullId),
                     new Query.FilterPredicate(UserEntity.COL_LASTMODIFICATIONDATE, Query.FilterOperator.LESS_THAN_OR_EQUAL, until),
                     new Query.FilterPredicate(UserEntity.COL_LASTMODIFICATIONDATE, Query.FilterOperator.GREATER_THAN_OR_EQUAL, from)
             );

@@ -82,6 +82,7 @@ public class UserEntity {
             e.printStackTrace();
             userBean = new User();
         }
+        userBean.setIdentifier(getKey().getName());
         userBean.setRunId(getRunId());
         userBean.setTeamId(getTeamId());
         userBean.setFullIdentifier(getEmail());
