@@ -4,13 +4,12 @@ import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.config.Nullable;
 import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.account.AccountList;
-
 import org.celstec.arlearn2.beans.api.ConnectionInvitation;
 import org.celstec.arlearn2.delegators.AccountDelegator;
 import org.celstec.arlearn2.delegators.CollaborationDelegator;
-import org.celstec.arlearn2.delegators.GameDelegator;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.manager.ContactManager;
 
@@ -36,6 +35,19 @@ import org.celstec.arlearn2.jdo.manager.ContactManager;
  */
 @Api(name = "player")
 public class PlayerApi extends GenericApi {
+
+
+    @ApiMethod(
+            name = "myGamesSince",
+            path = "/account/myContacts/list/{since}",
+            httpMethod = ApiMethod.HttpMethod.GET
+    )
+    public AccountList myAccountsSince(final EnhancedUser user,
+                                  @Named("since") long from,
+                                  @Nullable @Named("resumptionToken") String cursor) {
+        CollaborationDelegator cd = new CollaborationDelegator();
+        return cd.getContacts(user, from, null);
+    }
 
     @ApiMethod(
             httpMethod = ApiMethod.HttpMethod.GET,
@@ -110,8 +122,6 @@ public class PlayerApi extends GenericApi {
         return ContactManager.pendingInvitationsToEmail(user.getEmail());
     }
 
-
-
     @ApiMethod(
             httpMethod = ApiMethod.HttpMethod.GET,
             name = "confirmInvitation",
@@ -178,10 +188,18 @@ public class PlayerApi extends GenericApi {
             path = "/player/remove/{accountType}/{localId}"
     )
     public void removeContacts(EnhancedUser user, @Named("accountType") int accountType, @Named("localId") String localId) {
-
         CollaborationDelegator cd = new CollaborationDelegator();
         cd.removeContact(accountType, localId, user);
     }
 
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.DELETE,
+            name = "deleteContact",
+            path = "/player/delete/{accountType}/{localId}"
+    )
+    public void deleteContacts(EnhancedUser user, @Named("accountType") int accountType, @Named("localId") String localId) {
+        CollaborationDelegator cd = new CollaborationDelegator();
+        cd.softDeleteContact(accountType, localId, user);
+    }
 
 }

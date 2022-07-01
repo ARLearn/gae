@@ -32,7 +32,6 @@ public class GameAccessManager {
 		Query q = new Query(GameAccessEntity.KIND);//.addSort("name", SortDirection.ASCENDING);
 		q.setFilter(new Query.FilterPredicate(GameAccessEntity.COL_GAMEID, Query.FilterOperator.EQUAL, gameId));
 		PreparedQuery pq = datastore.prepare(q);
-		List<GameAccess> returnList = new ArrayList<GameAccess>();
 		for (Entity result : pq.asIterable()) {
 			GameAccessEntity object = new GameAccessEntity(result);
 			object.setLastModificationDateGame(lastModifiation);

@@ -215,35 +215,21 @@ public class GameDelegator {
         return game;
     }
 
-    public Game deleteGame(Long gameIdentifier, EnhancedUser user) {
+    public Game deleteGame(Game g, EnhancedUser user) {
         String myAccount = user.createFullId();
-        Game g = getGame(gameIdentifier);
-        if (g.getError() != null)
-            return g;
-        if (myAccount.contains(":")) {
-            GameAccessDelegator gad = new GameAccessDelegator();
-            if (!gad.isOwner(myAccount, g.getGameId())) {
-                Game game = new Game();
-                game.setError("You are not the owner of this game");
-                return game;
-            }
-        } else if (!g.getOwner().equals(myAccount)) {
-            Game game = new Game();
-            game.setError("You are not the owner of this game");
-            return game;
-        }
-        GameManager.deleteGame(gameIdentifier); //is a hard delete
-        GameAccessManager.deleteGame(gameIdentifier);
 
+        Game returnGame = GameManager.deleteGame(g.getGameId());
+        GameAccessManager.deleteGame(g.getGameId());
 
-        GameAccessManager.resetGameAccessLastModificationDate(g.getGameId());
         MyGamesCache.getInstance().removeGameList(null, null, myAccount, null, null);
-        MyGamesCache.getInstance().removeGameList(gameIdentifier, null, myAccount, null, null);
-        (new DeleteRuns(gameIdentifier, myAccount)).scheduleTask();
-        (new DeleteGeneralItems(gameIdentifier)).scheduleTask();
-        DeleteGameCloudStorage.setup(gameIdentifier);
+        MyGamesCache.getInstance().removeGameList(g.getGameId(), null, myAccount, null, null);
 
-        return g;
+        (new DeleteRuns(g.getGameId(), myAccount)).scheduleTask();
+        (new DeleteGeneralItems(g.getGameId())).scheduleTask();
+
+        DeleteGameCloudStorage.setup(g.getGameId());
+
+        return returnGame;
     }
 
     public GamesList getRecentGames() {

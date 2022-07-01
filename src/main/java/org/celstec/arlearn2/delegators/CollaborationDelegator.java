@@ -99,13 +99,15 @@ public class CollaborationDelegator {
         return ContactManager.getContacts(user.getProvider(), user.getLocalId(), cursor, new AccountDelegator());
     }
 
+    public AccountList getContacts(EnhancedUser user, Long from, String cursor) {
+        return ContactManager.getContacts(user.getProvider(), user.getLocalId(), from,  cursor, new AccountDelegator());
+    }
+
     public AccountList getContacts(EnhancedUser user, Long from, Long until, String cursor) {
         return ContactManager.getContacts(user.getProvider(), user.getLocalId(), from, until, cursor, new AccountDelegator());
     }
 
     public AccountList pendingInvitations(EnhancedUser user) {
-
-//        Account myAccount = qu.getCurrentUserAccountObject();
         return ContactManager.pendingInvitations(user.getProvider(), user.getLocalId());
     }
 
@@ -117,5 +119,10 @@ public class CollaborationDelegator {
     public void removeContact(Integer accountType, String localId, EnhancedUser user) {
         Account fullAccount = getMyAccount(user);
         ContactManager.removeContact(fullAccount.getAccountType(), fullAccount.getLocalId(), accountType, localId);
+    }
+
+    public void softDeleteContact(Integer accountType, String localId, EnhancedUser user) {
+        Account fullAccount = getMyAccount(user);
+        ContactManager.deleteContact(fullAccount.getAccountType(), fullAccount.getLocalId(), accountType, localId);
     }
 }

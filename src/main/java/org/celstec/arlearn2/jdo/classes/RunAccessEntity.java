@@ -27,6 +27,10 @@ import org.celstec.arlearn2.beans.run.RunAccess;
  */
 public class RunAccessEntity {
 
+    public final static int RUN_DELETED = -3;
+    public final static int GAME_DELETED = -2;
+    public final static int ACCESS_REMOVED = -1;
+
     public final static int OWNER = 1;
     public final static int CAN_EDIT = 2;
     public final static int CAN_VIEW = 3;

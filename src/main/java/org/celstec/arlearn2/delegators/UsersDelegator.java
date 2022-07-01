@@ -227,4 +227,11 @@ public class UsersDelegator {
         usersList.setFrom(from);
         return usersList;
     }
+
+    public UserList getGameUsersSince(String cursor, Long gameId, long from) {
+        UserList usersList = UserManager.getGameUserList(gameId, from, cursor);
+        usersList.setServerTime(System.currentTimeMillis());
+        usersList.setFrom(from);
+        return usersList;
+    }
 }

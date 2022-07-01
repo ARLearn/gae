@@ -28,6 +28,7 @@ import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.ForbiddenException;
+import com.google.api.server.spi.response.NotFoundException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -43,6 +44,7 @@ import org.celstec.arlearn2.beans.game.GameAccessList;
 import org.celstec.arlearn2.beans.game.GamesList;
 import org.celstec.arlearn2.delegators.GameAccessDelegator;
 import org.celstec.arlearn2.delegators.GameDelegator;
+import org.celstec.arlearn2.delegators.RunAccessDelegator;
 import org.celstec.arlearn2.delegators.UsersDelegator;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.manager.UserManager;
@@ -79,11 +81,11 @@ public class Games extends GenericApi {
             path = "/game/{gameId}",
             httpMethod = ApiMethod.HttpMethod.GET
     )
-    public Game getGame(final EnhancedUser user, @Named("gameId") Long gameId) throws UnauthorizedException {//Game newGame
+    public Game getGame(final EnhancedUser user, @Named("gameId") Long gameId) throws UnauthorizedException, NotFoundException, ForbiddenException {//Game newGame
         GameDelegator qg = new GameDelegator();
-        Game g = qg.getGame(gameId);
-        if (g.getError() != null) {
-            return g;
+        Game g = qg.getGame(gameId, true);
+        if (g == null || g.getDeleted()) {
+            throw new NotFoundException("Game does not exist");
         }
 
         if (g.getSharing() == null || g.getSharing() == Game.PRIVATE) {
@@ -92,12 +94,11 @@ public class Games extends GenericApi {
             if (!gad.canView(gameId, user.createFullId())) {
                 UsersDelegator ud = new UsersDelegator();
                 if (!ud.userExists(gameId, user.createFullId())) {
-//                    throw new UnauthorizedException("Not authorized to view this game");
+                    RunAccessDelegator rd = new RunAccessDelegator();
+                    if (!rd.canView(gameId, user)) {
+                        throw new UnauthorizedException("You do not have access to this game");
+                    }
 
-                    g = new Game();
-                    g.setGameId(gameId);
-                    g.setDeleted(true);
-                    return g;
                 }
             }
         }
@@ -110,7 +111,6 @@ public class Games extends GenericApi {
             httpMethod = ApiMethod.HttpMethod.GET
     )
     public Game cloneGame(final EnhancedUser user, @Named("gameId") Long gameId) throws UnauthorizedException {//Game newGame
-        System.out.println("user is " + user);
         GameDelegator qg = new GameDelegator();
         Game g = qg.getGame(gameId);
         if (g.getError() != null) {
@@ -184,24 +184,17 @@ public class Games extends GenericApi {
             path = "/game/{gameId}",
             httpMethod = ApiMethod.HttpMethod.DELETE
     )
-    public Game deleteGame(final EnhancedUser user, @Named("gameId") Long gameId) throws UnauthorizedException {//Game newGame
+    public Game deleteGame(final EnhancedUser user, @Named("gameId") Long gameId) throws UnauthorizedException, NotFoundException {//Game newGame
         GameDelegator qg = new GameDelegator();
-        Game g = qg.getGame(gameId);
-        if (g.getError() != null) {
-            return g;
+        Game g = qg.getGame(gameId, true);
+        if (g == null || g.getDeleted()) {
+            throw new NotFoundException("Game does not exist");
         }
         GameAccessDelegator gad = new GameAccessDelegator();
         if (!gad.isOwner(user.createFullId(), gameId)) {
-            g = new Game();
-            g.setGameId(gameId);
-            g.setDeleted(true);
-            return g;
-//            throw new UnauthorizedException("Not authorized to delete this game");
-
+            throw new UnauthorizedException("Not authorized to delete this game");
         }
-        qg.deleteGame(gameId, user);
-        g.setDeleted(true);
-        return g;
+        return qg.deleteGame(g, user);
     }
 
 //    @ApiMethod(

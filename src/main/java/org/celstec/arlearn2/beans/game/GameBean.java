@@ -37,6 +37,7 @@ public class GameBean extends Bean{
 	}
 	
 	public Boolean getDeleted() {
+		if (deleted == null) return false;
 		return deleted;
 	}
 

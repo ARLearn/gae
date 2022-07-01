@@ -241,6 +241,32 @@ public class UserManager {
         return returnList;
     }
 
+    public static UserList getGameUserList( Long gameId, Long from, String cursorString) {
+        FetchOptions fetchOptions = FetchOptions.Builder.withLimit(ACCESS_IN_LIST);
+        if (cursorString != null) {
+            fetchOptions.startCursor(Cursor.fromWebSafeString(cursorString));
+        }
+        UserList returnList = new UserList();
+        Query.CompositeFilter filter = Query.CompositeFilterOperator.and(
+                new Query.FilterPredicate(UserEntity.COL_GAMEID, Query.FilterOperator.EQUAL, gameId),
+                new Query.FilterPredicate(UserEntity.COL_LASTMODIFICATIONDATE, Query.FilterOperator.GREATER_THAN_OR_EQUAL, from)
+        );
+        Query q = new Query(UserEntity.KIND);
+        q.setFilter(filter);
+        q.addSort(UserEntity.COL_LASTMODIFICATIONDATE, Query.SortDirection.DESCENDING);
+        PreparedQuery pq = datastore.prepare(q);
+        QueryResultList<Entity> results =pq.asQueryResultList(fetchOptions);
+
+        for (Entity result : results) {
+            UserEntity object = new UserEntity(result);
+            returnList.addUser(object.toBean());
+        }
+        if (results.size() == ACCESS_IN_LIST) {
+            returnList.setResumptionToken(results.getCursor().toWebSafeString());
+        }
+        return returnList;
+    }
+
     public static List<User> getUserList(String fullId, Long from, Long until) {
         Query.CompositeFilter filter;
         if (from == null) {
@@ -399,8 +425,6 @@ public class UserManager {
 
 
     public static void setStatusDeleted(long runId, String email) {
-//		getUserListAsEntity(runId, email);
-        System.out.println("about to delete " + email + " for run " + runId);
         List<UserEntity> deleteList = getUserListAsEntity(runId, email);
         for (UserEntity jdo : deleteList) {
             jdo.setDeleted(true);

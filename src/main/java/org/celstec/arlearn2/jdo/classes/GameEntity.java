@@ -495,10 +495,8 @@ public class GameEntity {
             game.setIconAbbreviation(this.iconAbbreviation);
         }
         if (getAmountOfPlays() == null) {
-            System.out.println("set to zero");
             game.setAmountOfPlays(0L);
         } else {
-            System.out.println("set to getAmountOfPlays");
             game.setAmountOfPlays(getAmountOfPlays());
         }
 

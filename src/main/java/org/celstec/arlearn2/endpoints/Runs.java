@@ -18,6 +18,7 @@ import org.celstec.arlearn2.beans.run.RunList;
 import org.celstec.arlearn2.delegators.*;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.manager.AccountManager;
+import org.celstec.arlearn2.tasks.runAccess.CleanUp;
 
 import java.util.List;
 
@@ -127,7 +128,8 @@ public class Runs extends GenericApi {
             name = "gameForRun",
             path = "/run/game/{gameId}"
     )
-    public Game getGame(EnhancedUser user, @Named("gameId") Long gameId) throws UnauthorizedException {//Game newGame
+    public Game getGame(EnhancedUser user, @Named("gameId") Long gameId)
+            throws UnauthorizedException {//Game newGame
         if (new RunDelegator().hasParticipateRuns(gameId, user.createFullId())) {
             GameDelegator qg = new GameDelegator();
             return qg.getGame(gameId);
@@ -257,5 +259,19 @@ public class Runs extends GenericApi {
                                             @Nullable @Named("resumptionToken") String cursor
     ) throws UnauthorizedException {//Game newGame
         return new RunAccessDelegator().getRunAccess(user.createFullId(), cursor, from);
+    }
+
+
+    @ApiMethod(
+            name = "cleanUpUsers",
+            path = "/run/access/user/cleanup",
+            httpMethod = ApiMethod.HttpMethod.GET
+    )
+    public void runAccessCleanup(final EnhancedUser user
+
+    ) throws ForbiddenException {//Game newGame
+
+        CleanUp.setup(null);
+
     }
 }

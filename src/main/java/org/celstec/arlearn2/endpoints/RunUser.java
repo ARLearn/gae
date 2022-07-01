@@ -64,6 +64,20 @@ public class RunUser extends GenericApi{
         return (new UsersDelegator()).getRunUsersSince(cursorString, from, user.createFullId());
     }
 
+
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
+            name = "gameUsersSince",
+            path = "/run/game/{gameId}/users/{since}"
+    )
+    public UserList getRunGameUsersSince(
+            final EnhancedUser user,
+            @Named("gameId") Long gameId,
+            @Named("since") long from,
+            @Nullable @Named("resumptionToken") String cursorString) {
+        return (new UsersDelegator()).getGameUsersSince(cursorString, gameId, from);
+    }
+
     @ApiMethod(
             httpMethod = ApiMethod.HttpMethod.DELETE,
             name = "deleteUserForRunId",

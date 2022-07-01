@@ -126,7 +126,7 @@ public class GameManager {
     }
 
 
-    public static void deleteGame(Long gameId) {
+    public static Game deleteGame(Long gameId) {
 //        Key key = KeyFactory.createKey(GameEntity.KIND, gameId);
 //        datastore.delete(key);
         GameEntity gameJdo = new GameEntity();
@@ -134,6 +134,7 @@ public class GameManager {
         gameJdo.setDeleted(true);
         gameJdo.setLastModificationDate(System.currentTimeMillis());
         datastore.put(gameJdo.toEntity());
+        return gameJdo.toGame();
     }
 
     public static Game getGame(Long gameId) {

@@ -1,19 +1,26 @@
 package org.celstec.arlearn2.delegators;
 
 import com.google.api.server.spi.response.ForbiddenException;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 import org.celstec.arlearn2.beans.account.Account;
+import org.celstec.arlearn2.beans.run.Run;
 import org.celstec.arlearn2.beans.run.RunAccess;
 import org.celstec.arlearn2.beans.run.RunAccessList;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
+import org.celstec.arlearn2.jdo.classes.GameAccessEntity;
 import org.celstec.arlearn2.jdo.classes.RunAccessEntity;
 import org.celstec.arlearn2.jdo.manager.GameAccessManager;
 import org.celstec.arlearn2.jdo.manager.RunAccessManager;
+import org.celstec.arlearn2.jdo.manager.RunManager;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 
 
-public class RunAccessDelegator  {
+public class RunAccessDelegator {
 
 //    public RunAccessDelegator(EnhancedUser user) {
 //        super(user);
@@ -33,11 +40,11 @@ public class RunAccessDelegator  {
         if (st.hasMoreTokens()) {
             localId = (st.nextToken());
         }
-        if (accountType == null ||localId == null) {
+        if (accountType == null || localId == null) {
             return null;
         }
         RunAccessList ral = getRunAccess(runIdentifier);
-        if (accessRight != RunAccessEntity.OWNER  && ral.amountOfAdmins() <= 1) {
+        if (accessRight != RunAccessEntity.OWNER && ral.amountOfAdmins() <= 1) {
             if (ral.isAdmin(fullId)) {
                 throw new ForbiddenException("LAST_ADMIN");
             }
@@ -55,6 +62,20 @@ public class RunAccessDelegator  {
 
     public void provideAccess(Long runIdentifier, Long gameId, Account account, int accessRights) {
         RunAccessManager.addRunAccess(account.getLocalId(), account.getAccountType(), runIdentifier, gameId, accessRights);
+    }
+
+    public void provideAccess(Long runIdentifier, Long gameId, String fullId, int accessRights) {
+
+        StringTokenizer st = new StringTokenizer(fullId, ":");
+        int accountType = 0;
+        String localID = null;
+        if (st.hasMoreTokens()) {
+            accountType = Integer.parseInt(st.nextToken());
+        }
+        if (st.hasMoreTokens()) {
+            localID = st.nextToken();
+        }
+        RunAccessManager.addRunAccess(localID, accountType, runIdentifier, gameId, accessRights);
     }
 
 //    public RunAccessList getRunsAccess(Long from, Long until) {
@@ -95,7 +116,7 @@ public class RunAccessDelegator  {
         return rl;
     }
 
-    public RunAccessList getRunsAccess( Long gameId, int accountType, String localID) {
+    public RunAccessList getRunsAccess(Long gameId, int accountType, String localID) {
 //        StringTokenizer st = new StringTokenizer(account, ":");
 //        int accountType = 0;
 //        String localID = null;
@@ -126,7 +147,7 @@ public class RunAccessDelegator  {
         if (st.hasMoreTokens()) {
             localID = st.nextToken();
         }
-        return RunAccessManager.getRunListFrom(accountType, localID, resumptionToken,from);
+        return RunAccessManager.getRunListFrom(accountType, localID, resumptionToken, from);
     }
 
     public RunAccessList getRunAccess(Long runId) {
@@ -154,26 +175,24 @@ public class RunAccessDelegator  {
     }
 
     public void removeAccessWithCheck(Long runId, String fullId) {
-        StringTokenizer st = new StringTokenizer(fullId, ":");
-        int accountType = 0;
-        String localID = null;
-        if (st.hasMoreTokens()) {
-            accountType = Integer.parseInt(st.nextToken());
+        Run run = RunManager.getRun(runId);
+        provideAccess(runId, run.getGameId(), fullId, RunAccessEntity.ACCESS_REMOVED);
+//        RunAccessManager.removeRunAccess(localID, accountType, runId);
+
+    }
+
+
+    public boolean canView(Long gameId, final EnhancedUser user) {
+        List<RunAccess> rl = RunAccessManager.getRunList(user.getProvider(), user.getLocalId(), null, gameId);
+        for (RunAccess runAccess : rl) {
+            if (runAccess.getAccessRights() > 0) {
+                return true;
+            }
         }
-        if (st.hasMoreTokens()) {
-            localID = st.nextToken();
-        }
-        RunAccessManager.removeRunAccess(localID, accountType, runId);
+        return false;
 
     }
 
 
 
-//    public void broadcastRunUpdate(Run run) {
-//        for (RunAccess ra : RunAccessManager.getRunAccessList(run.getRunId())) {
-//            new NotificationDelegator(this).broadcast(run, ra.getAccount());
-//        }
-//
-//
-//    }
 }

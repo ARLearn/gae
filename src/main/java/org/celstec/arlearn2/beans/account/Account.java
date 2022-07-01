@@ -59,6 +59,7 @@ public class Account extends Bean {
     private Boolean advanced;
     private Boolean admin;
     private Boolean suspended = false;
+    private Boolean connection = false;
 
     private Boolean allowTrackLocation;
     private Long lastModificationDate;
@@ -267,6 +268,14 @@ public class Account extends Bean {
         this.lastLoginDate = lastLoginDate;
     }
 
+    public Boolean getConnection() {
+        return connection;
+    }
+
+    public void setConnection(Boolean connection) {
+        this.connection = connection;
+    }
+
     @Override
     public boolean equals(Object obj) {
         Account other = (Account) obj;
@@ -320,6 +329,7 @@ public class Account extends Bean {
             if (object.has("advanced")) bean.setAdvanced(object.getBoolean("advanced"));
             if (object.has("admin")) bean.setAdmin(object.getBoolean("admin"));
             if (object.has("suspended")) bean.setSuspended(object.getBoolean("suspended"));
+            if (object.has("connection")) bean.setConnection(object.getBoolean("connection"));
             if (object.has("canAddUsersToOrganisation")) bean.setCanAddUsersToOrganisation(object.getBoolean("canAddUsersToOrganisation"));
             if (object.has("canPublishGames")) bean.setCanPublishGames(object.getBoolean("canPublishGames"));
         }
@@ -365,6 +375,8 @@ public class Account extends Bean {
                     returnObject.put("admin", accountBean.getAdmin());
                 if (accountBean.getSuspended() != null)
                     returnObject.put("suspended", accountBean.getSuspended());
+                if (accountBean.getConnection() != null)
+                    returnObject.put("connection", accountBean.getConnection());
                 if (accountBean.getCanAddUsersToOrganisation() != null)
                     returnObject.put("canAddUsersToOrganisation", accountBean.getCanAddUsersToOrganisation());
                 if (accountBean.getCanPublishGames() != null)

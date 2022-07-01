@@ -111,8 +111,9 @@ public class RunDelegator {
 
     public Run createRun(EnhancedUser us, Run run) {
         if (run.getRunId() != null) RunsCache.getInstance().removeRun(run.getRunId());
+        long now = System.currentTimeMillis();
         if (run.getStartTime() == null) {
-            run.setStartTime(System.currentTimeMillis());
+            run.setStartTime(now);
             run.setServerCreationTime(run.getStartTime());
         }
         String myAccount = "";
@@ -135,11 +136,9 @@ public class RunDelegator {
     }
 
     private Run createRunWithAccount(EnhancedUser us, Run run) {
-        run.setRunId(RunManager.addRun(run));
-
+        run = RunManager.addRun(run);
         RunAccessDelegator rd = new RunAccessDelegator();
         rd.provideAccess(run.getRunId(), run.getGameId(), us, RunAccessEntity.OWNER);
-
         return run;
     }
 
@@ -162,7 +161,8 @@ public class RunDelegator {
             return run;
         }
         RunManager.setStatusDeleted(r.getRunId());
-        RunAccessManager.resetGameAccessLastModificationDate(r.getRunId());
+        RunAccessManager.deleteRun(r.getRunId());
+
         RunsCache.getInstance().removeRun(r.getRunId());
         (new UpdateGeneralItemsVisibility( r.getRunId(), null, 2)).scheduleTask();
 
@@ -180,6 +180,7 @@ public class RunDelegator {
         List<Run> runList = RunManager.getRunsWithGameId(gameId);
         for (Run r : runList) {
             deleteRun(r, email);
+
         }
     }
 

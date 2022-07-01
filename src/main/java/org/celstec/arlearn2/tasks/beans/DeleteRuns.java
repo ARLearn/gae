@@ -19,6 +19,7 @@
 package org.celstec.arlearn2.tasks.beans;
 
 import org.celstec.arlearn2.delegators.RunDelegator;
+import org.celstec.arlearn2.jdo.manager.RunAccessManager;
 
 
 public class DeleteRuns extends GenericBean {
@@ -57,6 +58,7 @@ public class DeleteRuns extends GenericBean {
 		RunDelegator rd;
             rd =new RunDelegator();
 			rd.deleteRuns(getGameId(),getUserEmail());
+
 	}
 
 }

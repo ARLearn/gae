@@ -182,4 +182,17 @@ public class RunAccessManager {
 		datastore.delete(key);
 	}
 
+
+	public static void deleteRun(Long runId) {
+		Long lastModificationDate = System.currentTimeMillis();
+		Query q = new Query(RunAccessEntity.KIND);//.addSort("name", SortDirection.ASCENDING);
+		q.setFilter(new Query.FilterPredicate(RunAccessEntity.COL_RUNID, Query.FilterOperator.EQUAL, runId));
+		PreparedQuery pq = datastore.prepare(q);
+		for (Entity result : pq.asIterable()) {
+			result.setProperty(RunAccessEntity.COL_LASTMODIFICATIONDATERUN, lastModificationDate);
+			result.setProperty(RunAccessEntity.COL_ACCESSRIGHTS, RunAccessEntity.RUN_DELETED);
+			datastore.put(result);
+		}
+	}
+
 }
