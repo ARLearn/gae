@@ -4,6 +4,7 @@ import com.google.appengine.api.datastore.Entity;
 import org.celstec.arlearn2.beans.Bean;
 import org.celstec.arlearn2.beans.deserializer.json.BeanDeserializer;
 import org.celstec.arlearn2.beans.serializer.json.BeanSerializer;
+import org.celstec.arlearn2.jdo.manager.GameThemeManager;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -22,12 +23,16 @@ public class GameTheme extends Bean {
     private String backgroundPath;
     private String correctPath;
     private String wrongPath;
+    private Long lastModificationDate;
 
     public static GameTheme from(Entity entity) {
         GameTheme theme = new GameTheme();
         theme.setThemeId(entity.getKey().getId());
         theme.setPrimaryColor((String) entity.getProperty("primaryColor"));
         theme.setSecondaryColor((String) entity.getProperty("secondaryColor"));
+        if (entity.getProperty(GameThemeManager.COL_LASTMODIFICATIONDATE) != null) {
+            theme.setLastModificationDate((Long) entity.getProperty(GameThemeManager.COL_LASTMODIFICATIONDATE));
+        }
 
         theme.setGlobal((boolean) entity.getProperty("global"));
         theme.setFullAccount((String) entity.getProperty("fullAccount"));
@@ -38,6 +43,7 @@ public class GameTheme extends Bean {
         theme.setBackgroundPath((String) entity.getProperty("backgroundPath"));
         theme.setCorrectPath((String) entity.getProperty("correctPath"));
         theme.setWrongPath((String) entity.getProperty("wrongPath"));
+
         return theme;
     }
 
@@ -129,6 +135,14 @@ public class GameTheme extends Bean {
         this.wrongPath = wrongPath;
     }
 
+    public Long getLastModificationDate() {
+        return lastModificationDate;
+    }
+
+    public void setLastModificationDate(Long lastModificationDate) {
+        this.lastModificationDate = lastModificationDate;
+    }
+
     public static BeanDeserializer deserializer = new BeanDeserializer(){
 
         @Override
@@ -159,6 +173,7 @@ public class GameTheme extends Bean {
             if (object.has("backgroundPath")) bean.setBackgroundPath(object.getString("backgroundPath"));
             if (object.has("correctPath")) bean.setCorrectPath(object.getString("correctPath"));
             if (object.has("wrongPath")) bean.setWrongPath(object.getString("wrongPath"));
+            if (object.has("lastModificationDate")) bean.setLastModificationDate(object.getLong("lastModificationDate"));
         }
     };
 
@@ -183,7 +198,7 @@ public class GameTheme extends Bean {
                 if (teamBean.getBackgroundPath() != null) returnObject.put("backgroundPath", teamBean.getBackgroundPath());
                 if (teamBean.getCorrectPath() != null) returnObject.put("correctPath", teamBean.getCorrectPath());
                 if (teamBean.getWrongPath() != null) returnObject.put("wrongPath", teamBean.getWrongPath());
-
+                if (teamBean.getLastModificationDate() != null) returnObject.put("lastModificationDate", teamBean.getLastModificationDate());
             } catch (JSONException e) {
                 e.printStackTrace();
             }

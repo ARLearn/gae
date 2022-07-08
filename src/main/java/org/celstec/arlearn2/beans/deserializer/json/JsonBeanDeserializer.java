@@ -293,6 +293,7 @@ public class JsonBeanDeserializer  extends BeanDeserializer{
 		customDeserializerMapString.put("org.celstec.arlearn2.beans.game.GameAccess", GameAccess.deserializer);
 		customDeserializerMapString.put("org.celstec.arlearn2.beans.game.GameAccessList", GameAccessList.deserializer);
 		customDeserializerMapString.put("org.celstec.arlearn2.beans.game.GameTheme", GameTheme.deserializer);
+		customDeserializerMapString.put("org.celstec.arlearn2.beans.game.GameThemesList", GameThemesList.deserializer);
 
         customDeserializerMapString.put("org.celstec.arlearn2.beans.game.Rating", Rating.deserializer);
 		customDeserializerMapString.put("org.celstec.arlearn2.beans.game.Config", cd);

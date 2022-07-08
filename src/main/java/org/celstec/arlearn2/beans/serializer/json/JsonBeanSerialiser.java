@@ -102,6 +102,7 @@ public class JsonBeanSerialiser extends BeanSerializer{
 		customSerializerMap.put(GameAccess.class.getCanonicalName(), GameAccess.serializer);
 		customSerializerMap.put(GameAccessList.class.getCanonicalName(), GameAccessList.serializer);
 		customSerializerMap.put(GameTheme.class.getCanonicalName(), GameTheme.serializer);
+		customSerializerMap.put(GameThemesList.class.getCanonicalName(), GameThemesList.serializer);
 
 
         customSerializerMap.put(Rating.class.getCanonicalName(), Rating.serializer);

@@ -56,9 +56,6 @@ public class GameDelegator {
         gl.setResumptionToken(gameAccessList.getResumptionToken());
         for (GameAccess ga : gameAccessList.getGameAccess()) {
             Game g = getGame(ga.getGameId());
-            if (ga.getAccessRights() < 0) {
-                g.setDeleted(true);
-            }
             gl.addGame(g);
         }
         return gl;
@@ -72,9 +69,9 @@ public class GameDelegator {
         gl.setResumptionToken(usersList.getResumptionToken());
         for (User ga : usersList.getUsers()) {
             Game g = getGame(ga.getGameId());
-            if (ga.getDeleted()) {
-                g.setDeleted(true);
-            }
+//            if (ga.getDeleted()) {
+//                g.setDeleted(true);
+//            }
             gl.addGame(g);
         }
         return gl;

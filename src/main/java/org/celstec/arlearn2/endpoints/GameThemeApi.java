@@ -4,9 +4,11 @@ import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.config.Nullable;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.ForbiddenException;
 import org.celstec.arlearn2.beans.game.GameTheme;
+import org.celstec.arlearn2.beans.game.GameThemesList;
 import org.celstec.arlearn2.endpoints.impl.storage.DeleteStorage;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.manager.GameThemeManager;
@@ -40,6 +42,29 @@ public class GameThemeApi extends GenericApi {
 
     @ApiMethod(
             httpMethod = ApiMethod.HttpMethod.GET,
+            name = "allGameThemesSince",
+            path = "/game/theme/list/{since}"
+    )
+    public GameThemesList getGameThemesSince(
+            @Named("since") long from,
+            @Nullable @Named("resumptionToken") String cursor
+    ) {
+        return GameThemeManager.listGlobalWithCursor(cursor, from);
+    }
+
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
+            name = "allGameThemesUpdateOnce",
+            path = "/game/theme/updateOnce"
+    )
+    public void updateOnce() {
+        GameThemeManager.updateOnce();
+    }
+
+
+    //todo check if still used in app
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
             name = "allGameThemes",
             path = "/game/theme/list/global"
     )
@@ -47,6 +72,7 @@ public class GameThemeApi extends GenericApi {
         return CollectionResponse.<GameTheme>builder().setItems(GameThemeManager.listGlobal()).build();
     }
 
+    //todo check if still used in app
     @ApiMethod(
             httpMethod = ApiMethod.HttpMethod.GET,
             name = "myGameThemes",
@@ -54,6 +80,19 @@ public class GameThemeApi extends GenericApi {
     )
     public CollectionResponse<GameTheme> getMyGameThemes(final User u) {
         return CollectionResponse.<GameTheme>builder().setItems(GameThemeManager.myThemes(((EnhancedUser) u).createFullId())).build();
+    }
+
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
+            name = "allMyGameThemesSince",
+            path = "/game/theme/listMy/{since}"
+    )
+    public GameThemesList getMyGameThemesSince(
+            final User u,
+            @Named("since") long from,
+            @Nullable @Named("resumptionToken") String cursor
+    ) {
+        return GameThemeManager.listMineWithCursor(((EnhancedUser) u).createFullId(), cursor, from);
     }
 
     @SuppressWarnings("ResourceParameter")
