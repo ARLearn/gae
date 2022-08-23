@@ -38,7 +38,6 @@ public class GameThemeManager {
         QueryResultList<Entity> results = pq.asQueryResultList(fetchOptions);
 
         for (Entity result : results) {
-
             returnList.addGameTheme(GameTheme.from(result));
         }
         if (results.size() == THEMES_IN_LIST) {
@@ -54,7 +53,7 @@ public class GameThemeManager {
         PreparedQuery pq = datastore.prepare(q);
 
         for (Entity result : pq.asIterable()) {
-            if (result.getProperty(COL_LASTMODIFICATIONDATE) ==  null) {
+            if (result.getProperty(COL_LASTMODIFICATIONDATE) == null) {
                 result.setIndexedProperty(COL_LASTMODIFICATIONDATE, System.currentTimeMillis());
                 datastore.put(result);
             }
@@ -99,11 +98,33 @@ public class GameThemeManager {
 
         result.setProperty("iconPath", newTheme.getIconPath());
         result.setProperty("backgroundPath", newTheme.getBackgroundPath());
+
+
         result.setProperty("correctPath", newTheme.getCorrectPath());
         result.setProperty("wrongPath", newTheme.getWrongPath());
 
-
         datastore.put(result);
+
+        String prefix = "";
+        if (newTheme.isGlobal()) {
+            prefix = "/themes/" + result.getKey().getId();
+        } else {
+            prefix = "/customthemes/" + newTheme.getFirebaseAccount() + "/" + result.getKey().getId();
+        }
+        if (newTheme.getIconPath() == null) {
+            result.setProperty("iconPath", prefix + "/icon.png");
+        }
+        if (newTheme.getBackgroundPath() == null) {
+            result.setProperty("backgroundPath", prefix + "/background.png");
+        }
+        if (newTheme.getCorrectPath() == null) {
+            result.setProperty("correctPath", prefix + "/correct.png");
+        }
+        if (newTheme.getWrongPath() == null) {
+            result.setProperty("wrongPath", prefix + "/wrong.png");
+        }
+        datastore.put(result);
+
         return GameTheme.from(result);
 
     }

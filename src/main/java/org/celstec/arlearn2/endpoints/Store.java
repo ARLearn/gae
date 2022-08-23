@@ -26,6 +26,7 @@ import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
+import com.google.api.server.spi.config.Nullable;
 import com.google.api.server.spi.response.ForbiddenException;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
@@ -41,6 +42,7 @@ import org.celstec.arlearn2.delegators.GameDelegator;
 import org.celstec.arlearn2.endpoints.impl.storage.DeleteStorage;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.manager.GameCategoryManager;
+import org.celstec.arlearn2.jdo.manager.GameManager;
 import org.celstec.arlearn2.tasks.beans.GameSearchIndex;
 
 @Api(name = "store")
@@ -218,8 +220,7 @@ public class Store extends GenericApi {
             path = "/games/library/recent",
             httpMethod = ApiMethod.HttpMethod.GET
     )
-    public GamesList recent(
-            )  {//Game newGame
-        return new GameDelegator().getRecentGames();
+    public GamesList recent(@Nullable @Named("resumptionToken") String cursor)  {
+        return GameManager.getRecentGames(cursor);
     }
 }

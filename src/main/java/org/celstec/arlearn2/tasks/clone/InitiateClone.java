@@ -30,7 +30,7 @@ public class InitiateClone implements DeferredTask {
     public void run() {
         try {
             System.out.println("starting clone process");
-            cloneGame();
+//            cloneGame();
             cloneItems();
             Queue queue = QueueFactory.getDefaultQueue();
             queue.add(
@@ -66,19 +66,20 @@ public class InitiateClone implements DeferredTask {
 
     }
 
-    private void cloneGame() {
+    public Game cloneGame() {
         GameDelegator qg = new GameDelegator();
         Game g = qg.getGame(gameId);
         g.setTitle(g.getTitle() + " (copy) ");
         g.setSharing(g.PRIVATE);
         if (g == null) {
             System.out.println("[clone] game not found");
-            return;
+            return g;
         }
         System.out.println("set game id to null");
         g.setGameId(null);
         Game newGame = qg.createGame(g, user.createFullId());
         cloneManifest.newGameId = newGame.getGameId();
         System.out.println("cloneManifest" + cloneManifest);
+        return newGame;
     }
 }

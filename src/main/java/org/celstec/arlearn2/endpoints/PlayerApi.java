@@ -46,7 +46,7 @@ public class PlayerApi extends GenericApi {
                                   @Named("since") long from,
                                   @Nullable @Named("resumptionToken") String cursor) {
         CollaborationDelegator cd = new CollaborationDelegator();
-        return cd.getContacts(user, from, null);
+        return cd.getContacts(user, from, cursor);
     }
 
     @ApiMethod(

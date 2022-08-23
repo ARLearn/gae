@@ -1,4 +1,4 @@
-package org.celstec.arlearn2.tasks.runAccess;
+package org.celstec.arlearn2.tasks.gameAccess;
 
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.taskqueue.DeferredTask;
@@ -6,12 +6,11 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import org.celstec.arlearn2.beans.game.Game;
-import org.celstec.arlearn2.beans.run.Run;
-import org.celstec.arlearn2.jdo.classes.RunAccessEntity;
+import org.celstec.arlearn2.jdo.classes.GameAccessEntity;
 import org.celstec.arlearn2.jdo.manager.GameManager;
-import org.celstec.arlearn2.jdo.manager.RunManager;
 
-public class CleanUp implements DeferredTask {
+
+public class GameAccessCleanUp implements DeferredTask {
     private static DatastoreService datastore;
     static {
         datastore = DatastoreServiceFactory.getDatastoreService();
@@ -20,11 +19,11 @@ public class CleanUp implements DeferredTask {
     private String cursor;
     private Long gameId;
 
-    public CleanUp(String cursor) {
+    public GameAccessCleanUp(String cursor) {
         this.cursor = cursor;
     }
 
-    public CleanUp(String cursor, Long gameId) {
+    public GameAccessCleanUp(String cursor, Long gameId) {
         this.cursor = cursor;
         this.gameId = gameId;
     }
@@ -36,9 +35,9 @@ public class CleanUp implements DeferredTask {
             fetchOptions.startCursor(Cursor.fromWebSafeString(cursor));
         }
 
-        Query q = new Query(RunAccessEntity.KIND);
+        Query q = new Query(GameAccessEntity.KIND);
         if (gameId != null) {
-            q.setFilter(new Query.FilterPredicate(RunAccessEntity.COL_GAMEID, Query.FilterOperator.EQUAL, gameId));
+            q.setFilter(new Query.FilterPredicate(GameAccessEntity.COL_GAMEID, Query.FilterOperator.EQUAL, gameId));
         }
         PreparedQuery pq = datastore.prepare(q);
         QueryResultList<Entity> results =pq.asQueryResultList(fetchOptions);
@@ -46,22 +45,14 @@ public class CleanUp implements DeferredTask {
 
         boolean hasResult = false;
         for (Entity result : results) {
-            Long gameId = (Long) result.getProperty(RunAccessEntity.COL_GAMEID);
+            Long gameId = (Long) result.getProperty(GameAccessEntity.COL_GAMEID);
             System.out.println("gameId is "+gameId);
             Game game = GameManager.getGame(gameId);
             if (game == null || game.getDeleted()) {
-                result.setProperty(RunAccessEntity.COL_LASTMODIFICATIONDATERUN, System.currentTimeMillis());
-                result.setProperty(RunAccessEntity.COL_ACCESSRIGHTS, RunAccessEntity.GAME_DELETED);
+                result.setProperty(GameAccessEntity.COL_LASTMODIFICATIONDATEGAME, System.currentTimeMillis());
+                result.setProperty(GameAccessEntity.COL_ACCESSRIGHTS, GameAccessEntity.GAME_DELETED);
                 datastore.put(result);
-                System.out.println("gameid "+gameId + " was missing ");
-            }
-            Long runId = (Long) result.getProperty(RunAccessEntity.COL_RUNID);
-            Run run = RunManager.getRun(runId);
-            if (run == null || run.getDeleted()) {
-                result.setProperty(RunAccessEntity.COL_LASTMODIFICATIONDATERUN, System.currentTimeMillis());
-                result.setProperty(RunAccessEntity.COL_ACCESSRIGHTS, RunAccessEntity.RUN_DELETED);
-                datastore.put(result);
-                System.out.println("runId "+runId + " was missing ");
+                System.out.println("gameid "+gameId + " was missing: game access statement was updated ");
             }
             hasResult = true;
         }
@@ -75,7 +66,7 @@ public class CleanUp implements DeferredTask {
         queue.add(
                 TaskOptions.Builder
                         .withPayload(
-                                new CleanUp(cursor)
+                                new GameAccessCleanUp(cursor)
                         )
         );
     }
@@ -85,7 +76,7 @@ public class CleanUp implements DeferredTask {
         queue.add(
                 TaskOptions.Builder
                         .withPayload(
-                                new CleanUp(cursor, gameId)
+                                new GameAccessCleanUp(cursor, gameId)
                         )
         );
     }

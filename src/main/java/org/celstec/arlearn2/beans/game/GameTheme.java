@@ -16,6 +16,7 @@ public class GameTheme extends Bean {
 
     private boolean global;
     private String fullAccount;
+    private String firebaseAccount;
     private String category;
     private String name;
 
@@ -101,6 +102,14 @@ public class GameTheme extends Bean {
 
     public void setFullAccount(String fullAccount) {
         this.fullAccount = fullAccount;
+    }
+
+    public String getFirebaseAccount() {
+        return firebaseAccount;
+    }
+
+    public void setFirebaseAccount(String firebaseAccount) {
+        this.firebaseAccount = firebaseAccount;
     }
 
     public String getIconPath() {

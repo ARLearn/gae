@@ -161,4 +161,14 @@ public class FirebaseAuthPersistence {
         request.setDisabled(false);
         return FirebaseAuth.getInstance().updateUser(request);
     }
+
+    public UserRecord setPassword(String uid, String password, String displayName) throws FirebaseAuthException {
+        UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(uid);
+        request.setPassword(password);
+        if (displayName != null){
+            request.setDisplayName(displayName);
+        }
+        request.setEmailVerified(true);
+        return FirebaseAuth.getInstance().updateUser(request);
+    }
 }

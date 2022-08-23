@@ -17,7 +17,14 @@ public class AccountDelegator {
 
     public Account getAccountInfo(Account myAccount) {
         return AccountManager.getAccount(myAccount.getFullId());
+    }
 
+    public Account getWithEmail(String email) {
+        return AccountManager.queryViaEmail(email);
+    }
+
+    public Account getAccountWithToken(String token) {
+        return AccountManager.queryViaToken(token);
     }
 
     public Account getContactDetails(EnhancedUser user) throws EntityNotFoundException {

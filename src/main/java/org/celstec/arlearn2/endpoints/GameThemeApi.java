@@ -107,6 +107,7 @@ public class GameThemeApi extends GenericApi {
         }
         if (!newTheme.isGlobal()) {
             newTheme.setFullAccount(((EnhancedUser) u).createFullId());
+            newTheme.setFirebaseAccount(u.getId());
         }
         return GameThemeManager.create(newTheme);
     }

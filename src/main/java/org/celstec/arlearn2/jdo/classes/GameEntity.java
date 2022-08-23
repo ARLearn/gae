@@ -41,6 +41,7 @@ public class GameEntity {
     public static String COL_CONFIG = "config";
     public static String COL_CREATOREMAIL = "creatorEmail";
     public static String COL_DESCRIPTION = "description";
+    public static String COL_STARTBUTTON = "startButton";
     public static String COL_FEATURED = "featured";
     public static String COL_FEEDURL = "feedUrl";
 
@@ -97,6 +98,7 @@ public class GameEntity {
     private String feedUrl;
     private Text config;
     private Text description;
+    private Text startButton;
     private Text endsOn;
     private Integer sharing;
     private String licenseCode;
@@ -198,6 +200,16 @@ public class GameEntity {
 
     public void setDescription(String description) {
         if (description != null) this.description = new Text(description);
+    }
+
+
+    public String getStartButton() {
+        if (startButton == null) return null;
+        return startButton.getValue();
+    }
+
+    public void setStartButton(String startButton) {
+        if (startButton != null) this.startButton = new Text(startButton);
     }
 
     public Integer getSharing() {
@@ -353,6 +365,7 @@ public class GameEntity {
         this.config = (Text) entity.getProperty(COL_CONFIG);
         this.endsOn= (Text) entity.getProperty(COL_ENDS_ON);
         this.description = (Text) entity.getProperty(COL_DESCRIPTION);
+        this.startButton = (Text) entity.getProperty(COL_STARTBUTTON);
         if (entity.getProperty(COL_SHARING) != null) {
             this.sharing = ((Long) entity.getProperty(COL_SHARING)).intValue();
         }
@@ -404,6 +417,7 @@ public class GameEntity {
         result.setProperty(COL_ENDS_ON, this.endsOn);
         result.setProperty(COL_CREATOREMAIL, this.creatorEmail);
         result.setProperty(COL_DESCRIPTION, this.description);
+        result.setProperty(COL_STARTBUTTON, this.startButton);
         result.setProperty(COL_FEATURED, this.featured);
         result.setProperty(COL_FEEDURL, this.feedUrl);
 //        result.setProperty(COL_GOOGLEPLAYURL, this.googlePlayUrl);
@@ -441,6 +455,7 @@ public class GameEntity {
         game.setGameId(getGameId());
         game.setOwner(getOwner());
         game.setDescription(getDescription());
+        game.setStartButton(getStartButton());
         game.setSharing(getSharing());
         game.setLng(getLng());
         game.setLat(getLat());

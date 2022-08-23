@@ -8,15 +8,18 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
 import com.google.api.server.spi.response.ForbiddenException;
+import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.Timestamp;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
+import org.celstec.arlearn2.beans.Password;
 import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.account.AccountList;
 import org.celstec.arlearn2.beans.run.Run;
@@ -31,16 +34,14 @@ import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.manager.AccountManager;
 import org.celstec.arlearn2.tasks.beans.account.DeleteAccount;
 import org.celstec.arlearn2.tasks.beans.account.DeleteRunsForAccount;
+import org.celstec.arlearn2.tasks.mail.ResetPwTaks;
 
 import javax.naming.AuthenticationException;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.InvalidParameterException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * ****************************************************************************
@@ -392,6 +393,76 @@ public class AccountApi extends GenericApi {
         }
 
         return returnList;
+    }
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(
+            name = "resetPw",
+            path = "/account/resetpw/{email}",
+            httpMethod = ApiMethod.HttpMethod.POST
+    )
+    public void resetPw(
+            @Named("email") String email) throws Exception {
+        Account account = new AccountDelegator().getWithEmail(email);
+
+        if (account == null) {
+            throw new NotFoundException("Account with email: "+email+ " was not found");
+        } else {
+            account.setInitPasswordToken(UUID.randomUUID().toString());
+            account.setTokenExpirationDate((System.currentTimeMillis())+ 3000000);
+            AccountManager.unsecureSave(account);
+            String link = System.getenv("URL") + "/#/reset/wachtwoord/"+account.getInitPasswordToken();
+            ResetPwTaks.setup(
+                    account.getEmail(),
+                    link,
+                    account.getName()
+            );
+        }
+
+    }
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(
+            name = "getAccountViaResetToken",
+            path = "/account/resetPwToken/{token}",
+            httpMethod = ApiMethod.HttpMethod.GET
+    )
+    public Account getAccountViaResetToken(@Named("token") String token) throws Exception {
+        Account account = new AccountDelegator().getAccountWithToken(token);
+        System.out.println("account is "+ account);
+        if (account == null || account.getTokenExpirationDate() == null ) {
+            throw new NotFoundException("This token is not valid");
+        }
+        if (account.getTokenExpirationDate() < System.currentTimeMillis()) {
+            throw new ForbiddenException("TOKEN.EXPIRED");
+        }
+        return account;
+    }
+
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(
+            name = "setNewpw",
+            path = "/account/setPw/{token}",
+            httpMethod = ApiMethod.HttpMethod.POST
+    )
+    public Account setNewPw(
+            Password newPassword,
+            @Named("token") String token) throws Exception {
+        Account account = new AccountDelegator().getAccountWithToken(token);
+        if (account == null || account.getTokenExpirationDate() == null ) {
+            throw new NotFoundException("This token is not valid");
+        }
+        if (account.getTokenExpirationDate() < System.currentTimeMillis()) {
+            throw new ForbiddenException("TOKEN.EXPIRED");
+        }
+        FirebaseAuthPersistence.getInstance().setPassword(account.getFirebaseId(), newPassword.getPassword(), newPassword.displayName);
+        if (newPassword.displayName !=null) {
+            account.setName(newPassword.displayName);
+        }
+        account.unsetToken();
+        AccountManager.unsecureSave(account);
+        return account;
     }
 
 }

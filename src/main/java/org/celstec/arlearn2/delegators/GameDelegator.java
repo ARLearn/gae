@@ -125,6 +125,7 @@ public class GameDelegator {
         System.out.println("oldGame "+ oldGame.getAmountOfPlays());
         oldGame.setIconAbbreviation(updateGame.getIconAbbreviation());
         oldGame.setDescription(updateGame.getDescription());
+        oldGame.setStartButton(updateGame.getStartButton());
         oldGame.setSplashScreen(updateGame.getSplashScreen());
         oldGame.setLat(updateGame.getLat());
         oldGame.setLng(updateGame.getLng());
@@ -147,6 +148,7 @@ public class GameDelegator {
         resetCache(gameId, u);
 
         GameAccessManager.updateLastModificationDateGameAcessEntries(gameId, lastModificationDate);
+        checkSharing(oldGame, updateGame);
         return oldGame;
     }
 
@@ -229,12 +231,14 @@ public class GameDelegator {
         return returnGame;
     }
 
-    public GamesList getRecentGames() {
-        GamesList resultsList = new GamesList();
-        resultsList.setGames(GameManager.getRecentGames());
-        return resultsList;
-
-    }
+//    public GamesList getRecentGames(String resumptionToken) {
+//        GamesList resultsList = new GamesList();
+////        GameManager.getRecentGames(resumptionToken);
+////        resultsList.setResumptionToken(gameAccessList.getResumptionToken());
+////        resultsList.setGames();
+//        return resultsList;
+//
+//    }
 
     public void checkSharing(Game oldGame, Game newGame) {
         Integer newSharingType = newGame.getSharing();

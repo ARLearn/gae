@@ -5,6 +5,7 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
+import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.ForbiddenException;
 import com.google.api.server.spi.response.UnauthorizedException;
@@ -18,7 +19,9 @@ import org.celstec.arlearn2.beans.run.RunList;
 import org.celstec.arlearn2.delegators.*;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.manager.AccountManager;
+import org.celstec.arlearn2.tasks.gameAccess.GameAccessCleanUp;
 import org.celstec.arlearn2.tasks.runAccess.CleanUp;
+import org.celstec.arlearn2.tasks.runPlayer.RunPlayerCleanUp;
 
 import java.util.List;
 
@@ -65,9 +68,12 @@ public class Runs extends GenericApi {
     )
     public org.celstec.arlearn2.beans.run.User addUserToRun(EnhancedUser user,
                                                             @Named("runId") Long runId,
-                                                            @Named("fullId") String fullId) {
+                                                            @Named("fullId") String fullId) throws BadRequestException {
         org.celstec.arlearn2.beans.run.User userbean = new org.celstec.arlearn2.beans.run.User();
         userbean.setFullIdentifier(fullId);
+        if (userbean.getLocalId() == null) {
+            throw new BadRequestException("could not parse id of user :"+fullId);
+        }
         userbean.setRunId(runId);
         return new UsersDelegator().createUser(userbean);
     }
@@ -272,6 +278,72 @@ public class Runs extends GenericApi {
     ) throws ForbiddenException {//Game newGame
 
         CleanUp.setup(null);
+
+    }
+
+    @ApiMethod(
+            name = "cleanUpUsersForGame",
+            path = "/run/access/user/cleanup/{gameId}",
+            httpMethod = ApiMethod.HttpMethod.GET
+    )
+    public void runAccessCleanupGameId(final EnhancedUser user,
+                                 @Named("gameId") long gameId
+    ) throws ForbiddenException {//Game newGame
+
+        CleanUp.setupGameId(null, gameId);
+
+    }
+
+    @ApiMethod(
+            name = "cleanUpPlayersForGame",
+            path = "/run/player/cleanup/{gameId}",
+            httpMethod = ApiMethod.HttpMethod.GET
+    )
+    public void runPlayerCleanupGameId(final EnhancedUser user,
+                                       @Named("gameId") long gameId
+    ) throws ForbiddenException {//Game newGame
+
+        RunPlayerCleanUp.setupGameId(null, gameId);
+
+    }
+
+    @ApiMethod(
+            name = "cleanUpPlayersForGameAll",
+            path = "/run/player/cleanup",
+            httpMethod = ApiMethod.HttpMethod.GET
+    )
+    public void runPlayerCleanup(final EnhancedUser user
+    ) throws ForbiddenException {//Game newGame
+
+        RunPlayerCleanUp.setup(null);
+
+    }
+
+
+
+    @ApiMethod(
+            name = "cleanUpGameAccess",
+            path = "/game/access/cleanup/{gameId}",
+            httpMethod = ApiMethod.HttpMethod.GET
+    )
+    public void gameAccessCleanupGameId(final EnhancedUser user,
+                                       @Named("gameId") long gameId
+    ) throws ForbiddenException {//Game newGame
+
+        GameAccessCleanUp.setupGameId(null, gameId);
+
+    }
+
+
+    @ApiMethod(
+            name = "cleanUpGameAccessAll",
+            path = "/game/access/cleanup",
+            httpMethod = ApiMethod.HttpMethod.GET
+    )
+    public void gameAccessCleanup(final EnhancedUser user
+    ) throws ForbiddenException {//Game newGame
+
+        GameAccessCleanUp.setup(null);
 
     }
 }

@@ -20,6 +20,7 @@ package org.celstec.arlearn2.jdo.manager;
 
 import com.google.appengine.api.datastore.*;
 import org.celstec.arlearn2.beans.game.Game;
+import org.celstec.arlearn2.beans.game.GamesList;
 import org.celstec.arlearn2.beans.serializer.json.JsonBeanSerialiser;
 import org.celstec.arlearn2.jdo.classes.GameEntity;
 
@@ -48,6 +49,7 @@ public class GameManager {
         gameJdo.setSplashScreen(game.getSplashScreen());
         gameJdo.setSharing(game.getSharing());
         gameJdo.setDescription(game.getDescription());
+        gameJdo.setStartButton(game.getStartButton());
         gameJdo.setLat(game.getLat());
         gameJdo.setLng(game.getLng());
         gameJdo.setLanguage(game.getLanguage());
@@ -95,6 +97,7 @@ public class GameManager {
         gameJdo.setSplashScreen(game.getSplashScreen());
         gameJdo.setSharing(game.getSharing());
         gameJdo.setDescription(game.getDescription());
+        gameJdo.setStartButton(game.getStartButton());
         gameJdo.setLat(game.getLat());
         gameJdo.setLng(game.getLng());
         gameJdo.setLanguage(game.getLanguage());
@@ -138,7 +141,7 @@ public class GameManager {
     }
 
     public static Game getGame(Long gameId) {
-        System.out.println("retreive "+gameId);
+        System.out.println("retrieve "+gameId);
         Entity result = getGameAsEntity(gameId);
         if (result == null){
             return null;
@@ -175,19 +178,26 @@ public class GameManager {
         return featuredGamesList;
     }
 
-    public static List<Game> getRecentGames() {
-        ArrayList<Game> featuredGamesList = new ArrayList<Game>();
+    public static GamesList getRecentGames( String cursorString) {
+        FetchOptions fetchOptions = FetchOptions.Builder.withLimit(10);
+        if (cursorString != null) {
+            fetchOptions.startCursor(Cursor.fromWebSafeString(cursorString));
+        }
+        GamesList resultsList = new GamesList();
         Query.FilterPredicate filterPredicate = new Query.FilterPredicate(GameEntity.COL_SHARING, Query.FilterOperator.EQUAL, 3);
 
         Query q = new Query(GameEntity.KIND).setFilter(filterPredicate).addSort(GameEntity.COL_LASTMODIFICATIONDATE, Query.SortDirection.DESCENDING);
 
         PreparedQuery pq = datastore.prepare(q);
-        List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(10));
-        Iterator<Entity> it = results.iterator();
-        while (it.hasNext()) {
-            featuredGamesList.add(new GameEntity(it.next()).toGame());
+        QueryResultList<Entity>  results = pq.asQueryResultList(fetchOptions);
+        for (Entity result : results) {
+            resultsList.addGame(new GameEntity(result).toGame());
         }
-        return featuredGamesList;
+        if (resultsList.getGames().size() == 10) {
+            resultsList.setResumptionToken(results.getCursor().toWebSafeString());
+        }
+        resultsList.setServerTime(System.currentTimeMillis());
+        return resultsList;
     }
 
     public static List<GameEntity> queryAll() {

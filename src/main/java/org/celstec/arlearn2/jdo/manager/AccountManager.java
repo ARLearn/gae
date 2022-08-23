@@ -121,6 +121,12 @@ public class AccountManager {
         return account;
     }
 
+    public static AccountEntity unsecureSave(Account acc) {
+        AccountEntity account = new AccountEntity(acc);
+        datastore.put(account.toEntity());
+        return account;
+    }
+
     public static Account getAccount(Account myAccount) {
         return (getAccount(myAccount.getAccountType() + ":" + myAccount.getLocalId()));
     }
@@ -241,6 +247,20 @@ public class AccountManager {
                 .setFilter(new Query.FilterPredicate(AccountEntity.COL_EMAIL, Query.FilterOperator.EQUAL, email.toLowerCase()));
         PreparedQuery pq = datastore.prepare(q);
 
+        List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(2));
+        Iterator<Entity> it = results.iterator();
+        if (it.hasNext()) {
+            return new AccountEntity(it.next()).toAccount();
+        }
+        return null;
+    }
+
+    public static Account queryViaToken(String token) {
+        AccountList itemsResult = new AccountList();
+        Query q = new Query(AccountEntity.KIND)
+                .setFilter(new Query.FilterPredicate(AccountEntity.COL_INIT_PW_TOKEN, Query.FilterOperator.EQUAL, token));
+        PreparedQuery pq = datastore.prepare(q);
+        System.out.println("query is "+q);
         List<Entity> results = pq.asList(FetchOptions.Builder.withLimit(2));
         Iterator<Entity> it = results.iterator();
         if (it.hasNext()) {

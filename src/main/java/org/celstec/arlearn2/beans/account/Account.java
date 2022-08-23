@@ -64,6 +64,9 @@ public class Account extends Bean {
     private Boolean allowTrackLocation;
     private Long lastModificationDate;
     private Long lastLoginDate;
+    public String initPasswordToken;
+    private Long tokenExpirationDate;
+
 
     public String getFirebaseId() {
         return firebaseId;
@@ -276,6 +279,22 @@ public class Account extends Bean {
         this.connection = connection;
     }
 
+    public String getInitPasswordToken() {
+        return initPasswordToken;
+    }
+
+    public void setInitPasswordToken(String initPasswordToken) {
+        this.initPasswordToken = initPasswordToken;
+    }
+
+    public Long getTokenExpirationDate() {
+        return tokenExpirationDate;
+    }
+
+    public void setTokenExpirationDate(Long tokenExpirationDate) {
+        this.tokenExpirationDate = tokenExpirationDate;
+    }
+
     @Override
     public boolean equals(Object obj) {
         Account other = (Account) obj;
@@ -388,6 +407,10 @@ public class Account extends Bean {
         }
     }
 
-    ;
+    public void unsetToken() {
+        tokenExpirationDate = null;
+        initPasswordToken = null;
+
+    }
 
 }

@@ -42,6 +42,7 @@ public class Game extends GameBean implements Serializable, Comparable<Game>{
     private String description;
     private String owner;
     private String feedUrl;
+    private String startButton;
 
     private Config config;
     private Integer sharing;
@@ -310,6 +311,14 @@ public class Game extends GameBean implements Serializable, Comparable<Game>{
 
     public void setGridSize(Integer gridSize) {
         this.gridSize = gridSize;
+    }
+
+    public String getStartButton() {
+        return startButton;
+    }
+
+    public void setStartButton(String startButton) {
+        this.startButton = startButton;
     }
 }
 

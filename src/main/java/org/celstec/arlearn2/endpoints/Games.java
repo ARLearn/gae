@@ -33,7 +33,6 @@ import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.celstec.arlearn2.beans.DependencyWrapper;
 import org.celstec.arlearn2.beans.GameIdentifierList;
 import org.celstec.arlearn2.beans.dependencies.Dependency;
@@ -116,12 +115,13 @@ public class Games extends GenericApi {
         if (g.getError() != null) {
             return g;
         }
+        InitiateClone clone = new InitiateClone(g.getGameId(), user);
+        Game toReturn = clone.cloneGame();
         Queue queue = QueueFactory.getDefaultQueue();
         queue.add(
                 TaskOptions.Builder
-                        .withPayload(new InitiateClone(g.getGameId(), user)
-                        ));
-        return g;
+                        .withPayload(clone));
+        return toReturn;
     }
 
     @ApiMethod(

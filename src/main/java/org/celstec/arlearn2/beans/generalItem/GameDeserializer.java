@@ -47,6 +47,7 @@ public class GameDeserializer extends GameBeanDeserializer {
 		if (object.has("splashScreen")) g.setSplashScreen(object.getString("splashScreen"));
 		if (object.has("creator")) g.setCreator(object.getString("creator"));
 		if (object.has("description")) g.setDescription(object.getString("description"));
+		if (object.has("startButton")) g.setStartButton(object.getString("startButton"));
 		if (object.has("owner")) g.setOwner(object.getString("owner"));
 		if (object.has("feedUrl")) g.setFeedUrl(object.getString("feedUrl"));
 		if (object.has("messageListTypes")) g.setMessageListTypes(object.getString("messageListTypes"));

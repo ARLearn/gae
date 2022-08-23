@@ -135,6 +135,7 @@ public class RunAccessManager {
 				new Query.FilterPredicate(RunAccessEntity.COL_LASTMODIFICATIONDATERUN, Query.FilterOperator.GREATER_THAN_OR_EQUAL, from)
 		);
 		q.setFilter(accountFilter);
+		System.out.println("query is " +q);
 		q.addSort(RunAccessEntity.COL_LASTMODIFICATIONDATERUN, Query.SortDirection.DESCENDING);
 		PreparedQuery pq = datastore.prepare(q);
 		QueryResultList<Entity> results =pq.asQueryResultList(fetchOptions);

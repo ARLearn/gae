@@ -48,6 +48,8 @@ public class AccountEntity {
     public static String COL_LOCALID = "localId";
     public static String COL_NAME = "name";
     public static String COL_PICTURE = "picture";
+    public static String COL_INIT_PW_TOKEN = "initPwToken";
+    public static String COL_TOKEN_EXP_DATE = "tokenExpDate";
 
     public final static int FBCLIENT = 1;
     public final static int GOOGLECLIENT = 2;
@@ -81,8 +83,8 @@ public class AccountEntity {
     private Boolean suspended;
 //    private Integer accountLevel;
     private Boolean allowTrackLocation;
-
-
+    public String initPasswordToken;
+    private Long tokenExpirationDate;
 
     public String getUniqueId() {
         return uniqueId.getName();
@@ -252,6 +254,22 @@ public class AccountEntity {
         this.canAddUsersToOrganisation = canAddUsersToOrganisation;
     }
 
+    public String getInitPasswordToken() {
+        return initPasswordToken;
+    }
+
+    public void setInitPasswordToken(String initPasswordToken) {
+        this.initPasswordToken = initPasswordToken;
+    }
+
+    public Long getTokenExpirationDate() {
+        return tokenExpirationDate;
+    }
+
+    public void setTokenExpirationDate(Long tokenExpirationDate) {
+        this.tokenExpirationDate = tokenExpirationDate;
+    }
+
     public AccountEntity(){
 
     }
@@ -284,6 +302,25 @@ public class AccountEntity {
 
         //        if ( entity.getProperty(COL_ACCOUNTLEVEL) !=null )this.accountLevel = ((Long) entity.getProperty(COL_ACCOUNTLEVEL)).intValue();
         this.allowTrackLocation = (Boolean) entity.getProperty(COL_ALLOWTRACKLOCATION);
+        this.tokenExpirationDate = (Long) entity.getProperty(COL_TOKEN_EXP_DATE);
+        this.initPasswordToken = (String) entity.getProperty(COL_INIT_PW_TOKEN);
+    }
+
+    public AccountEntity(Account acc){
+        setLocalId(acc.getLocalId());
+        setAccountType(acc.getAccountType());
+        setUniqueId();
+        setFirebaseId(acc.getFirebaseId());
+        setEmail(acc.getEmail());
+        setName(acc.getName());
+        setLabels(acc.getLabel());
+        setPicture(acc.getPicture());
+        setLastModificationDate(System.currentTimeMillis());
+        setAllowTrackLocation(false);
+        setExpirationDate(acc.getExpirationDate());
+        setSuspended(acc.getSuspended());
+        setInitPasswordToken(acc.getInitPasswordToken());
+        setTokenExpirationDate(acc.getTokenExpirationDate());
     }
 
     public Entity toEntity() {
@@ -309,6 +346,8 @@ public class AccountEntity {
         result.setProperty(COL_CAN_PUBLISH, this.canPublishGames);
         result.setProperty(COL_CAN_ADD_USERS_TO_ORG, this.canAddUsersToOrganisation);
 
+        result.setProperty(COL_TOKEN_EXP_DATE, this.tokenExpirationDate);
+        result.setProperty(COL_INIT_PW_TOKEN, this.initPasswordToken);
         return result;
     }
 
@@ -332,6 +371,8 @@ public class AccountEntity {
         account.setAdmin(this.admin);
         account.setLastModificationDate(this.lastModificationDate);
         account.setLastLoginDate(this.lastLoginDate);
+        account.setInitPasswordToken(this.initPasswordToken);
+        account.setTokenExpirationDate(this.tokenExpirationDate);
         return account;
     }
 }
