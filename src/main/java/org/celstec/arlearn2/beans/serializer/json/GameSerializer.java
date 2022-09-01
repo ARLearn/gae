@@ -34,6 +34,9 @@ public class GameSerializer extends GameBeanSerializer{
 			if (game.getCreator() != null) returnObject.put("creator", game.getCreator());
 			if (game.getDescription() != null) returnObject.put("description", game.getDescription());
 			if (game.getStartButton() != null) returnObject.put("startButton", game.getStartButton());
+			if (game.getGameOverHeading() != null) returnObject.put("gameOverHeading", game.getGameOverHeading());
+			if (game.getGameOverButton() != null) returnObject.put("gameOverButton", game.getGameOverButton());
+			if (game.getGameOverDescription() != null) returnObject.put("gameOverDescription", game.getGameOverDescription());
 			if (game.getOwner() != null) returnObject.put("owner", game.getOwner());
 			if (game.getFeedUrl() != null) returnObject.put("feedUrl", game.getFeedUrl());
 			if (game.getSharing() != null) returnObject.put("sharing", game.getSharing());

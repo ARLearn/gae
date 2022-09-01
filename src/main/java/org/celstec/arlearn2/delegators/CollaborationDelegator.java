@@ -7,6 +7,7 @@ import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.classes.ContactEntity;
 import org.celstec.arlearn2.jdo.manager.AccountManager;
 import org.celstec.arlearn2.jdo.manager.ContactManager;
+import org.celstec.arlearn2.tasks.mail.AddContactMail;
 
 public class CollaborationDelegator {
 
@@ -33,26 +34,27 @@ public class CollaborationDelegator {
 
 
     public void addContactViaEmail(String toEmail, String note, String from, EnhancedUser us) {
-        com.google.apphosting.api.ApiProxy.getCurrentEnvironment();
+//        com.google.apphosting.api.ApiProxy.getCurrentEnvironment();
+//
+//        ContactEntity jdo = ContactManager.addContactInvitation(us.getLocalId(), us.getProvider(), toEmail, from);
+//
+//        String msgBody = "<html><body>";
+//        msgBody += "Hi,<br>";
+//        msgBody += "<p>";
+//        msgBody += from + " has invited you to become his contact";
+//        msgBody += "</p>";
+//        msgBody += note;
+//        msgBody += "<p>";
+//        msgBody += "Click  <a href=\"http://" + SystemProperty.applicationId.get() + ".appspot.com/#/connections/pending/\">here</a> to accept this invitation.";
+//        msgBody += "</p>";
+//        msgBody += "</body></html>";
+//
+//        MailDelegator md;
+//
+//        md = new MailDelegator();
+//        md.sendMail("no-reply@" + SystemProperty.applicationId.get() + ".appspotmail.com", from, toEmail, "Pending contact request", msgBody);
 
-        ContactEntity jdo = ContactManager.addContactInvitation(us.getLocalId(), us.getProvider(), toEmail, from);
-
-        String msgBody = "<html><body>";
-        msgBody += "Hi,<br>";
-        msgBody += "<p>";
-        msgBody += from + " has invited you to become his contact";
-        msgBody += "</p>";
-        msgBody += note;
-        msgBody += "<p>";
-        msgBody += "Click  <a href=\"http://" + SystemProperty.applicationId.get() + ".appspot.com/#/connections/pending/\">here</a> to accept this invitation.";
-        msgBody += "</p>";
-        msgBody += "</body></html>";
-
-        MailDelegator md;
-
-        md = new MailDelegator();
-        md.sendMail("no-reply@" + SystemProperty.applicationId.get() + ".appspotmail.com", from, toEmail, "Pending contact request", msgBody);
-
+        AddContactMail.setup(toEmail, toEmail, from, note);
 
     }
 
@@ -69,18 +71,19 @@ public class CollaborationDelegator {
         Account targetAccount = ContactManager.getContactViaId(addContactToken);
         String toEmail = targetAccount.getEmail();
 
-        String msgBody = "<html><body>";
-        msgBody += "Hi,<br>";
-        msgBody += "<p>";
-        msgBody += from + " is still waiting for you to become his contact";
-        msgBody += "Click  <a href=\"http://" + SystemProperty.applicationId.get() + ".appspot.com/#/connections/pending/\">here</a> to accept this invitation.";
-        msgBody += "</p>";
-        msgBody += "</body></html>";
-
-        MailDelegator md;
-
-        md = new MailDelegator();
-        md.sendMail("no-reply@" + SystemProperty.applicationId.get() + ".appspotmail.com", from, toEmail, "Pending contact request", msgBody);
+//        String msgBody = "<html><body>";
+//        msgBody += "Hi,<br>";
+//        msgBody += "<p>";
+//        msgBody += from + " is still waiting for you to become his contact";
+//        msgBody += "Click  <a href=\"http://" + SystemProperty.applicationId.get() + ".appspot.com/#/connections/pending/\">here</a> to accept this invitation.";
+//        msgBody += "</p>";
+//        msgBody += "</body></html>";
+//
+//        MailDelegator md;
+//
+//        md = new MailDelegator();
+//        md.sendMail("no-reply@" + SystemProperty.applicationId.get() + ".appspotmail.com", from, toEmail, "Pending contact request", msgBody);
+        AddContactMail.setup(toEmail, toEmail, from, "");
     }
 
 

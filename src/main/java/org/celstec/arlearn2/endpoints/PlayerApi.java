@@ -176,7 +176,7 @@ public class PlayerApi extends GenericApi {
         if (metadata.addpers) {
             cd.addContactViaEmail(metadata.email, metadata.note, ((EnhancedUser) user).name, us);
         } else {
-            cd.addContactViaEmail(metadata.email, "default note", ((EnhancedUser) user).name, us);
+            cd.addContactViaEmail(metadata.email, "", ((EnhancedUser) user).name, us);
         }
 
     }

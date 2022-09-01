@@ -122,10 +122,14 @@ public class GameDelegator {
     public Game updateGame(EnhancedUser u, Long gameId, Game updateGame) {
         Long lastModificationDate = System.currentTimeMillis();
         Game oldGame = GameManager.getGame(gameId);
-        System.out.println("oldGame "+ oldGame.getAmountOfPlays());
         oldGame.setIconAbbreviation(updateGame.getIconAbbreviation());
         oldGame.setDescription(updateGame.getDescription());
         oldGame.setStartButton(updateGame.getStartButton());
+        oldGame.setGameOverHeading(updateGame.getGameOverHeading());
+        oldGame.setGameOverButton(updateGame.getGameOverButton());
+        oldGame.setGameOverDescription(updateGame.getGameOverDescription());
+        oldGame.setGameOverHeading(updateGame.getGameOverHeading());
+
         oldGame.setSplashScreen(updateGame.getSplashScreen());
         oldGame.setLat(updateGame.getLat());
         oldGame.setLng(updateGame.getLng());

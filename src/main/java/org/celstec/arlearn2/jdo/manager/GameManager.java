@@ -50,6 +50,9 @@ public class GameManager {
         gameJdo.setSharing(game.getSharing());
         gameJdo.setDescription(game.getDescription());
         gameJdo.setStartButton(game.getStartButton());
+        gameJdo.setGameOverHeading(game.getGameOverHeading());
+        gameJdo.setGameOverButton(game.getGameOverButton());
+        gameJdo.setGameOverDescription(game.getGameOverDescription());
         gameJdo.setLat(game.getLat());
         gameJdo.setLng(game.getLng());
         gameJdo.setLanguage(game.getLanguage());
@@ -98,6 +101,9 @@ public class GameManager {
         gameJdo.setSharing(game.getSharing());
         gameJdo.setDescription(game.getDescription());
         gameJdo.setStartButton(game.getStartButton());
+        gameJdo.setGameOverHeading(game.getGameOverHeading());
+        gameJdo.setGameOverButton(game.getGameOverButton());
+        gameJdo.setGameOverDescription(game.getGameOverDescription());
         gameJdo.setLat(game.getLat());
         gameJdo.setLng(game.getLng());
         gameJdo.setLanguage(game.getLanguage());

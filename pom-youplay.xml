@@ -4,7 +4,7 @@
     <packaging>war</packaging>
     <version>2.0.0</version>
     <groupId>org.celstec.arlearn.gae</groupId>
-    <artifactId>dido-authoring</artifactId>
+    <artifactId>arlearn-eu</artifactId>
 
  <parent>
         <groupId>com.google.cloud.samples</groupId>
@@ -32,11 +32,6 @@
     </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>com.sendgrid</groupId>
-            <artifactId>sendgrid-java</artifactId>
-            <version>4.3.0</version>
-        </dependency>
         <dependency>
             <groupId>com.google.endpoints</groupId>
             <artifactId>endpoints-framework</artifactId>
@@ -103,7 +98,7 @@
     </dependencies>
 
     <build>
-        <finalName>DidoProd</finalName>
+        <finalName>YouplayProd</finalName>
         <plugins>
             <plugin>
                 <groupId>com.google.code.maven-replacer-plugin</groupId>
@@ -118,7 +113,7 @@
                         </goals>
                         <inherited>false</inherited>
                         <configuration>
-                            <file>src/main/java/templates/arlearn_dido/Constants.java.template</file>
+                            <file>src/main/java/templates/arlearn_eu/Constants.java.template</file>
                             <outputFile>src/main/java/org/celstec/arlearn2/endpoints/util/Constants.java</outputFile>
                             <replacements>
                                 <replacement>
@@ -137,7 +132,7 @@
                         </goals>
                         <inherited>false</inherited>
                         <configuration>
-                            <file>src/main/java/templates/arlearn_dido/GenericApi.java.template</file>
+                            <file>src/main/java/templates/arlearn_eu/GenericApi.java.template</file>
                             <outputFile>src/main/java/org/celstec/arlearn2/endpoints/GenericApi.java</outputFile>
                             <replacements>
                                 <replacement>
@@ -182,7 +177,7 @@
                 <artifactId>endpoints-framework-maven-plugin</artifactId>
                 <version>1.0.2</version>
                 <configuration>
-                    <hostname>moonlit-cistern-280812.appspot.com</hostname>
+                    <hostname>arlearn-eu.appspot.com</hostname>
                     <basePath>/api</basePath>
                 </configuration>
             </plugin>

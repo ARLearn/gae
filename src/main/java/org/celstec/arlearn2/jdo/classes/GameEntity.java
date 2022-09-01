@@ -42,6 +42,9 @@ public class GameEntity {
     public static String COL_CREATOREMAIL = "creatorEmail";
     public static String COL_DESCRIPTION = "description";
     public static String COL_STARTBUTTON = "startButton";
+    public static String COL_GAME_OVER_HEADING = "gameOverHeading";
+    public static String COL_GAME_OVER_BUTTON = "gameOverButton";
+    public static String COL_GAME_OVER_DESC_BUTTON = "gameOverDescription";
     public static String COL_FEATURED = "featured";
     public static String COL_FEEDURL = "feedUrl";
 
@@ -99,6 +102,9 @@ public class GameEntity {
     private Text config;
     private Text description;
     private Text startButton;
+    private Text gameOverHeading;
+    private Text gameOverButton;
+    private Text gameOverDescription;
     private Text endsOn;
     private Integer sharing;
     private String licenseCode;
@@ -210,6 +216,33 @@ public class GameEntity {
 
     public void setStartButton(String startButton) {
         if (startButton != null) this.startButton = new Text(startButton);
+    }
+
+    public String getGameOverHeading() {
+        if (gameOverHeading == null) return null;
+        return gameOverHeading.getValue();
+    }
+
+    public void setGameOverHeading(String gameOverHeadingString) {
+        if (gameOverHeadingString != null) this.gameOverHeading = new Text(gameOverHeadingString);
+    }
+
+    public String getGameOverButton() {
+        if (gameOverButton == null) return null;
+        return gameOverButton.getValue();
+    }
+
+    public void setGameOverButton(String gameOverButtonString) {
+        if (gameOverButtonString != null) this.gameOverButton = new Text(gameOverButtonString);
+    }
+
+    public String getGameOverDescription() {
+        if (gameOverDescription == null) return null;
+        return gameOverDescription.getValue();
+    }
+
+    public void setGameOverDescription(String gameOverDescString) {
+        if (gameOverDescString != null) this.gameOverDescription = new Text(gameOverDescString);
     }
 
     public Integer getSharing() {
@@ -366,6 +399,9 @@ public class GameEntity {
         this.endsOn= (Text) entity.getProperty(COL_ENDS_ON);
         this.description = (Text) entity.getProperty(COL_DESCRIPTION);
         this.startButton = (Text) entity.getProperty(COL_STARTBUTTON);
+        this.gameOverButton = (Text) entity.getProperty(COL_GAME_OVER_BUTTON);
+        this.gameOverHeading =(Text) entity.getProperty(COL_GAME_OVER_HEADING);
+        this.gameOverDescription = (Text) entity.getProperty(COL_GAME_OVER_DESC_BUTTON);
         if (entity.getProperty(COL_SHARING) != null) {
             this.sharing = ((Long) entity.getProperty(COL_SHARING)).intValue();
         }
@@ -418,6 +454,10 @@ public class GameEntity {
         result.setProperty(COL_CREATOREMAIL, this.creatorEmail);
         result.setProperty(COL_DESCRIPTION, this.description);
         result.setProperty(COL_STARTBUTTON, this.startButton);
+
+        result.setProperty(COL_GAME_OVER_HEADING, this.gameOverHeading);
+        result.setProperty(COL_GAME_OVER_BUTTON, this.gameOverButton);
+        result.setProperty(COL_GAME_OVER_DESC_BUTTON, this.gameOverDescription);
         result.setProperty(COL_FEATURED, this.featured);
         result.setProperty(COL_FEEDURL, this.feedUrl);
 //        result.setProperty(COL_GOOGLEPLAYURL, this.googlePlayUrl);
@@ -456,6 +496,9 @@ public class GameEntity {
         game.setOwner(getOwner());
         game.setDescription(getDescription());
         game.setStartButton(getStartButton());
+        game.setGameOverHeading(getGameOverHeading());
+        game.setGameOverButton(getGameOverButton());
+        game.setGameOverDescription(getGameOverDescription());
         game.setSharing(getSharing());
         game.setLng(getLng());
         game.setLat(getLat());

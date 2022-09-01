@@ -43,6 +43,9 @@ public class Game extends GameBean implements Serializable, Comparable<Game>{
     private String owner;
     private String feedUrl;
     private String startButton;
+    private String gameOverHeading;
+    private String gameOverButton;
+    private String gameOverDescription;
 
     private Config config;
     private Integer sharing;
@@ -319,6 +322,30 @@ public class Game extends GameBean implements Serializable, Comparable<Game>{
 
     public void setStartButton(String startButton) {
         this.startButton = startButton;
+    }
+
+    public String getGameOverHeading() {
+        return gameOverHeading;
+    }
+
+    public void setGameOverHeading(String gameOverHeading) {
+        this.gameOverHeading = gameOverHeading;
+    }
+
+    public String getGameOverButton() {
+        return gameOverButton;
+    }
+
+    public void setGameOverButton(String gameOverButtonString) {
+        this.gameOverButton = gameOverButtonString;
+    }
+
+    public String getGameOverDescription() {
+        return gameOverDescription;
+    }
+
+    public void setGameOverDescription(String gameOverDescriptionString) {
+        this.gameOverDescription = gameOverDescriptionString;
     }
 }
 
