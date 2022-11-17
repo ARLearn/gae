@@ -19,6 +19,7 @@
 package org.celstec.arlearn2.delegators;
 
 import com.google.api.server.spi.response.ForbiddenException;
+import com.google.api.server.spi.response.NotFoundException;
 import org.celstec.arlearn2.beans.game.Game;
 import org.celstec.arlearn2.beans.run.*;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
@@ -39,11 +40,11 @@ public class RunDelegator {
     public RunDelegator() {
     }
 
-    public Run getRun(Long runId) {
+    public Run getRun(Long runId) throws NotFoundException {
         return getRun(runId, true);
     }
 
-    public Run getRun(Long runId, boolean withGame) {
+    public Run getRun(Long runId, boolean withGame) throws NotFoundException {
         Run r = RunsCache.getInstance().getRun(runId);
         if (r == null) {
             r = RunManager.getRun(runId);
@@ -58,7 +59,7 @@ public class RunDelegator {
         return r;
     }
 
-    public long getRunDuration(Long runId) {
+    public long getRunDuration(Long runId) throws NotFoundException {
         Run r = getRun(runId);
         if (r == null) {
             System.out.println("runid is null");
@@ -74,7 +75,7 @@ public class RunDelegator {
         return UserManager.hasUserListByGameId(gameId, fullId);
     }
 
-    public RunList getParticipateRuns(Long gameId, String fullId) {
+    public RunList getParticipateRuns(Long gameId, String fullId) throws NotFoundException {
         Iterator<User> it = UserManager.getUserListByGameId(gameId, fullId).iterator();
         RunList rl = new RunList();
         while (it.hasNext()) {
@@ -97,19 +98,25 @@ public class RunDelegator {
         RunList rl = new RunList();
         while (it.hasNext()) {
             User user = it.next();
-            Run r = getRun(user.getRunId());
-            if (r != null) {
-                rl.addRun(r);
-            } else {
-                logger.severe("following run does not exist" + user.getRunId());
+            Run r = null;
+            try {
+                r = getRun(user.getRunId());
+                if (r != null) {
+                    rl.addRun(r);
+                } else {
+                    logger.severe("following run does not exist" + user.getRunId());
 
+                }
+            } catch (NotFoundException e) {
+                e.printStackTrace();
             }
+
         }
         rl.setServerTime(System.currentTimeMillis());
         return rl;
     }
 
-    public Run createRun(EnhancedUser us, Run run) {
+    public Run createRun(EnhancedUser us, Run run) throws NotFoundException {
         if (run.getRunId() != null) RunsCache.getInstance().removeRun(run.getRunId());
         long now = System.currentTimeMillis();
         if (run.getStartTime() == null) {
@@ -142,7 +149,7 @@ public class RunDelegator {
         return run;
     }
 
-    public Run deleteRun(Long runId, EnhancedUser us) {
+    public Run deleteRun(Long runId, EnhancedUser us) throws NotFoundException {
         return deleteRun(getRun(runId), us.createFullId());
     }
 
@@ -236,7 +243,7 @@ public class RunDelegator {
     }
 
 
-    public RunList getRuns(String resumptionToken, long gameId, int provider, String localId) {
+    public RunList getRuns(String resumptionToken, long gameId, int provider, String localId) throws NotFoundException {
         RunList runList = new RunList();
         RunAccessList runAccessList = RunAccessManager.getRunList(provider, localId, resumptionToken, gameId);
         runList.setServerTime(runAccessList.getServerTime());

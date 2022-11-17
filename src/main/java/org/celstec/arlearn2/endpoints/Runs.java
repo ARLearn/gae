@@ -5,10 +5,7 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
-import com.google.api.server.spi.response.BadRequestException;
-import com.google.api.server.spi.response.CollectionResponse;
-import com.google.api.server.spi.response.ForbiddenException;
-import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.api.server.spi.response.*;
 import org.celstec.arlearn2.beans.game.Game;
 import org.celstec.arlearn2.beans.game.GameAccess;
 import org.celstec.arlearn2.beans.game.GameAccessList;
@@ -56,7 +53,7 @@ public class Runs extends GenericApi {
             name = "createRun",
             path = "/run/create"
     )
-    public Run createRun(final User user, Run run){
+    public Run createRun(final User user, Run run) throws NotFoundException {
         EnhancedUser us = (EnhancedUser) user;
         return new RunDelegator().createRun(us, run);
     }
@@ -68,7 +65,7 @@ public class Runs extends GenericApi {
     )
     public org.celstec.arlearn2.beans.run.User addUserToRun(EnhancedUser user,
                                                             @Named("runId") Long runId,
-                                                            @Named("fullId") String fullId) throws BadRequestException {
+                                                            @Named("fullId") String fullId) throws BadRequestException, NotFoundException {
         org.celstec.arlearn2.beans.run.User userbean = new org.celstec.arlearn2.beans.run.User();
         userbean.setFullIdentifier(fullId);
         if (userbean.getLocalId() == null) {
@@ -84,7 +81,7 @@ public class Runs extends GenericApi {
             name = "createRunWithSelf",
             path = "/run/create/withSelf"
     )
-    public Run createRunWithSelf(final User user, Run run){
+    public Run createRunWithSelf(final User user, Run run) throws NotFoundException {
         EnhancedUser us = (EnhancedUser) user;
         if (AccountManager.getAccount(us.createFullId()) == null) {
             AccountManager.overwriteAccount(us.getId(), us.getLocalId(), us.getProvider(), us.getEmail(), user.getEmail(), null, false, 0l, "onlineplay");
@@ -113,7 +110,7 @@ public class Runs extends GenericApi {
             name = "accountDetails",
             path = "/runs/participate/{gameId}"
     )
-    public RunList getUserEmail(EnhancedUser user, @Named("gameId") Long gameId) {
+    public RunList getUserEmail(EnhancedUser user, @Named("gameId") Long gameId) throws NotFoundException {
         return new RunDelegator().getParticipateRuns(gameId, user.createFullId());
     }
 
@@ -135,7 +132,7 @@ public class Runs extends GenericApi {
             path = "/run/game/{gameId}"
     )
     public Game getGame(EnhancedUser user, @Named("gameId") Long gameId)
-            throws UnauthorizedException {//Game newGame
+            throws UnauthorizedException, NotFoundException {//Game newGame
         if (new RunDelegator().hasParticipateRuns(gameId, user.createFullId())) {
             GameDelegator qg = new GameDelegator();
             return qg.getGame(gameId);
@@ -149,7 +146,7 @@ public class Runs extends GenericApi {
             name = "getRun",
             path = "/run/{runId}"
     )
-    public Run getRun(EnhancedUser user, @Named("runId") Long runId) {
+    public Run getRun(EnhancedUser user, @Named("runId") Long runId) throws NotFoundException {
 
         return new RunDelegator().getRun(runId, true);
     }
@@ -159,7 +156,7 @@ public class Runs extends GenericApi {
             name = "getRunUnAuth",
             path = "/run/{runId}/unauth"
     )
-    public Run getRunUnAuth(@Named("runId") Long runId) throws UnauthorizedException {//Game newGame
+    public Run getRunUnAuth(@Named("runId") Long runId) throws UnauthorizedException, NotFoundException {//Game newGame
         Run r = new RunDelegator().getRun(runId, true);
         if (r.getRunConfig() != null && r.getRunConfig().getSelfRegistration()) {
             return r;
@@ -200,7 +197,7 @@ public class Runs extends GenericApi {
                                     @Named("runId") Long runId,
                                     @Named("fullId") String fullId,
                                     @Named("rights") int rights
-    ) throws ForbiddenException {
+    ) throws ForbiddenException, NotFoundException {
         RunAccessDelegator rad = new RunAccessDelegator();
         Run run = getRun(user, runId);
         if (run != null) {
@@ -241,7 +238,7 @@ public class Runs extends GenericApi {
     )
     public RunList getMyRuns(final EnhancedUser user,
                                              @Named("gameId") Long gameId, @Nullable @Named("resumptionToken") String cursor
-    ) {
+    ) throws NotFoundException {
         return new RunDelegator().getRuns(cursor, gameId, user.getProvider(), user.getLocalId());
     }
 
@@ -250,7 +247,7 @@ public class Runs extends GenericApi {
             name = "deleteRun",
             path = "/run/delete/{runId}"
     )
-    public Run deleteRun(final User user, @Named("runId") Long runId) {
+    public Run deleteRun(final User user, @Named("runId") Long runId) throws NotFoundException {
         EnhancedUser us = (EnhancedUser) user;
         return new RunDelegator().deleteRun(runId, us);
     }

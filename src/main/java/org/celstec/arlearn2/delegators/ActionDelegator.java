@@ -18,6 +18,7 @@
  ******************************************************************************/
 package org.celstec.arlearn2.delegators;
 
+import com.google.api.server.spi.response.NotFoundException;
 import org.celstec.arlearn2.beans.dependencies.ActionDependency;
 import org.celstec.arlearn2.beans.run.*;
 import org.celstec.arlearn2.jdo.manager.ActionManager;
@@ -44,7 +45,7 @@ public class ActionDelegator  {
 
     private static final Logger log = Logger.getLogger(ActionDelegator.class.getName());
 
-    public Action createAction(Action action, String userFullId) {
+    public Action createAction(Action action, String userFullId) throws NotFoundException {
 
         if (action.getRunId() == null) {
             action.setError("No run identifier specified");

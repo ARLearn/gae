@@ -105,11 +105,28 @@ public class Games extends GenericApi {
     }
 
     @ApiMethod(
+            name = "getGameUnauth",
+            path = "/game/{gameId}/unauth",
+            httpMethod = ApiMethod.HttpMethod.GET
+    )
+    public Game getGameUnauth(@Named("gameId") Long gameId) throws UnauthorizedException, NotFoundException, ForbiddenException {//Game newGame
+        GameDelegator qg = new GameDelegator();
+        Game g = qg.getGame(gameId, true);
+        if (g == null || g.getDeleted()) {
+            throw new NotFoundException("Game does not exist");
+        }
+        if (g.getSharing() == null || g.getSharing() == Game.PRIVATE) {
+            throw new UnauthorizedException("You do not have access to this game");
+        }
+        return g;
+    }
+
+    @ApiMethod(
             name = "cloneGame",
             path = "/game/clone/{gameId}",
             httpMethod = ApiMethod.HttpMethod.GET
     )
-    public Game cloneGame(final EnhancedUser user, @Named("gameId") Long gameId) throws UnauthorizedException {//Game newGame
+    public Game cloneGame(final EnhancedUser user, @Named("gameId") Long gameId) throws UnauthorizedException, NotFoundException {//Game newGame
         GameDelegator qg = new GameDelegator();
         Game g = qg.getGame(gameId);
         if (g.getError() != null) {

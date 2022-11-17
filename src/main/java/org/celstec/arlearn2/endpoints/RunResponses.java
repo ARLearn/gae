@@ -5,6 +5,7 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.ForbiddenException;
+import com.google.api.server.spi.response.NotFoundException;
 import org.celstec.arlearn2.beans.run.Response;
 
 import org.celstec.arlearn2.beans.run.ResponseList;
@@ -21,7 +22,7 @@ public class RunResponses extends GenericApi {
             name = "createRunResponse",
             path = "/run/response"
     )
-    public Response createRunResponse(final User user, Response response) {
+    public Response createRunResponse(final User user, Response response) throws NotFoundException {
         EnhancedUser us = (EnhancedUser) user;
         response.setUserId(us.createFullId());
         return new ResponseDelegator().createResponse(response.getRunId(), response);

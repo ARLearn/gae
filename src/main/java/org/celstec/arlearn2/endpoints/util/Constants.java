@@ -23,9 +23,8 @@ import com.google.api.server.spi.auth.EspAuthenticator;
  */
 
 public class Constants {
-//764873423698-ojpp4uav3l579b9r9fi3qvbvm0mulvrn.apps.googleusercontent.com,
     public static final String AUDIENCES = "801681056035-ru46n2ln3lpj8ivmn2i8t99fmbuaaebc.apps.googleusercontent.com";
     public static final Class AUTHENTICATOR= EspAuthenticator.class;
-    public static final String API_NAME_SPACE = "serious-gaming-platform.appspot.com";
+    public static final String API_NAME_SPACE = "serious-gaming-platform-dev.appspot.com";
 
 }

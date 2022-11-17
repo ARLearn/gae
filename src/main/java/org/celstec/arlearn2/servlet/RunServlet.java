@@ -1,5 +1,6 @@
 package org.celstec.arlearn2.servlet;
 
+import com.google.api.server.spi.response.NotFoundException;
 import org.celstec.arlearn2.beans.run.Run;
 import org.celstec.arlearn2.delegators.RunDelegator;
 
@@ -17,12 +18,18 @@ public class RunServlet extends HttpServlet {
 
         String requestUri = req.getRequestURI();
         long runId = Long.parseLong(requestUri.substring(5));
-        Run r = new RunDelegator().getRun(runId, false);
-        if (r != null) {
-            String path = "/#/game/" + r.getGameId() + "/detail/runs/" + r.getRunId() + "/players";
-            resp.sendRedirect(req.getContextPath() + path);
+        Run r = null;
+        try {
+            r = new RunDelegator().getRun(runId, false);
+            if (r != null) {
+                String path = "/#/game/" + r.getGameId() + "/detail/runs/" + r.getRunId() + "/players";
+                resp.sendRedirect(req.getContextPath() + path);
+            }
+            resp.sendRedirect(req.getContextPath() + "/#/landing" + req.getRequestURI());
+        } catch (NotFoundException e) {
+            e.printStackTrace();
         }
-        resp.sendRedirect(req.getContextPath() + "/#/landing" + req.getRequestURI());
+
 
     }
 }

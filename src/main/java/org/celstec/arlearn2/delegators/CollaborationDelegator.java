@@ -36,7 +36,7 @@ public class CollaborationDelegator {
     public void addContactViaEmail(String toEmail, String note, String from, EnhancedUser us) {
 //        com.google.apphosting.api.ApiProxy.getCurrentEnvironment();
 //
-//        ContactEntity jdo = ContactManager.addContactInvitation(us.getLocalId(), us.getProvider(), toEmail, from);
+        ContactEntity jdo = ContactManager.addContactInvitation(us.getLocalId(), us.getProvider(), toEmail, from);
 //
 //        String msgBody = "<html><body>";
 //        msgBody += "Hi,<br>";

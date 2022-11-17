@@ -18,6 +18,7 @@
  ******************************************************************************/
 package org.celstec.arlearn2.delegators;
 
+import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.SearchServiceFactory;
@@ -55,8 +56,14 @@ public class GameDelegator {
         gl.setFrom(from);
         gl.setResumptionToken(gameAccessList.getResumptionToken());
         for (GameAccess ga : gameAccessList.getGameAccess()) {
-            Game g = getGame(ga.getGameId());
-            gl.addGame(g);
+            Game g = null;
+            try {
+                g = getGame(ga.getGameId());
+                gl.addGame(g);
+            } catch (NotFoundException e) {
+                e.printStackTrace();
+            }
+
         }
         return gl;
     }
@@ -68,11 +75,13 @@ public class GameDelegator {
         gl.setFrom(from);
         gl.setResumptionToken(usersList.getResumptionToken());
         for (User ga : usersList.getUsers()) {
-            Game g = getGame(ga.getGameId());
-//            if (ga.getDeleted()) {
-//                g.setDeleted(true);
-//            }
-            gl.addGame(g);
+            Game g = null;
+            try {
+                g = getGame(ga.getGameId());
+                gl.addGame(g);
+            } catch (NotFoundException e) {
+                System.out.println("Game id " + ga.getGameId() + " not found");
+            }
         }
         return gl;
     }
@@ -96,27 +105,27 @@ public class GameDelegator {
         return gl;
     }
 
-    public Game getGame(Long gameId) {
+    public Game getGame(Long gameId) throws NotFoundException {
         return getGame(gameId, false);
     }
 
-    public Game getGame(Long gameId, boolean nullIfGameDoesNotExist) {
+    public Game getGame(Long gameId, boolean nullIfGameDoesNotExist) throws NotFoundException {
         Game game = MyGamesCache.getInstance().getGame(gameId);
         if (game == null) {
             game = GameManager.getGame(gameId);
             if (game == null) {
                 if (nullIfGameDoesNotExist) return null;
-                GameAccessManager.deleteGame(gameId);
-                game = new Game();
-                game.setGameId(gameId);
-                game.setError("game does not exist");
-                return game;
+                throw new NotFoundException(gameId + " not found");
+//                GameAccessManager.deleteGame(gameId);
+//                game = new Game();
+//                game.setGameId(gameId);
+//                game.setError("game does not exist");
+//                return game;
             }
             MyGamesCache.getInstance().putGame(game, gameId);
         }
         return game;
     }
-
 
 
     public Game updateGame(EnhancedUser u, Long gameId, Game updateGame) {
@@ -155,8 +164,6 @@ public class GameDelegator {
         checkSharing(oldGame, updateGame);
         return oldGame;
     }
-
-
 
 
     public Game updateShowGrid(EnhancedUser u, Long gameId, Boolean showGrid) {
@@ -203,7 +210,10 @@ public class GameDelegator {
 
         Game oldGame = null;
         if (game.getGameId() != null) {
-            oldGame = getGame(game.getGameId());
+            try {
+                oldGame = getGame(game.getGameId());
+            } catch (NotFoundException e) {
+            }
         }
         game.setGameId(GameManager.addGame(game));
         MyGamesCache.getInstance().removeGame(game.getGameId());
@@ -257,7 +267,6 @@ public class GameDelegator {
         IndexSpec indexSpec = IndexSpec.newBuilder().setName("game_index").build();
         return SearchServiceFactory.getSearchService().getIndex(indexSpec);
     }
-
 
 
 //    public GameFileList getGameContentDescription(Long gameId) {

@@ -7,6 +7,7 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
+import com.google.api.server.spi.response.ConflictException;
 import com.google.api.server.spi.response.ForbiddenException;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.datastore.EntityNotFoundException;
@@ -113,7 +114,7 @@ public class AccountApi extends GenericApi {
         adminCheck(user);
         EnhancedUser us = (EnhancedUser) user;
         if (AccountManager.queryViaEmail(account.getEmail()) != null) {
-            throw new Exception("EXCEPTION.USER_EXISTS");
+            throw new ConflictException("User exists");
         }
         return CreateAccount.getInstance().createUser(account.getEmail(), account.getPassword(), account.getName(), account.getLabel());
     }

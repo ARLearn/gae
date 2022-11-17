@@ -18,6 +18,7 @@
  ******************************************************************************/
 package org.celstec.arlearn2.delegators;
 
+import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import org.celstec.arlearn2.beans.account.Account;
 import org.celstec.arlearn2.beans.run.*;
@@ -47,7 +48,7 @@ public class UsersDelegator {
 //        super(account, token);
 //    }
 
-    public User createUser(User u) {
+    public User createUser(User u) throws NotFoundException {
         User check = checkUser(u);
         if (check != null)
             return check;

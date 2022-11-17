@@ -1,5 +1,6 @@
 package org.celstec.arlearn2.tasks.clone;
 
+import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -66,7 +67,7 @@ public class InitiateClone implements DeferredTask {
 
     }
 
-    public Game cloneGame() {
+    public Game cloneGame() throws NotFoundException {
         GameDelegator qg = new GameDelegator();
         Game g = qg.getGame(gameId);
         g.setTitle(g.getTitle() + " (copy) ");

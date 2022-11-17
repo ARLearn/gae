@@ -18,6 +18,7 @@
  ******************************************************************************/
 package org.celstec.arlearn2.delegators;
 
+import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.datastore.Key;
 import org.celstec.arlearn2.beans.Bean;
 import org.celstec.arlearn2.beans.dependencies.Dependency;
@@ -106,13 +107,13 @@ public class GeneralItemDelegator extends DependencyDelegator {
         return gil;
     }
 
-    public GeneralItemList getAllGeneralItems(Long runIdentifier) {
+    public GeneralItemList getAllGeneralItems(Long runIdentifier) throws NotFoundException {
         RunDelegator qr = new RunDelegator();
         Run run = qr.getRun(runIdentifier);
         return getGeneralItems(run.getGameId());
     }
 
-    public GeneralItemList getGeneralItemsRun(Long runIdentifier) {
+    public GeneralItemList getGeneralItemsRun(Long runIdentifier) throws NotFoundException {
         RunDelegator qr = new RunDelegator();
         Run run = qr.getRun(runIdentifier);
         if (run == null) {
@@ -147,7 +148,7 @@ public class GeneralItemDelegator extends DependencyDelegator {
     }
 
 
-    public GeneralItemList getItems(Long runIdentifier, String userIdentifier, Integer status) {
+    public GeneralItemList getItems(Long runIdentifier, String userIdentifier, Integer status) throws NotFoundException {
         GeneralItemList gil = VisibleGeneralItemsCache.getInstance().getVisibleGeneralitems(runIdentifier, userIdentifier, status);
         if (gil == null) {
             gil = new GeneralItemList();
@@ -182,15 +183,17 @@ public class GeneralItemDelegator extends DependencyDelegator {
         return gil;
     }
 
-    public void checkActionEffect(Action action, long runId, User u) {
+    public void checkActionEffect(Action action, long runId, User u) throws NotFoundException {
         if (u == null) {
             return;
         }
         ActionDelegator qa = new ActionDelegator();
         ActionList al = qa.getActionList(runId);
         GeneralItemDelegator gid = new GeneralItemDelegator();
-        GeneralItemList visableGIs = gid.getItems(runId, u.getFullId(), GeneralItemVisibilityManager.VISIBLE_STATUS);
-        GeneralItemList disappearedGIs = gid.getItems(runId, u.getFullId(), GeneralItemVisibilityManager.DISAPPEARED_STATUS);
+        GeneralItemList visableGIs= gid.getItems(runId, u.getFullId(), GeneralItemVisibilityManager.VISIBLE_STATUS);
+        GeneralItemList  disappearedGIs = gid.getItems(runId, u.getFullId(), GeneralItemVisibilityManager.DISAPPEARED_STATUS);
+
+
 
         // VisibleItemDelegator vid = new VisibleItemDelegator(this);
 

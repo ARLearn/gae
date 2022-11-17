@@ -1,25 +1,26 @@
 /*******************************************************************************
  * Copyright (C) 2013 Open Universiteit Nederland
- * 
+ *
  * This library is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * Contributors: Stefaan Ternier
  ******************************************************************************/
 package org.celstec.arlearn2.tasks.beans;
 
 import java.util.logging.Logger;
 
+import com.google.api.server.spi.response.NotFoundException;
 import org.celstec.arlearn2.beans.run.Action;
 import org.celstec.arlearn2.beans.run.Run;
 import org.celstec.arlearn2.beans.run.User;
@@ -30,111 +31,116 @@ import org.celstec.arlearn2.delegators.RunDelegator;
 import org.celstec.arlearn2.delegators.UsersDelegator;
 
 
-public class UpdateGeneralItems extends GenericBean{
+public class UpdateGeneralItems extends GenericBean {
 
-	private Long runId;
-	private String action;
-	private String userEmail;
-	private Long generalItemId;
-	private String generalItemType;
-	
-	private static final Logger log = Logger.getLogger(UpdateGeneralItems.class.getName());
+    private Long runId;
+    private String action;
+    private String userEmail;
+    private Long generalItemId;
+    private String generalItemType;
 
-	public UpdateGeneralItems() {
-		
-	}
-	
-	public UpdateGeneralItems(Long runId, String action, String userEmail, Long generalItemId, String generalItemType) {
-		super();
-		this.runId = runId;
-		this.action = action;
-		this.userEmail = userEmail;
-		this.generalItemId = generalItemId;
-		this.generalItemType = generalItemType;
-	}
+    private static final Logger log = Logger.getLogger(UpdateGeneralItems.class.getName());
 
-	public Long getRunId() {
-		return runId;
-	}
+    public UpdateGeneralItems() {
 
-	public void setRunId(Long runId) {
-		this.runId = runId;
-	}
+    }
 
-	public Long getGeneralItemId() {
-		return generalItemId;
-	}
+    public UpdateGeneralItems(Long runId, String action, String userEmail, Long generalItemId, String generalItemType) {
+        super();
+        this.runId = runId;
+        this.action = action;
+        this.userEmail = userEmail;
+        this.generalItemId = generalItemId;
+        this.generalItemType = generalItemType;
+    }
 
-	public void setGeneralItemId(Long generalItemId) {
-		this.generalItemId = generalItemId;
-	}
+    public Long getRunId() {
+        return runId;
+    }
 
-	public String getGeneralItemType() {
-		return generalItemType;
-	}
+    public void setRunId(Long runId) {
+        this.runId = runId;
+    }
 
-	public void setGeneralItemType(String generalItemType) {
-		this.generalItemType = generalItemType;
-	}
+    public Long getGeneralItemId() {
+        return generalItemId;
+    }
 
-	public String getAction() {
-		return action;
-	}
+    public void setGeneralItemId(Long generalItemId) {
+        this.generalItemId = generalItemId;
+    }
 
-	public void setAction(String action) {
-		this.action = action;
-	}
+    public String getGeneralItemType() {
+        return generalItemType;
+    }
 
-	public String getUserEmail() {
-		return userEmail;
-	}
+    public void setGeneralItemType(String generalItemType) {
+        this.generalItemType = generalItemType;
+    }
 
-	public void setUserEmail(String userEmail) {
-		this.userEmail = userEmail;
-	}
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
 
 
-	
-	@Override
-	public void run() {
+    @Override
+    public void run() {
+        try {
+        UsersDelegator qu = new UsersDelegator();
+        User u = qu.getUserByEmail(runId, getUserEmail());
 
-		UsersDelegator qu = new UsersDelegator();
-		User u = qu.getUserByEmail(runId, getUserEmail());
+        Action a = new Action();
+        a.setRunId(runId);
+        a.setAction(getAction());
+        a.setGeneralItemId(getGeneralItemId());
+        a.setGeneralItemType(getGeneralItemType());
+        RunDelegator qr = new RunDelegator();
+        Run run = qr.getRun(a.getRunId());
 
-		Action a = new Action();
-		a.setRunId(runId);
-		a.setAction(getAction());
-		a.setGeneralItemId(getGeneralItemId());
-		a.setGeneralItemType(getGeneralItemType());
-		RunDelegator qr = new RunDelegator();
-		Run run = qr.getRun(a.getRunId());
-		
-		GeneralItemDelegator gid = new GeneralItemDelegator();
-		ActionRelevancyPredictor arp = ActionRelevancyPredictor.getActionRelevancyPredicator(run.getGameId());
+        GeneralItemDelegator gid = new GeneralItemDelegator();
+        ActionRelevancyPredictor arp = ActionRelevancyPredictor.getActionRelevancyPredicator(run.getGameId());
 
-		boolean userRelevant = arp.isRelevantForUser(a);
-		boolean teamRelevant = arp.isRelevantForTeam(a); 
-		boolean allRelevant = arp.isRelevantForAll(a); 
-		if (userRelevant) {
+        boolean userRelevant = arp.isRelevantForUser(a);
+        boolean teamRelevant = arp.isRelevantForTeam(a);
+        boolean allRelevant = arp.isRelevantForAll(a);
 
-			gid.checkActionEffect(a, runId, u);	
-		} 
-			
+            if (userRelevant) {
 
-			if ((teamRelevant ||allRelevant)) {
+
+                gid.checkActionEffect(a, runId, u);
+
+            }
+            if ((teamRelevant || allRelevant)) {
                 UserList ul = qu.getUsers(runId);
                 if (ul != null)
-				for (User otherUser :ul.getUsers()) {
-					if (!(userRelevant && u.getFullId().equals(otherUser.getFullId())))
-					if (teamRelevant && u.getTeamId().equals(otherUser.getTeamId())) {
-						gid.checkActionEffect(a, runId, otherUser);
-					} else if (allRelevant) {
+                    for (User otherUser : ul.getUsers()) {
+                        if (!(userRelevant && u.getFullId().equals(otherUser.getFullId())))
+                            if (teamRelevant && u.getTeamId().equals(otherUser.getTeamId())) {
+                                gid.checkActionEffect(a, runId, otherUser);
+                            } else if (allRelevant) {
 
-						gid.checkActionEffect(a, runId, otherUser);
-					}
-				}
-			}
+                                gid.checkActionEffect(a, runId, otherUser);
+                            }
+                    }
+            }
 
-	}
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 
 }

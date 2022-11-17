@@ -1,6 +1,6 @@
 package org.celstec.arlearn2.beans;
 
-import org.apache.commons.lang3.ArrayUtils;
+
 
 /**
  * ****************************************************************************
@@ -23,7 +23,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * ****************************************************************************
  */
 public class GameIdentifierList {
-
+    public static final long[] EMPTY_LONG_ARRAY = new long[0];
     private String resumptionToken;
     private long[] gameIds;
 
@@ -34,7 +34,7 @@ public class GameIdentifierList {
 
     public GameIdentifierList(String resumptionToken, Long[] gameIds) {
         this.resumptionToken = resumptionToken;
-        this.gameIds = ArrayUtils.toPrimitive(gameIds);
+        this.gameIds = toPrimitive(gameIds);
     }
 
     public String getResumptionToken() {
@@ -51,5 +51,18 @@ public class GameIdentifierList {
 
     public void setGameIds(long[] gameIds) {
         this.gameIds = gameIds;
+    }
+
+    public static long[] toPrimitive(final Long[] array) {
+        if (array == null) {
+            return null;
+        } else if (array.length == 0) {
+            return EMPTY_LONG_ARRAY;
+        }
+        final long[] result = new long[array.length];
+        for (int i = 0; i < array.length; i++) {
+            result[i] = array[i].longValue();
+        }
+        return result;
     }
 }

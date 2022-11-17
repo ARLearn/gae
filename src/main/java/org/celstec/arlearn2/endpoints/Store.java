@@ -28,6 +28,7 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.config.Nullable;
 import com.google.api.server.spi.response.ForbiddenException;
+import com.google.api.server.spi.response.NotFoundException;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import org.celstec.arlearn2.beans.game.Game;
@@ -116,14 +117,13 @@ public class Store extends GenericApi {
             path = "/games/library/game/{gameId}",
             httpMethod = ApiMethod.HttpMethod.GET
     )
-    public Game getLibraryGame( @Named("gameId") Long gameId) throws ForbiddenException {//Game newGame
+    public Game getLibraryGame( @Named("gameId") Long gameId) throws ForbiddenException, NotFoundException {//Game newGame
         GameDelegator qg = new GameDelegator();
         Game g = qg.getGame(gameId);
         if (g.getError() != null ||g.getSharing() != null || g.getSharing() == Game.PUBLIC) {
             return g;
         }
         throw new ForbiddenException("no accesss");
-
     }
 
     @ApiMethod(

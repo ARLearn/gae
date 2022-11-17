@@ -18,6 +18,7 @@
  ******************************************************************************/
 package org.celstec.arlearn2.delegators;
 
+import com.google.api.server.spi.response.NotFoundException;
 import org.celstec.arlearn2.beans.run.Response;
 import org.celstec.arlearn2.beans.run.ResponseList;
 import org.celstec.arlearn2.beans.run.Run;
@@ -34,7 +35,7 @@ public class ResponseDelegator  {
 //        super(user);
 //    }
 
-    public Response createResponse(Long runIdentifier, Response r) {
+    public Response createResponse(Long runIdentifier, Response r) throws NotFoundException {
         RunDelegator rd = new RunDelegator();
         Run run = rd.getRun(runIdentifier);
         if (run == null) {

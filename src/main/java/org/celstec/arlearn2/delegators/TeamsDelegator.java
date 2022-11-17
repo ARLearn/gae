@@ -36,18 +36,6 @@ public class TeamsDelegator  {
 
 
 
-    public Team createTeam(Team team) {
-        RunDelegator rd = new RunDelegator();
-        if (team.getRunId() == null) {
-            team.setError("No run identifier specified");
-            return team;
-        }
-        if (rd.getRun(team.getRunId(), false) == null) {
-            team.setError("No run with given id exists");
-            return team;
-        }
-        return createTeam(team.getRunId(), team.getTeamId(), team.getName());
-    }
 
     public Team createTeam(long runId, String teamId, String name) {
         if (teamId == null) teamId = UUID.randomUUID().toString();

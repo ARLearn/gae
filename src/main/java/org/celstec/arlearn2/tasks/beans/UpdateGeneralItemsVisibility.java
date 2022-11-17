@@ -18,6 +18,7 @@
  ******************************************************************************/
 package org.celstec.arlearn2.tasks.beans;
 
+import com.google.api.server.spi.response.NotFoundException;
 import org.celstec.arlearn2.beans.generalItem.GeneralItem;
 import org.celstec.arlearn2.beans.generalItem.GeneralItemList;
 import org.celstec.arlearn2.beans.run.User;
@@ -96,13 +97,19 @@ public class UpdateGeneralItemsVisibility extends GenericBean{
 		GeneralItemDelegator gid  = new GeneralItemDelegator();
 		UsersDelegator ud = new UsersDelegator();
 		User u = ud.getUserByEmail(getRunId(), getUserEmail());
-		GeneralItemList gil = gid.getGeneralItemsRun(getRunId());
-        if (gil != null && gil.getGeneralItems() != null) {
-			for (GeneralItem gi: gil.getGeneralItems()) {
-				if (gi.getDependsOn() == null && GeneralItemDelegator.itemMatchesUserRoles(gi, u.getRoles()) && (gi.getDeleted() == null || !gi.getDeleted())) {
-					GeneralItemVisibilityManager.setItemVisible(gi.getId(), getRunId(), getUserEmail(), GeneralItemVisibilityManager.VISIBLE_STATUS, System.currentTimeMillis());
+		GeneralItemList gil = null;
+		try {
+			gil = gid.getGeneralItemsRun(getRunId());
+			if (gil != null && gil.getGeneralItems() != null) {
+				for (GeneralItem gi: gil.getGeneralItems()) {
+					if (gi.getDependsOn() == null && GeneralItemDelegator.itemMatchesUserRoles(gi, u.getRoles()) && (gi.getDeleted() == null || !gi.getDeleted())) {
+						GeneralItemVisibilityManager.setItemVisible(gi.getId(), getRunId(), getUserEmail(), GeneralItemVisibilityManager.VISIBLE_STATUS, System.currentTimeMillis());
+					}
 				}
 			}
+		} catch (NotFoundException e) {
+			e.printStackTrace();
 		}
+
 	}
 }

@@ -4,6 +4,7 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.auth.common.User;
+import com.google.api.server.spi.response.NotFoundException;
 import org.celstec.arlearn2.beans.run.Action;
 import org.celstec.arlearn2.beans.run.ActionList;
 import org.celstec.arlearn2.delegators.ActionDelegator;
@@ -55,7 +56,7 @@ public class ActionApi extends GenericApi {
             name = "create_action",
             path = "/action/create"
     )
-    public Action createAction(final User user, Action action) {
+    public Action createAction(final User user, Action action) throws NotFoundException {
         EnhancedUser us = (EnhancedUser) user;
         action.setUserId(us.createFullId());
         if (action.getTimestamp() == null) action.setTimestamp(System.currentTimeMillis());
