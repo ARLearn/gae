@@ -55,6 +55,7 @@ public class Game extends GameBean implements Serializable, Comparable<Game>{
     private Double lat;
     private Integer rank;
     private Long theme;
+    private Long organisationId;
 
 
 
@@ -65,6 +66,9 @@ public class Game extends GameBean implements Serializable, Comparable<Game>{
     private Dependency endsOn;
 
     private Long amountOfPlays;
+    private String playDuration;
+    private String ageSpan;
+    private String devTeam;
 
     private Boolean showGrid;
     private Integer gridSize;
@@ -268,6 +272,14 @@ public class Game extends GameBean implements Serializable, Comparable<Game>{
         this.theme = theme;
     }
 
+    public Long getOrganisationId() {
+        return organisationId;
+    }
+
+    public void setOrganisationId(Long organisationId) {
+        this.organisationId = organisationId;
+    }
+
     public Dependency getEndsOn() {
         return endsOn;
     }
@@ -346,6 +358,30 @@ public class Game extends GameBean implements Serializable, Comparable<Game>{
 
     public void setGameOverDescription(String gameOverDescriptionString) {
         this.gameOverDescription = gameOverDescriptionString;
+    }
+
+    public String getPlayDuration() {
+        return playDuration;
+    }
+
+    public void setPlayDuration(String playDuration) {
+        this.playDuration = playDuration;
+    }
+
+    public String getAgeSpan() {
+        return ageSpan;
+    }
+
+    public void setAgeSpan(String ageSpan) {
+        this.ageSpan = ageSpan;
+    }
+
+    public String getDevTeam() {
+        return devTeam;
+    }
+
+    public void setDevTeam(String devTeam) {
+        this.devTeam = devTeam;
     }
 }
 

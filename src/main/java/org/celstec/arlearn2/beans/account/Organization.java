@@ -2,6 +2,7 @@ package org.celstec.arlearn2.beans.account;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.KeyFactory;
+import org.mockito.internal.matchers.Or;
 
 public class Organization {
     public static String COL_NAME = "name";
@@ -51,5 +52,10 @@ public class Organization {
         result.setProperty(COL_NAME, this.name);
         result.setProperty(COL_EXPIRATION_DATE, this.expirationDate);
         return result;
+    }
+
+    public Organization withoutExpiration() {
+        expirationDate = null;
+        return this;
     }
 }

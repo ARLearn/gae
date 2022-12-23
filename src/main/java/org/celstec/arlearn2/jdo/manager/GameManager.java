@@ -45,6 +45,11 @@ public class GameManager {
         gameJdo.setCreatorEmail(game.getCreator());
 //        gameJdo.setOwner(myAccount);
         gameJdo.setFeedUrl(game.getFeedUrl());
+
+        gameJdo.setPlayDuration(game.getPlayDuration());
+        gameJdo.setAgeSpan(game.getAgeSpan());
+        gameJdo.setDevTeam(game.getDevTeam());
+
         gameJdo.setTitle(game.getTitle());
         gameJdo.setSplashScreen(game.getSplashScreen());
         gameJdo.setSharing(game.getSharing());
@@ -57,6 +62,7 @@ public class GameManager {
         gameJdo.setLng(game.getLng());
         gameJdo.setLanguage(game.getLanguage());
         gameJdo.setTheme(game.getTheme());
+        gameJdo.setOrganisationId(game.getOrganisationId());
         if (game.getLicenseCode() != null) gameJdo.setLicenseCode(game.getLicenseCode());
         gameJdo.setLastModificationDate(System.currentTimeMillis());
         if (game.getEndsOn() != null) {
@@ -100,6 +106,11 @@ public class GameManager {
         gameJdo.setSplashScreen(game.getSplashScreen());
         gameJdo.setSharing(game.getSharing());
         gameJdo.setDescription(game.getDescription());
+
+        gameJdo.setPlayDuration(game.getPlayDuration());
+        gameJdo.setAgeSpan(game.getAgeSpan());
+        gameJdo.setDevTeam(game.getDevTeam());
+
         gameJdo.setStartButton(game.getStartButton());
         gameJdo.setGameOverHeading(game.getGameOverHeading());
         gameJdo.setGameOverButton(game.getGameOverButton());
@@ -108,6 +119,7 @@ public class GameManager {
         gameJdo.setLng(game.getLng());
         gameJdo.setLanguage(game.getLanguage());
         gameJdo.setTheme(game.getTheme());
+        gameJdo.setOrganisationId(game.getOrganisationId());
         gameJdo.setMessageListScreen(game.getMessageListScreen());
         gameJdo.setMessageListTypes(game.getMessageListTypes());
         gameJdo.setBoardHeight(game.getBoardHeight());

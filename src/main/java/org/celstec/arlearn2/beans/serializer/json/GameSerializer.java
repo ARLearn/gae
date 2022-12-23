@@ -47,6 +47,7 @@ public class GameSerializer extends GameBeanSerializer{
             if (game.getLanguage() != null) returnObject.put("language", game.getLanguage());
             if (game.getRank() != null) returnObject.put("rank", game.getRank());
             if (game.getTheme() != null) returnObject.put("theme", game.getTheme());
+			if (game.getOrganisationId() != null) returnObject.put("organisationId", game.getOrganisationId());
 			if (game.getMessageListScreen() != null) returnObject.put("messageListScreen", game.getMessageListScreen());
 			if (game.getMessageListTypes() != null) returnObject.put("messageListTypes", game.getMessageListTypes());
 			if (game.getBoardHeight() != null) returnObject.put("boardHeight", game.getBoardHeight());
@@ -69,6 +70,10 @@ public class GameSerializer extends GameBeanSerializer{
 			if (game.getAmountOfPlays() != null) returnObject.put("amountOfPlays", game.getAmountOfPlays());
 			if (game.getGridSize() != null) returnObject.put("gridSize", game.getGridSize());
 			if (game.getShowGrid() != null) returnObject.put("showGrid", game.getShowGrid());
+
+			if (game.getAgeSpan() != null) returnObject.put("ageSpan", game.getAgeSpan());
+			if (game.getDevTeam() != null) returnObject.put("devTeam", game.getDevTeam());
+			if (game.getPlayDuration() != null) returnObject.put("playDuration", game.getPlayDuration());
         } catch (JSONException e) {
 			e.printStackTrace();
 		}

@@ -33,7 +33,6 @@ public class GameCategoryEntity {
     public static String COL_GAMEID= "gameId";
     public static String COL_DELETED = "deleted";
 
-//    protected Key id;
     private Key uniqueId;
     private Long categoryId;
     private Long gameId;
@@ -46,14 +45,6 @@ public class GameCategoryEntity {
     public void setUniqueId() {
         this.uniqueId = KeyFactory.createKey(KIND, getCategoryId()+":"+getGameId());
     }
-
-//    public Key getId() {
-//        return id;
-//    }
-//
-//    public void setId(Key id) {
-//        this.id = id;
-//    }
 
     public Long getCategoryId() {
         return categoryId;

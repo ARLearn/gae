@@ -152,10 +152,15 @@ public class GameDelegator {
         oldGame.setMessageListTypes(updateGame.getMessageListTypes());
         oldGame.setConfig(updateGame.getConfig());
         oldGame.setTheme(updateGame.getTheme());
+        oldGame.setOrganisationId(updateGame.getOrganisationId());
         oldGame.setTitle(updateGame.getTitle());
         oldGame.setWebEnabled(updateGame.getWebEnabled());
         oldGame.setShowGrid(updateGame.getShowGrid());
         oldGame.setGridSize(updateGame.getGridSize());
+
+        oldGame.setPlayDuration(updateGame.getPlayDuration());
+        oldGame.setDevTeam(updateGame.getDevTeam());
+        oldGame.setAgeSpan(updateGame.getAgeSpan());
 
         GameManager.addGame(oldGame);
         resetCache(gameId, u);

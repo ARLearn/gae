@@ -33,10 +33,7 @@ import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import org.celstec.arlearn2.beans.game.Game;
 import org.celstec.arlearn2.beans.game.GamesList;
-import org.celstec.arlearn2.beans.store.Category;
-import org.celstec.arlearn2.beans.store.CategoryList;
-import org.celstec.arlearn2.beans.store.GameCategory;
-import org.celstec.arlearn2.beans.store.GameCategoryList;
+import org.celstec.arlearn2.beans.store.*;
 import org.celstec.arlearn2.delegators.CategoryDelegator;
 import org.celstec.arlearn2.delegators.FeaturedGameDelegator;
 import org.celstec.arlearn2.delegators.GameDelegator;
@@ -44,6 +41,7 @@ import org.celstec.arlearn2.endpoints.impl.storage.DeleteStorage;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
 import org.celstec.arlearn2.jdo.manager.GameCategoryManager;
 import org.celstec.arlearn2.jdo.manager.GameManager;
+import org.celstec.arlearn2.jdo.manager.GameOrganisationManager;
 import org.celstec.arlearn2.tasks.beans.GameSearchIndex;
 
 @Api(name = "store")
@@ -164,12 +162,34 @@ public class Store extends GenericApi {
 
     @SuppressWarnings("ResourceParameter")
     @ApiMethod(
+            name = "link_game_to_organisation",
+            path = "/games/library/organisation/{gameId}/{organisationId}"
+    )
+    public GameOrganisation linkGameToOrg(final User u,
+                                          @Named("gameId") Long gameId,
+                                          @Named("organisationId") Long organisationId) throws ForbiddenException {//Game newGame
+        adminCheck(u);
+        return GameOrganisationManager.linkGameToOrganisation(gameId, organisationId);
+    }
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(
             name = "get_games_for_category",
             path = "/games/library/category/games/{categoryId}"
     )
     public GameCategoryList getGamesForCategory(
                                      @Named("categoryId") Long categoryId)  {//Game newGame
         return new CategoryDelegator().getGames(categoryId);
+    }
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(
+            name = "get_games_for_organisation",
+            path = "/games/library/organisation/games/{organisationId}"
+    )
+    public GameOrganisationList getGamesForOrganisation(
+            @Named("organisationId") Long organisationId)  {//Game newGame
+        return GameOrganisationManager.getGames(organisationId);
     }
 
     @SuppressWarnings("ResourceParameter")
@@ -200,6 +220,26 @@ public class Store extends GenericApi {
 
     @SuppressWarnings("ResourceParameter")
     @ApiMethod(
+            name = "get_organisation_mappings_for_game",
+            path = "/games/library/organisationsMappings/game/{gameId}"
+    )
+    public GameOrganisationList getOrganisationsMappingsForGame(
+            @Named("gameId") Long gameId)  {//Game newGame
+        return GameOrganisationManager.getOrganisationsForGame(gameId);
+    }
+//
+//    @SuppressWarnings("ResourceParameter")
+//    @ApiMethod(
+//            name = "get_organisation_mappings_for_organisation",
+//            path = "/games/library/organisationsMappings/organisatino/{organisationId}"
+//    )
+//    public GameOrganisationList getOrganisationsMappingsForOrganisation(
+//            @Named("organisationId") Long organisationId)  {//Game newGame
+//        return GameOrganisationManager.getOrganisationsForOrganisation(organisationId);
+//    }
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(
             name = "delete_category_mappings_for_game",
             path = "/games/library/categoriesMappings/game/{id}",
             httpMethod = ApiMethod.HttpMethod.DELETE
@@ -212,6 +252,22 @@ public class Store extends GenericApi {
         GameCategory gameCategory = new GameCategory();
         gameCategory.setId(id);
         return gameCategory;
+    }
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(
+            name = "delete_organisation_mappings_for_game",
+            path = "/games/library/organisationsMappings/game/{id}",
+            httpMethod = ApiMethod.HttpMethod.DELETE
+    )
+    public GameOrganisation deleteOrganisationsMappingsForGame(
+            final User u,
+            @Named("id") String id) throws ForbiddenException {//Game
+        adminCheck(u);// newGame
+        GameOrganisationManager.deleteGameOrganisation(id);
+        GameOrganisation gameOrganisation = new GameOrganisation();
+        gameOrganisation.setId(id);
+        return gameOrganisation;
     }
 
     @SuppressWarnings("ResourceParameter")

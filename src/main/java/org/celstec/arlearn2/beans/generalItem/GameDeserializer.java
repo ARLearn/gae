@@ -63,6 +63,7 @@ public class GameDeserializer extends GameBeanDeserializer {
         if (object.has("language")) g.setLanguage(object.getString("language"));
         if (object.has("rank")) g.setRank(object.getInt("rank"));
         if (object.has("theme")) g.setTheme(object.getLong("theme"));
+		if (object.has("organisationId")) g.setOrganisationId(object.getLong("organisationId"));
 //		if (object.has("googlePlayUrl")) g.setGooglePlayUrl(object.getString("googlePlayUrl"));
 //		if (object.has("appStoreUrl")) g.setAppStoreUrl(object.getString("appStoreUrl"));
 		if (object.has("messageListScreen")) g.setMessageListScreen(object.getString("messageListScreen"));
@@ -78,5 +79,9 @@ public class GameDeserializer extends GameBeanDeserializer {
 
 		if (object.has("showGrid")) g.setShowGrid(object.getBoolean("showGrid"));
 		if (object.has("gridSize")) g.setGridSize(object.getInt("gridSize"));
+
+		if (object.has("ageSpan")) g.setAgeSpan(object.getString("ageSpan"));
+		if (object.has("devTeam")) g.setDevTeam(object.getString("devTeam"));
+		if (object.has("playDuration")) g.setPlayDuration(object.getString("playDuration"));
     }
 }

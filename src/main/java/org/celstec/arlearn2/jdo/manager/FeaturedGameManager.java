@@ -79,6 +79,17 @@ public class FeaturedGameManager {
         return resultList;
     }
 
+    public static GamesList getOrganisationGames(Long organisationId) {
+        Query q = new Query(GameEntity.KIND);
+        q.setFilter(new Query.FilterPredicate(GameEntity.COL_ORGANISATIONID, Query.FilterOperator.EQUAL, organisationId));
+        PreparedQuery pq = datastore.prepare(q);
+        GamesList resultList = new GamesList();
+        for (Entity result : pq.asIterable()) {
+            resultList.addGame(new GameEntity(result).toGame());
+        }
+        return resultList;
+    }
+
     public static GamesList getFeaturedGame(Long gameId) {
         Query q = new Query(FeaturedGameEntity.KIND);
         q.setFilter(new Query.FilterPredicate(FeaturedGameEntity.COL_GAMEID, Query.FilterOperator.EQUAL, gameId));

@@ -61,6 +61,7 @@ public class GameEntity {
     public static String COL_OWNER = "owner";
     public static String COL_SHARING = "sharing";
     public static String COL_THEME = "theme";
+    public static String COL_ORGANISATIONID = "organisationId";
     public static String COL_TITLE = "title";
     public static String COL_SPLASHSCREEN = "splashScreen";
     public static String COL_PRIVATE_MODE = "privateMode";
@@ -71,6 +72,10 @@ public class GameEntity {
 
     public static String COL_SHOW_GRID = "showGrid";
     public static String COL_GRID_SIZE = "gridSize";
+
+    public static String COL_PLAY_DURATION = "playDuration";
+    public static String COL_AGE_SPAN = "ageSpan";
+    public static String COL_DEV_TEAM = "devTeam";
 
     //from GameClass
     private Key gameId;
@@ -113,6 +118,7 @@ public class GameEntity {
     private Boolean featured;
     private String language;
     private Long theme;
+    private Long organisationId;
 //    private String googlePlayUrl;
 //    private String appStoreUrl;
     private String messageListScreen;
@@ -126,6 +132,11 @@ public class GameEntity {
 
     private Boolean showGrid;
     private Integer gridSize;
+
+    private String playDuration;
+    private String ageSpan;
+    private String devTeam;
+
 
     public Long getGameId() {
         return gameId.getId();
@@ -170,6 +181,18 @@ public class GameEntity {
 
     public void setFeedUrl(String feedUrl) {
         this.feedUrl = feedUrl;
+    }
+
+    public void setDevTeam(String devTeam) {
+        this.devTeam = devTeam;
+    }
+
+    public void setAgeSpan(String ageSpan) {
+        this.ageSpan = ageSpan;
+    }
+
+    public void setPlayDuration(String playDuration) {
+        this.playDuration = playDuration;
     }
 
     public String getOwner() {
@@ -250,6 +273,19 @@ public class GameEntity {
         return sharing;
     }
 
+    public String getDevTeam() {
+        return devTeam;
+    }
+
+    public String getAgeSpan() {
+        return ageSpan;
+    }
+
+    public String getPlayDuration() {
+        return playDuration;
+    }
+
+
     public void setSharing(Integer sharing) {
         this.sharing = sharing;
     }
@@ -300,6 +336,14 @@ public class GameEntity {
 
     public void setTheme(Long theme) {
         this.theme = theme;
+    }
+
+    public Long getOrganisationId() {
+        return organisationId;
+    }
+
+    public void setOrganisationId(Long organisationId) {
+        this.organisationId = organisationId;
     }
 
     public String getMessageListScreen() {
@@ -414,6 +458,10 @@ public class GameEntity {
         if (entity.getProperty(COL_THEME) != null) {
             this.theme = ((Long) entity.getProperty(COL_THEME));
         }
+        if (entity.getProperty(COL_ORGANISATIONID) != null) {
+            this.organisationId = ((Long) entity.getProperty(COL_ORGANISATIONID));
+        }
+
 //        this.googlePlayUrl = (String) entity.getProperty(COL_GOOGLEPLAYURL);
 //        this.appStoreUrl = (String) entity.getProperty(COL_APPSTOREURL);
         this.messageListScreen = (String) entity.getProperty(COL_MESSAGELISTSCREEN);
@@ -436,6 +484,9 @@ public class GameEntity {
         if (entity.getProperty(COL_GRID_SIZE) != null) {
             this.gridSize = ((Long) entity.getProperty(COL_GRID_SIZE)).intValue();
         }
+        this.playDuration = (String) entity.getProperty(COL_PLAY_DURATION);
+        this.ageSpan = (String) entity.getProperty(COL_AGE_SPAN);
+        this.devTeam = (String) entity.getProperty(COL_DEV_TEAM);
     }
 
     public Entity toEntity() {
@@ -460,6 +511,9 @@ public class GameEntity {
         result.setProperty(COL_GAME_OVER_DESC_BUTTON, this.gameOverDescription);
         result.setProperty(COL_FEATURED, this.featured);
         result.setProperty(COL_FEEDURL, this.feedUrl);
+        result.setProperty(COL_AGE_SPAN, this.ageSpan);
+        result.setProperty(COL_PLAY_DURATION, this.playDuration);
+        result.setProperty(COL_DEV_TEAM, this.devTeam);
 //        result.setProperty(COL_GOOGLEPLAYURL, this.googlePlayUrl);
 
         result.setProperty(COL_MESSAGELISTSCREEN, this.messageListScreen);
@@ -474,6 +528,7 @@ public class GameEntity {
         result.setProperty(COL_OWNER, this.owner);
         result.setProperty(COL_SHARING, this.sharing);
         result.setProperty(COL_THEME, this.theme);
+        result.setProperty(COL_ORGANISATIONID, this.organisationId);
         result.setProperty(COL_TITLE, this.title);
         result.setProperty(COL_SPLASHSCREEN, this.splashScreen);
         result.setProperty(COL_PRIVATE_MODE, this.privateMode);
@@ -507,7 +562,13 @@ public class GameEntity {
         game.setMessageListTypes(getMessageListTypes());
         game.setBoardWidth(getBoardWidth());
         game.setBoardHeight(getBoardHeight());
+
+        game.setPlayDuration(getPlayDuration());
+        game.setDevTeam(getDevTeam());
+        game.setAgeSpan(getAgeSpan());
+
         if (getTheme() != null) game.setTheme(getTheme());
+        if (getOrganisationId() != null) game.setOrganisationId(getOrganisationId());
         if (getLicenseCode() != null) game.setLicenseCode(getLicenseCode());
         if (getLastModificationDate() != null) {
             game.setLastModificationDate(getLastModificationDate());

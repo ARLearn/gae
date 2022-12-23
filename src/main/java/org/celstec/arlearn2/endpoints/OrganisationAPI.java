@@ -10,9 +10,11 @@ import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.ForbiddenException;
 import org.celstec.arlearn2.beans.account.Organization;
 
+import org.celstec.arlearn2.beans.game.GamesList;
 import org.celstec.arlearn2.endpoints.impl.account.CreateOrganization;
 import org.celstec.arlearn2.endpoints.impl.account.GetOrganization;
 import org.celstec.arlearn2.endpoints.util.EnhancedUser;
+import org.celstec.arlearn2.jdo.manager.FeaturedGameManager;
 
 
 @Api(name = "organization")
@@ -46,8 +48,20 @@ public class OrganisationAPI extends GenericApi {
             path = "/organization/{id}"
     )
     public Organization getOrganisation(final User user, @Named("id") Long id) throws Exception{
-        adminCheck(user);
-        return GetOrganization.getInstance().getOrganisation(id);
+        if (user != null && ( (EnhancedUser) user).isAdmin()) {
+            return GetOrganization.getInstance().getOrganisation(id);
+        }
+        return GetOrganization.getInstance().getOrganisation(id).withoutExpiration();
+    }
+
+    @SuppressWarnings("ResourceParameter")
+    @ApiMethod(
+            httpMethod = ApiMethod.HttpMethod.GET,
+            name = "get_organisation_games",
+            path = "/organization/{id}/games"
+    )
+    public GamesList getOrganisationGames(final User user, @Named("id") Long id) throws Exception{
+        return FeaturedGameManager.getOrganisationGames(id);
     }
 
     @SuppressWarnings("ResourceParameter")

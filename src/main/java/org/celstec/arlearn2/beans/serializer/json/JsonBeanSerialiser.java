@@ -32,10 +32,7 @@ import org.celstec.arlearn2.beans.medialibrary.MediaLibraryFile;
 import org.celstec.arlearn2.beans.run.Thread;
 import org.celstec.arlearn2.beans.run.*;
 import org.celstec.arlearn2.beans.serializer.BeanSerializer;
-import org.celstec.arlearn2.beans.store.Category;
-import org.celstec.arlearn2.beans.store.CategoryList;
-import org.celstec.arlearn2.beans.store.GameCategory;
-import org.celstec.arlearn2.beans.store.GameCategoryList;
+import org.celstec.arlearn2.beans.store.*;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -162,6 +159,7 @@ public class JsonBeanSerialiser extends BeanSerializer{
         customSerializerMap.put(Category.class.getCanonicalName(), Category.serializer);
         customSerializerMap.put(CategoryList.class.getCanonicalName(), CategoryList.serializer);
         customSerializerMap.put(GameCategory.class.getCanonicalName(), GameCategory.serializer);
+		customSerializerMap.put(GameOrganisation.class.getCanonicalName(), GameOrganisation.serializer);
         customSerializerMap.put(GameCategoryList.class.getCanonicalName(), GameCategoryList.serializer);
 
         customSerializerMap.put(YoutubeObject.class.getCanonicalName(), YoutubeObject.serializer);

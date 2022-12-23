@@ -6,38 +6,18 @@ import org.celstec.arlearn2.beans.serializer.json.BeanSerializer;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
-/**
- * ****************************************************************************
- * Copyright (C) 2013 Open Universiteit Nederland
- * <p/>
- * This library is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * <p/>
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * <p/>
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
- * <p/>
- * Contributors: Stefaan Ternier
- * ****************************************************************************
- */
-public class GameCategory extends Bean {
+public class GameOrganisation extends Bean {
 
     private String id;
     private Long gameId;
-    private Long categoryId;
+    private Long organisationId;
     private Boolean deleted;
 
     public static BeanDeserializer deserializer = new BeanDeserializer(){
 
         @Override
-        public GameCategory toBean(JSONObject object) {
-            GameCategory bean = new GameCategory();
+        public GameOrganisation toBean(JSONObject object) {
+            GameOrganisation bean = new GameOrganisation();
             try {
                 initBean(object, bean);
             } catch (JSONException e) {
@@ -48,10 +28,10 @@ public class GameCategory extends Bean {
 
         public void initBean(JSONObject object, Bean genericBean) throws JSONException {
             super.initBean(object, genericBean);
-            GameCategory bean = (GameCategory) genericBean;
+            GameOrganisation bean = (GameOrganisation) genericBean;
             if (object.has("id")) bean.setId(object.getString("id"));
             if (object.has("gameId")) bean.setGameId(object.getLong("gameId"));
-            if (object.has("categoryId")) bean.setCategoryId(object.getLong("categoryId"));
+            if (object.has("organisationId")) bean.setOrganisationId(object.getLong("organisationId"));
             if (object.has("deleted")) bean.setDeleted(object.getBoolean("deleted"));
         }
     };
@@ -60,12 +40,12 @@ public class GameCategory extends Bean {
 
         @Override
         public JSONObject toJSON(Object bean) {
-            GameCategory gameCategoryBean = (GameCategory) bean;
+            GameOrganisation gameCategoryBean = (GameOrganisation) bean;
             JSONObject returnObject = super.toJSON(bean);
             try {
                 if (gameCategoryBean.getId() != null) returnObject.put("id", gameCategoryBean.getId());
                 if (gameCategoryBean.getGameId() != null) returnObject.put("gameId", gameCategoryBean.getGameId());
-                if (gameCategoryBean.getCategoryId() != null) returnObject.put("categoryId", gameCategoryBean.getCategoryId());
+                if (gameCategoryBean.getOrganisationId() != null) returnObject.put("organisationId", gameCategoryBean.getOrganisationId());
                 if (gameCategoryBean.getDeleted() != null) returnObject.put("deleted", gameCategoryBean.getDeleted());
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -90,12 +70,12 @@ public class GameCategory extends Bean {
         this.gameId = gameId;
     }
 
-    public Long getCategoryId() {
-        return categoryId;
+    public Long getOrganisationId() {
+        return organisationId;
     }
 
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
+    public void setOrganisationId(Long organisationId) {
+        this.organisationId = organisationId;
     }
 
     public Boolean getDeleted() {
